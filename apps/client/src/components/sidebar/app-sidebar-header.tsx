@@ -13,7 +13,7 @@ export function AppSidebarHeader() {
             <div className="flex items-center space-x-1.5">
               <FiAnchor className="size-4 shrink-0" />
               <span className="cn-font-heading text-base text-[17px]">
-                Doska
+                Kanban
               </span>
             </div>
           </Link>

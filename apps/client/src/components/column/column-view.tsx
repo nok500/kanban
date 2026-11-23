@@ -52,7 +52,7 @@ export function ColumnView({
     <div
       role="group"
       aria-label={title}
-      className="flex w-full shrink-0 snap-center flex-col pb-6 xs:w-sm"
+      className="flex h-full min-h-0 w-full shrink-0 snap-center flex-col pb-6 xs:w-sm"
     >
       <div
         className={cn(
@@ -96,14 +96,14 @@ export function ColumnView({
       </div>
       <div
         className={cn(
-          "flex min-h-40 w-full shrink-0 flex-col rounded-2xl bg-background p-4 transition-colors",
+          "flex min-h-40 w-full flex-col overflow-hidden rounded-2xl bg-background pt-4 transition-colors",
           "border border-sidebar-primary-foreground",
           "shadow-inset",
           isDraggingOver && "bg-primary/5 dark:bg-sidebar/50"
         )}
       >
         {onAddCard && (
-          <div className="mb-3 flex gap-2">
+          <div className="mb-3 flex shrink-0 gap-2 px-4">
             <Button
               variant="muted"
               onClick={() => {
@@ -129,7 +129,11 @@ export function ColumnView({
             )}
           </div>
         )}
-        <div ref={listRef} {...listProps} className="flex flex-1 flex-col">
+        <div
+          ref={listRef}
+          {...listProps}
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-4"
+        >
           {children}
         </div>
       </div>

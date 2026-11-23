@@ -18,7 +18,7 @@ export function PublicHeader({ title }: IProps) {
         className="flex shrink-0 items-center gap-1 rounded-md px-2 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50"
       >
         <Anchor className="size-4 shrink-0" />
-        <span className="font-semibold">Doska</span>
+        <span className="font-semibold">Kanban</span>
       </a>
       {title && (
         <>

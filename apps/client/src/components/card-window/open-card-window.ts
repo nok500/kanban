@@ -53,7 +53,7 @@ export async function openCardWindow(cardId: string, at?: DropPoint) {
   await evictHidden()
   new WebviewWindow(label, {
     url: routes.cardWindow.to(cardId),
-    title: "Doska",
+    title: "Kanban",
     minWidth: 400,
     minHeight: 320,
     dragDropEnabled: false,

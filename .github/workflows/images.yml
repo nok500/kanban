@@ -8,6 +8,8 @@ name: Publish Images
 # (v*-beta.N). The git tag is the single source of truth for the version.
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*"
   workflow_dispatch:

@@ -98,8 +98,8 @@ export default defineConfig({
       injectRegister: null,
       registerType: "prompt",
       manifest: {
-        name: "Doska",
-        short_name: "Doska",
+        name: "Kanban",
+        short_name: "Kanban",
         description:
           "A local-first Kanban board where every card is Markdown. Works offline and syncs through a server you host.",
         start_url: "/",

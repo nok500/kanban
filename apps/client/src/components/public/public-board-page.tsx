@@ -24,7 +24,7 @@ export function PublicBoardPage({ token, closeHref }: IProps) {
   const title = snapshot?.dashboard.title
 
   useEffect(() => {
-    document.title = title ? `${title} · Doska` : "Doska"
+    document.title = title ? `${title} · Kanban` : "Kanban"
   }, [title])
 
   if (isPending)

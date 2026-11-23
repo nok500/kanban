@@ -1,0 +1,125 @@
+# Build and run the full app (web UI + sync server) from local source.
+#
+# Postgres is bundled by default (data lives in the doska-pgdata volume).
+# To use your own managed Postgres, set DATABASE_URL in .env
+#
+# For automatic HTTPS, set DOMAIN in .env and add `--profile https` to start a
+# Caddy reverse proxy in front (Let's Encrypt certs, auto-renewed):
+#   docker compose --profile https up -d --build
+#
+services:
+  server:
+    image: doska-server:local
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-local}
+    environment:
+      # Defaults to the bundled Postgres below; override with your own managed
+      # DATABASE_URL to skip it entirely.
+      DATABASE_URL: ${DATABASE_URL:-postgres://doska:${POSTGRES_PASSWORD:-doska}@db:5432/doska}
+      # Auth credentials come from the env (see .env.selfhost.example).
+      AUTH_LOGIN: ${AUTH_LOGIN:?set AUTH_LOGIN in .env}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:?set AUTH_PASSWORD in .env}
+      AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in .env}
+      # The web UI shows sign in, and does not allow local unauthenticated usage
+      ALWAYS_AUTH: ${ALWAYS_AUTH:-true}
+      # Optional single sign-on (see the docs on environment variables).
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      OIDC_NAME: ${OIDC_NAME:-}
+      OIDC_AUTO_CREATE: ${OIDC_AUTO_CREATE:-}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      FILE_MAX_BYTES: ${FILE_MAX_BYTES:-}
+      PORT: 3000
+      NODE_ENV: production
+      BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://doska.example.com}
+    volumes:
+      - doska-files:/data/files
+    networks:
+      default:
+        aliases:
+          - doska-api
+    depends_on: { db: { condition: service_healthy } }
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/version').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      # Migrations run on boot before the port opens.
+      start_period: 40s
+    restart: unless-stopped
+
+  web:
+    image: doska-web:local
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-local}
+    ports:
+      - "${WEB_HOST_BIND:+${WEB_HOST_BIND}:}${WEB_PORT:-8080}:80"
+    depends_on:
+      - server
+    healthcheck:
+      # 127.0.0.1, not localhost: busybox wget tries ::1 first, nginx is IPv4-only.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Remove this service (and the server's depends_on above)
+  # if you point DATABASE_URL at your own managed database.
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: doska
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-doska}
+      POSTGRES_DB: doska
+    volumes:
+      - doska-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doska -d doska"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Optional TLS terminator, only started with `--profile https`. Fetches and
+  # renews a Let's Encrypt cert for DOMAIN and proxies to the web container.
+  # Set BASE_URL=https://$DOMAIN in .env so OAuth/MCP advertise the right origin.
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["https"]
+    ports:
+      - "80:80"
+      - "443:443"
+    # DOMAIN is required for this profile; unset it and Caddy errors on start.
+    command: caddy reverse-proxy --from ${DOMAIN:-} --to web:80
+    depends_on:
+      - web
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+
+volumes:
+  doska-pgdata:
+  doska-files:
+  caddy-data:
+  caddy-config:
