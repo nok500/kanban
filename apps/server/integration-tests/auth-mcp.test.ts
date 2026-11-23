@@ -56,6 +56,16 @@ describe("auth discovery", () => {
     // better-auth fills in the authorization server metadata.
     expect(res.json()).toHaveProperty("issuer")
   })
+
+  test.each([
+    "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-protected-resource/mcp",
+  ])("serves protected resource metadata with /mcp resource at %s", async (url) => {
+    const res = await h.app.inject({ method: "GET", url })
+    expect(res.statusCode).toBe(200)
+    const body = res.json() as { resource: string }
+    expect(body.resource).toMatch(/\/mcp$/)
+  })
 })
 
 describe("mcp", () => {

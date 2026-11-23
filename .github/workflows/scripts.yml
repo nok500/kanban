@@ -4,22 +4,8 @@ name: Scripts
 # repo. Hermetic — the docker CLI is stubbed, so no daemon and no network.
 
 # Keep the two path lists identical — Actions does not support YAML anchors.
+# Temporarily disabled on push/PR; only Publish Images runs on push.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "install.sh"
-      - "backup.sh"
-      - "docker-compose.selfhost.yml"
-      - ".github/scripts/install-test.sh"
-      - ".github/workflows/scripts.yml"
-  pull_request:
-    paths:
-      - "install.sh"
-      - "backup.sh"
-      - "docker-compose.selfhost.yml"
-      - ".github/scripts/install-test.sh"
-      - ".github/workflows/scripts.yml"
   workflow_dispatch:
 
 concurrency:

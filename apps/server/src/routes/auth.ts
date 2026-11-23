@@ -1,6 +1,7 @@
-import { toNodeHandler } from "better-auth/node"
+import { fromNodeHeaders, toNodeHandler } from "better-auth/node"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { auth } from "../auth"
+import { originOf } from "../auth/guard"
 import { OIDC_PROVIDER_ID } from "../auth/oidc"
 import { env } from "../env"
 
@@ -38,13 +39,32 @@ export function registerAuthRoutes(app: FastifyInstance): void {
 
   // OAuth clients look for discovery at the well-known root, but better-auth
   // serves it under its own prefix — so rewrite the path and hand it over.
+  app.get("/.well-known/oauth-authorization-server", async (req, reply) => {
+    req.raw.url = "/api/auth/.well-known/oauth-authorization-server"
+    return delegateToAuth(req, reply)
+  })
+
+  // MCP clients (e.g. Antigravity CLI) probe the path-scoped metadata URL
+  // first, then fall back to the root, and require `resource` to match `/mcp`.
   for (const path of [
-    "/.well-known/oauth-authorization-server",
     "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-protected-resource/mcp",
   ]) {
     app.get(path, async (req, reply) => {
-      req.raw.url = `/api/auth${path}`
-      return delegateToAuth(req, reply)
+      const origin = originOf(req)
+      const response = await auth.handler(
+        new Request(
+          `${origin}/api/auth/.well-known/oauth-protected-resource`,
+          { headers: fromNodeHeaders(req.headers) }
+        )
+      )
+      if (!response.ok) {
+        return reply.code(response.status).send(await response.text())
+      }
+      const metadata = (await response.json()) as Record<string, unknown>
+      return reply
+        .code(response.status)
+        .send({ ...metadata, resource: `${origin}/mcp` })
     })
   }
 }

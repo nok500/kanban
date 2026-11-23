@@ -1,8 +1,8 @@
 name: E2E
 
+# Temporarily disabled on push; only Publish Images runs on push.
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: e2e-${{ github.ref }}

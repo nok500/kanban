@@ -1,9 +1,8 @@
 name: Test
 
+# Temporarily disabled on push/PR; only Publish Images runs on push.
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: test-${{ github.ref }}
