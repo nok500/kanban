@@ -26,15 +26,15 @@
 
 :root {
   --radius: 0.625rem;
-  --sidebar-ring: #725cff;
-  --scrollbar-thumb: #d8dae1;
-  --scrollbar-thumb-hover: #bcbfca;
+  --sidebar-ring: #5e81ac;
+  --scrollbar-thumb: #d8dee9;
+  --scrollbar-thumb-hover: #aeb7c7;
 }
 
 .dark:root {
-  --sidebar-ring: #9585ff;
-  --scrollbar-thumb: #ffffff1f;
-  --scrollbar-thumb-hover: #ffffff3d;
+  --sidebar-ring: #88c0d0;
+  --scrollbar-thumb: #4c566a99;
+  --scrollbar-thumb-hover: #4c566acc;
 }
 
 @layer base {
