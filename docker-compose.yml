@@ -1,21 +1,14 @@
-# Build and run the full app (web UI + sync server) from local source.
+# Run the full app (web UI + sync server) from your GHCR images.
 #
 # Postgres is bundled by default (data lives in the doska-pgdata volume).
 # To use your own managed Postgres, set DATABASE_URL in .env
 #
-# For automatic HTTPS, set DOMAIN in .env and add `--profile https` to start a
-# Caddy reverse proxy in front (Let's Encrypt certs, auto-renewed):
-#   docker compose --profile https up -d --build
-#
 services:
   server:
-    image: doska-server:local
-    pull_policy: build
-    build:
-      context: .
-      dockerfile: apps/server/Dockerfile
-      args:
-        APP_VERSION: ${APP_VERSION:-local}
+    image: ghcr.io/nok500/doska-server:${DOCKER_IMAGE_TAG:-latest}
+    pull_policy: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       # Defaults to the bundled Postgres below; override with your own managed
       # DATABASE_URL to skip it entirely.
@@ -24,6 +17,7 @@ services:
       AUTH_LOGIN: ${AUTH_LOGIN:?set AUTH_LOGIN in .env}
       AUTH_PASSWORD: ${AUTH_PASSWORD:?set AUTH_PASSWORD in .env}
       AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in .env}
+      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:-}
       # The web UI shows sign in, and does not allow local unauthenticated usage
       ALWAYS_AUTH: ${ALWAYS_AUTH:-true}
       # Optional single sign-on (see the docs on environment variables).
@@ -40,7 +34,9 @@ services:
       FILE_MAX_BYTES: ${FILE_MAX_BYTES:-}
       PORT: 3000
       NODE_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-info}
       BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://doska.example.com}
+      AGENT_MONITORS: ${AGENT_MONITORS:-}
     volumes:
       - doska-files:/data/files
     networks:
@@ -64,13 +60,8 @@ services:
     restart: unless-stopped
 
   web:
-    image: doska-web:local
-    pull_policy: build
-    build:
-      context: .
-      dockerfile: apps/client/Dockerfile
-      args:
-        APP_VERSION: ${APP_VERSION:-local}
+    image: ghcr.io/nok500/doska-web:${DOCKER_IMAGE_TAG:-latest}
+    pull_policy: always
     ports:
       - "${WEB_HOST_BIND:+${WEB_HOST_BIND}:}${WEB_PORT:-8080}:80"
     depends_on:
@@ -98,24 +89,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
-
-  # Optional TLS terminator, only started with `--profile https`. Fetches and
-  # renews a Let's Encrypt cert for DOMAIN and proxies to the web container.
-  # Set BASE_URL=https://$DOMAIN in .env so OAuth/MCP advertise the right origin.
-  caddy:
-    image: caddy:2-alpine
-    profiles: ["https"]
-    ports:
-      - "80:80"
-      - "443:443"
-    # DOMAIN is required for this profile; unset it and Caddy errors on start.
-    command: caddy reverse-proxy --from ${DOMAIN:-} --to web:80
-    depends_on:
-      - web
-    volumes:
-      - caddy-data:/data
-      - caddy-config:/config
     restart: unless-stopped
 
 volumes:

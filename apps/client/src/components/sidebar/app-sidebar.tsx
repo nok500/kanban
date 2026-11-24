@@ -12,6 +12,7 @@ import { useAuth } from "@/lib/hooks"
 import { AppSidebarHeader } from "./app-sidebar-header"
 import { DashboardsList } from "./dashboards-list/dashboards-list"
 import { SidebarAccount } from "./sidebar-account"
+import { SidebarAgentsMonitor } from "./sidebar-agents-monitor"
 import { SidebarThemeButton } from "./sidebar-theme-button"
 import { SettingsButton } from "@/components/settings/settings-button"
 import { TrashButton } from "@/components/trash/trash-button"
@@ -30,6 +31,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="ml-1">
       {!isDesktop() && <AppSidebarHeader />}
+      <SidebarAgentsMonitor />
       <SidebarContent className="group/sidebar">
         <div
           aria-hidden

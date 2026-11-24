@@ -1,0 +1,15 @@
+services:
+  agent-probe:
+    image: python:3.12-alpine
+    container_name: kanban-agent-probe
+    pid: host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor=unconfined
+    ports:
+      - "${AGENT_PROBE_PORT:-4747}:4747"
+    volumes:
+      - ./probe.py:/app/probe.py:ro
+    command: ["python", "/app/probe.py"]
+    restart: unless-stopped

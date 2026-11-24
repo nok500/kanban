@@ -54,6 +54,9 @@ export const env = {
   logLevel: process.env.LOG_LEVEL,
   noColor: Boolean(process.env.NO_COLOR),
 
+  // CLI agent monitor probes: comma-separated `Label|URL` entries.
+  agentMonitors: list(process.env.AGENT_MONITORS),
+
   // Dev-only PGlite socket bridge (serve-dev.ts)
   pgSocketHost: process.env.PG_SOCKET_HOST ?? "127.0.0.1",
   pgSocketPort: num(process.env.PG_SOCKET_PORT, 5432),

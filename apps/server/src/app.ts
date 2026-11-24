@@ -2,6 +2,7 @@ import Fastify from "fastify"
 import type { FastifyInstance } from "fastify"
 import { requireMCPSession, requireSession } from "./auth/guard"
 import { loggerOptions, setLogger } from "./logger"
+import { registerAgentRoutes } from "./routes/agents"
 import { registerAuthRoutes } from "./routes/auth"
 import { registerDesktopLoginRoutes } from "./routes/desktop-login"
 import { registerFileRoutes, type ServerStorage } from "./routes/files"
@@ -49,6 +50,7 @@ export function buildApp(opts: BuildOptions = {}): FastifyInstance {
   app.register(async (scope) => {
     scope.addHook("onRequest", requireSession)
 
+    registerAgentRoutes(scope)
     registerRpcRoutes(scope)
     registerFileRoutes(scope, opts.storage)
   })
