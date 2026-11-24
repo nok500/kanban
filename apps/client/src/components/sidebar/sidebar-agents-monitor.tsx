@@ -3,6 +3,7 @@ import { apiUrl, appFetch } from "@doska/core"
 import { SidebarGroup, cn } from "@doska/ui-kit"
 import { FiRefreshCw } from "react-icons/fi"
 import { useAuth } from "@/lib/hooks"
+import { useAgentJobs, type AgentJobInfo } from "@/lib/hooks/use-agent-jobs"
 
 interface AgentProcessInfo {
   pid: number
@@ -36,53 +37,32 @@ interface AgentsResponse {
   hosts: AgentHostStatus[]
 }
 
-interface AgentJobInfo {
-  jobId: string
-  agent: string
-  title: string
-  cvCount: number
-  pid: number | null
-  status: "running" | "completed" | "failed" | string
-  startedAt: number
-  finishedAt: number | null
-  exitCode: number | null
-  logPath: string
-}
-
-interface AgentJobsResponse {
-  jobs: AgentJobInfo[]
-}
-
 const POLL_INTERVAL_MS = 10_000
 
 /** Compact sidebar widget monitoring CLI agents and local LLM runners across hosts. */
 export function SidebarAgentsMonitor() {
   const { authed } = useAuth()
   const [data, setData] = useState<AgentsResponse | null>(null)
-  const [jobs, setJobs] = useState<AgentJobInfo[]>([])
+  const { data: jobs = [], refetch: refetchJobs } = useAgentJobs()
   const [loading, setLoading] = useState(false)
 
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [agentsRes, jobsRes] = await Promise.all([
+      const [agentsRes] = await Promise.all([
         appFetch(apiUrl("/api/agents")),
-        appFetch(apiUrl("/api/agents/jobs")),
+        refetchJobs(),
       ])
       if (agentsRes.ok) {
         const json = (await agentsRes.json()) as AgentsResponse
         setData(json)
-      }
-      if (jobsRes.ok) {
-        const json = (await jobsRes.json()) as AgentJobsResponse
-        setJobs(json.jobs ?? [])
       }
     } catch {
       // Ignore transient network errors; previous state stays visible.
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [refetchJobs])
 
   useEffect(() => {
     if (authed !== true) return

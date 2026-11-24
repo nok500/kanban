@@ -44,6 +44,10 @@ export function triggerAgentIfProcess(card: Card, toColumn: Column): void {
       const data = (await res.json()) as { jobId?: string | number }
       if (data.jobId == null) return
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("kanban:agent-job-started"))
+      }
+
       const latest = await db.getCard(card.id)
       if (!latest) return
       const marker = `process as job-id: ${data.jobId} (${agent})`

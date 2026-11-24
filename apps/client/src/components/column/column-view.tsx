@@ -1,13 +1,20 @@
 import type { DroppableProvidedProps } from "@hello-pangea/dnd"
 import { createElement, type ReactNode, type Ref } from "react"
 import { toast } from "react-hot-toast"
-import { Button, cn } from "@doska/ui-kit"
-import { Check, FoldVertical, Plus, UnfoldVertical } from "lucide-react"
+import { COLUMN_COLORS, Button, cn } from "@doska/ui-kit"
+import {
+  Check,
+  FoldVertical,
+  Loader2,
+  Plus,
+  UnfoldVertical,
+} from "lucide-react"
 import { ColumnSwatch } from "./column-swatch"
 import type { Card } from "@doska/core"
 import { CardTemplatePicker } from "../templates/card-template-picker"
 import { ColumnTitle } from "./column-title"
 import { AddCardBlockedToast } from "@/components/toasts/add-card-blocked/add-card-blocked-toast"
+import { useAgentJobs } from "@/lib/hooks/use-agent-jobs"
 
 interface IProps {
   title: string
@@ -48,6 +55,14 @@ export function ColumnView({
   listProps,
   children,
 }: IProps) {
+  const { data: jobs = [] } = useAgentJobs()
+  const isProcessingCol = ["analise", "process", "processing"].includes(
+    title.trim().toLowerCase()
+  )
+  const hasRunningJob =
+    isProcessingCol && jobs.some((j) => j.status === "running")
+  const colColor = COLUMN_COLORS.find((c) => c.id === color)
+
   return (
     <div
       role="group"
@@ -62,7 +77,24 @@ export function ColumnView({
         )}
       >
         <div className="flex min-w-0 items-center gap-1.5">
-          <ColumnSwatch color={color} labelled className="ml-1" />
+          {hasRunningJob ? (
+            <span
+              title="Processing job..."
+              className="ml-1 inline-flex shrink-0 items-center"
+            >
+              <Loader2
+                aria-label="Processing job"
+                className="size-3.5 animate-spin text-amber-500"
+                style={
+                  colColor
+                    ? { color: `oklch(0.72 0.14 ${colColor.hue})` }
+                    : undefined
+                }
+              />
+            </span>
+          ) : (
+            <ColumnSwatch color={color} labelled className="ml-1" />
+          )}
           <div>
             <ColumnTitle title={title} onRename={onRename} />
             {/* The only place the flag shows — its toggle lives in the menu. */}
