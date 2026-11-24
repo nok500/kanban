@@ -36,21 +36,47 @@ interface AgentsResponse {
   hosts: AgentHostStatus[]
 }
 
+interface AgentJobInfo {
+  jobId: string
+  agent: string
+  title: string
+  cvCount: number
+  pid: number | null
+  status: "running" | "completed" | "failed" | string
+  startedAt: number
+  finishedAt: number | null
+  exitCode: number | null
+  logPath: string
+}
+
+interface AgentJobsResponse {
+  jobs: AgentJobInfo[]
+}
+
 const POLL_INTERVAL_MS = 10_000
 
 /** Compact sidebar widget monitoring CLI agents and local LLM runners across hosts. */
 export function SidebarAgentsMonitor() {
   const { authed } = useAuth()
   const [data, setData] = useState<AgentsResponse | null>(null)
+  const [jobs, setJobs] = useState<AgentJobInfo[]>([])
   const [loading, setLoading] = useState(false)
 
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await appFetch(apiUrl("/api/agents"))
-      if (!res.ok) return
-      const json = (await res.json()) as AgentsResponse
-      setData(json)
+      const [agentsRes, jobsRes] = await Promise.all([
+        appFetch(apiUrl("/api/agents")),
+        appFetch(apiUrl("/api/agents/jobs")),
+      ])
+      if (agentsRes.ok) {
+        const json = (await agentsRes.json()) as AgentsResponse
+        setData(json)
+      }
+      if (jobsRes.ok) {
+        const json = (await jobsRes.json()) as AgentJobsResponse
+        setJobs(json.jobs ?? [])
+      }
     } catch {
       // Ignore transient network errors; previous state stays visible.
     } finally {
@@ -126,9 +152,70 @@ export function SidebarAgentsMonitor() {
               </div>
             </div>
           ))}
+
+          <div className="flex flex-col gap-1 border-t border-border/40 pt-2">
+            <span className="text-xs font-medium tracking-wide uppercase text-foreground/90">
+              JOBS
+            </span>
+            {jobs.length === 0 ? (
+              <span className="pl-3 text-[11px] text-muted-foreground/60">
+                none
+              </span>
+            ) : (
+              <div className="flex flex-col gap-1 pl-3">
+                {[...jobs]
+                  .sort((a, b) => b.startedAt - a.startedAt)
+                  .slice(0, 6)
+                  .map((job) => (
+                    <JobRow key={job.jobId} job={job} />
+                  ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </SidebarGroup>
+  )
+}
+
+function JobRow({ job }: { job: AgentJobInfo }) {
+  const isRunning = job.status === "running"
+  const isFailed = job.status === "failed"
+  const title = [
+    `job #${job.jobId} (${job.agent})`,
+    job.title || "(untitled)",
+    `status: ${job.status}${job.exitCode != null ? ` (exit ${job.exitCode})` : ""}`,
+    `cvs: ${job.cvCount}${job.pid != null ? ` · pid: ${job.pid}` : ""}`,
+    job.logPath,
+  ].join("\n")
+
+  return (
+    <div
+      title={title}
+      className="flex items-center justify-between gap-2 text-xs leading-tight"
+    >
+      <div className="flex min-w-0 items-baseline gap-1.5">
+        <span className="shrink-0 font-mono text-[11px] text-foreground/85">
+          #{job.jobId}
+        </span>
+        <span className="truncate text-[10px] text-muted-foreground">
+          {job.agent}
+          {job.title ? ` · ${job.title}` : ""}
+        </span>
+      </div>
+      <span
+        className={cn(
+          "shrink-0 text-[10px] font-medium",
+          isRunning
+            ? "text-emerald-600 dark:text-emerald-400"
+            : isFailed
+              ? "text-destructive"
+              : "text-muted-foreground"
+        )}
+      >
+        {job.status}
+      </span>
+    </div>
   )
 }
 

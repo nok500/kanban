@@ -50,7 +50,7 @@ export function buildApp(opts: BuildOptions = {}): FastifyInstance {
   app.register(async (scope) => {
     scope.addHook("onRequest", requireSession)
 
-    registerAgentRoutes(scope)
+    registerAgentRoutes(scope, opts.storage)
     registerRpcRoutes(scope)
     registerFileRoutes(scope, opts.storage)
   })

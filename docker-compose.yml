@@ -36,7 +36,8 @@ services:
       NODE_ENV: production
       LOG_LEVEL: ${LOG_LEVEL:-info}
       BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://doska.example.com}
-      AGENT_MONITORS: ${AGENT_MONITORS:-}
+      AGENT_MONITORS: ${AGENT_MONITORS:-VOODOO|http://192.168.8.229:4747/status,VERDUN|http://agent-probe:4747/status}
+      AGENT_RUNNER_URL: ${AGENT_RUNNER_URL:-http://agent-runner:4850}
     volumes:
       - doska-files:/data/files
     networks:
@@ -89,6 +90,32 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
+
+  agent-runner:
+    image: ghcr.io/nok500/kanban-agent-runner:${DOCKER_IMAGE_TAG:-latest}
+    pull_policy: always
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      HOME: /home/jvnl
+    volumes:
+      - ${AGY_BIN}:/usr/local/bin/agy:ro
+      - ${CLAUDE_BIN_USR_SHARE}:/usr/local/bin/claude:ro
+      - ${GEMINI_BIN}:/home/jvnl/.gemini
+      - ${CLAUDE_BIN}:/home/jvnl/.claude
+      - ${CLAUDE_JSON}:/home/jvnl/.claude.json
+    restart: unless-stopped
+
+  agent-probe:
+    image: ghcr.io/nok500/kanban-probe:${DOCKER_IMAGE_TAG:-latest}
+    pull_policy: always
+    pid: host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor=unconfined
+    ports:
+      - "${AGENT_PROBE_PORT:-4747}:4747"
     restart: unless-stopped
 
 volumes:

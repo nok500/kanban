@@ -56,6 +56,7 @@ export const env = {
 
   // CLI agent monitor probes: comma-separated `Label|URL` entries.
   agentMonitors: list(process.env.AGENT_MONITORS),
+  agentRunnerUrl: trimSlash(process.env.AGENT_RUNNER_URL) ?? "http://agent-runner:4850",
 
   // Dev-only PGlite socket bridge (serve-dev.ts)
   pgSocketHost: process.env.PG_SOCKET_HOST ?? "127.0.0.1",
