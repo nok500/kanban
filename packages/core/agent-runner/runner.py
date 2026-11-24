@@ -9,17 +9,12 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
 import threading
 import time
 
-from fpdf import FPDF
-
 PORT = int(os.environ.get("AGENT_RUNNER_PORT", "4850"))
 JOBS_ROOT = Path(os.environ.get("AGENT_JOBS_DIR", "/tmp/agent-jobs"))
-DEJAVU_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-DEJAVU_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 jobs: dict[str, dict] = {}
 jobs_lock = threading.Lock()
@@ -49,7 +44,6 @@ def build_prompt(
     board_id: str | None = None,
     card_id: str | None = None,
     job_id: str | None = None,
-    tailored_cv_path: str = "tailored-cv.md",
 ) -> str:
     if cv_paths:
         cv_lines = "\n".join(f"- {p}" for p in cv_paths)
@@ -76,7 +70,7 @@ def build_prompt(
             f"Analyze the JD ({position or title} at {company}) against CV."
             if company
             else f"Analyze the JD ({title}) against CV.",
-            "Provide a clear, structured fit analysis covering: matching skills/experience, gaps or missing requirements, and brief reasoning.",
+            "Provide a clear, structured fit analysis covering: Matching Skills & Experience, Gaps & Missing Requirements (include actionable recommendations on how to tailor/reframe the CV or address those gaps for this JD), and brief reasoning.",
             company_line,
             "",
             "Use your Kanban MCP tools to update this card directly:",
@@ -84,7 +78,6 @@ def build_prompt(
             "- Append a `---` divider followed by your analysis (and `process as job-id: <job_id>` at the end) to the card using `update_card`.",
             "- If the JD is worth following up, set `priority` (`high`, `medium`, or `low` based on match strength) and move the card to `Follow-up` using `move_card`.",
             "- Otherwise, move the card to `Nay` using `move_card`.",
-            f"- Rewrite the candidate's CV in clean Markdown to better align with this JD (without inventing false experience) and save it to `{tailored_cv_path}` so it can be converted to PDF and attached.",
             "",
             cv_section,
             "",
@@ -95,53 +88,7 @@ def build_prompt(
     )
 
 
-def render_markdown_pdf(md_text: str, out_path: Path) -> None:
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.add_font("DejaVu", "", DEJAVU_REGULAR)
-    pdf.add_font("DejaVu", "B", DEJAVU_BOLD)
-    pdf.set_font("DejaVu", size=10)
-
-    for raw_line in md_text.splitlines():
-        line = raw_line.strip()
-        if not line:
-            pdf.ln(3)
-            continue
-        pdf.set_x(pdf.l_margin)
-        clean = re.sub(r"\*\*(.+?)\*\*", r"\1", line)
-        clean = re.sub(r"`(.+?)`", r"\1", clean)
-        if clean.startswith("# "):
-            pdf.set_font("DejaVu", "B", 15)
-            pdf.multi_cell(pdf.epw, 7, clean[2:].strip())
-            pdf.ln(1)
-            pdf.set_font("DejaVu", size=10)
-        elif clean.startswith("## "):
-            pdf.ln(2)
-            pdf.set_font("DejaVu", "B", 12)
-            pdf.multi_cell(pdf.epw, 6, clean[3:].strip())
-            pdf.set_font("DejaVu", size=10)
-        elif clean.startswith("### "):
-            pdf.ln(1)
-            pdf.set_font("DejaVu", "B", 10.5)
-            pdf.multi_cell(pdf.epw, 5.5, clean[4:].strip())
-            pdf.set_font("DejaVu", size=10)
-        elif clean.startswith(("- ", "* ")):
-            pdf.multi_cell(pdf.epw, 5, f"• {clean[2:].strip()}")
-        else:
-            pdf.multi_cell(pdf.epw, 5, clean)
-
-    pdf.output(str(out_path))
-
-
-def run_job(
-    job_id: str,
-    agent: str,
-    job_dir: Path,
-    prompt: str,
-    log_path: Path,
-    cv_stem: str,
-) -> None:
+def run_job(job_id: str, agent: str, job_dir: Path, prompt: str, log_path: Path) -> None:
     if agent == "agy":
         cmd = [
             "agy",
@@ -182,30 +129,11 @@ def run_job(
             exit_code = proc.wait()
             elapsed_ms = int((time.monotonic() - started) * 1000)
 
-            tailored_md = job_dir / "tailored-cv.md"
-            tailored_pdf_info = None
-            if tailored_md.exists():
-                md_content = tailored_md.read_text(encoding="utf-8", errors="replace").strip()
-                if md_content:
-                    epoch = int(time.time())
-                    pdf_name = f"{cv_stem}-{epoch}.pdf"
-                    pdf_path = job_dir / pdf_name
-                    try:
-                        render_markdown_pdf(md_content, pdf_path)
-                        tailored_pdf_info = {
-                            "name": pdf_name,
-                            "path": str(pdf_path),
-                        }
-                        log(f"job={job_id} generated tailored CV PDF {pdf_path}")
-                    except Exception as pdf_exc:  # noqa: BLE001
-                        log(f"job={job_id} failed to render PDF: {pdf_exc}")
-
             with jobs_lock:
                 jobs[job_id]["status"] = "completed" if exit_code == 0 else "failed"
                 jobs[job_id]["exitCode"] = exit_code
                 jobs[job_id]["durationMs"] = elapsed_ms
                 jobs[job_id]["finishedAt"] = int(time.time() * 1000)
-                jobs[job_id]["tailoredPdf"] = tailored_pdf_info
             log(
                 f"job={job_id} finished agent={agent} pid={proc.pid} "
                 f"exitCode={exit_code} durationMs={elapsed_ms} log={log_path}"
@@ -239,14 +167,6 @@ class RunnerHandler(BaseHTTPRequestHandler):
             log_file = Path(snapshot["logPath"])
             output = log_file.read_text(encoding="utf-8", errors="replace") if log_file.exists() else ""
             snapshot["output"] = output
-            pdf_info = snapshot.pop("tailoredPdf", None)
-            if isinstance(pdf_info, dict) and pdf_info.get("path"):
-                pdf_file = Path(pdf_info["path"])
-                if pdf_file.exists():
-                    snapshot["tailoredCv"] = {
-                        "name": pdf_info["name"],
-                        "contentBase64": base64.b64encode(pdf_file.read_bytes()).decode("ascii"),
-                    }
             self._send_json(200, snapshot)
             return
         if self.path == "/health":
@@ -304,8 +224,6 @@ class RunnerHandler(BaseHTTPRequestHandler):
             cv_paths.append(dest)
             log(f"job={job_id} wrote CV {dest} ({len(raw_bytes)} bytes)")
 
-        tailored_cv_path = str(job_dir / "tailored-cv.md")
-        cv_stem = cv_paths[0].stem if cv_paths else "CV"
         prompt = build_prompt(
             title,
             body,
@@ -313,7 +231,6 @@ class RunnerHandler(BaseHTTPRequestHandler):
             board_id=board_id,
             card_id=card_id,
             job_id=job_id,
-            tailored_cv_path=tailored_cv_path,
         )
         (job_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
         log_path = job_dir / "output.log"
@@ -336,7 +253,7 @@ class RunnerHandler(BaseHTTPRequestHandler):
 
         thread = threading.Thread(
             target=run_job,
-            args=(job_id, agent, job_dir, prompt, log_path, cv_stem),
+            args=(job_id, agent, job_dir, prompt, log_path),
             daemon=True,
         )
         thread.start()
