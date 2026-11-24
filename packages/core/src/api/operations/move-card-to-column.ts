@@ -7,7 +7,6 @@ import { sync } from "../sync"
 import { touchCard } from "../sync/touch"
 import { live } from "./live"
 import { newId } from "./new-id"
-import { triggerAgentIfProcess } from "./trigger-agent"
 
 /**
  * Moves a card to the top of another column, for callers that know the
@@ -36,13 +35,11 @@ export async function moveCardToColumn(
   if (!from || from.dashboardId === to.dashboardId) {
     await db.setCard(touchCard({ ...card, columnId, position }, ["place"]))
     sync.markDirty("cards", id)
-    if (from && from.id !== to.id) {
+    if (from && from.id !== to.id)
       await recordHistory.card(to.dashboardId, id, card.title, "move", {
         from: from.title,
         to: to.title,
       })
-      triggerAgentIfProcess(card, to)
-    }
     return id
   }
 

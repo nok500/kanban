@@ -37,14 +37,21 @@ def log(msg: str) -> None:
     print(f"[{ts}] [agent-runner] {msg}", flush=True)
 
 
-def build_prompt(title: str, body: str, cv_paths: list[Path]) -> str:
+def build_prompt(
+    title: str,
+    body: str,
+    cv_paths: list[Path],
+    board_id: str | None = None,
+    card_id: str | None = None,
+    job_id: str | None = None,
+) -> str:
     if cv_paths:
         cv_lines = "\n".join(f"- {p}" for p in cv_paths)
         cv_section = f"Candidate CV file(s) from the Docs column:\n{cv_lines}"
     else:
         cv_section = (
             "No CV file was attached to any card in the Docs column yet; "
-            "note that in your output."
+            "you can also check the Docs column via Kanban MCP."
         )
 
     if ":" in title:
@@ -65,10 +72,12 @@ def build_prompt(title: str, body: str, cv_paths: list[Path]) -> str:
             else f"Analyze the JD ({title}) against CV.",
             "Provide a clear, structured fit analysis covering: matching skills/experience, gaps or missing requirements, and brief reasoning.",
             company_line,
-            "End your response with:",
-            "- `VERDICT: FOLLOW-UP` (worth following up) or `VERDICT: NAY` (not worth following up)",
-            "- If `VERDICT: FOLLOW-UP`, also include `MATCH: HIGH` (strong match), `MATCH: MEDIUM` (good match), or `MATCH: LOW` (borderline/partial match).",
-            "IMPORTANT: Do NOT call any Kanban MCP tools (or any external MCP tools) — the runner will attach your output to the card and move it to Follow-up or Nay automatically.",
+            "",
+            "Use your Kanban MCP tools to update this card directly:",
+            f"- Board ID: {board_id or '(unknown)'}, Card ID: {card_id or '(unknown)'}, Job ID: {job_id or '(unknown)'}",
+            "- Append a `---` divider followed by your analysis (and `process as job-id: <job_id>` at the end) to the card using `update_card`.",
+            "- If the JD is worth following up, set `priority` (`high`, `medium`, or `low` based on match strength) and move the card to `Follow-up` using `move_card`.",
+            "- Otherwise, move the card to `Nay` using `move_card`.",
             "",
             cv_section,
             "",
@@ -214,7 +223,14 @@ class RunnerHandler(BaseHTTPRequestHandler):
             cv_paths.append(dest)
             log(f"job={job_id} wrote CV {dest} ({len(raw_bytes)} bytes)")
 
-        prompt = build_prompt(title, body, cv_paths)
+        prompt = build_prompt(
+            title,
+            body,
+            cv_paths,
+            board_id=board_id,
+            card_id=card_id,
+            job_id=job_id,
+        )
         (job_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
         log_path = job_dir / "output.log"
 

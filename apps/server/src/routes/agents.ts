@@ -1,12 +1,10 @@
 import type { IncomingMessage } from "node:http"
-import type { Card, Column } from "@doska/contract"
 import { storageFromEnv } from "@doska/file-storage/server"
 import { and, eq, inArray, isNull, sql } from "drizzle-orm"
 import type { FastifyBaseLogger, FastifyInstance } from "fastify"
 import { getDB } from "../db/get-db"
 import { boardMembers, cards, columns, dashboards } from "../db/schema"
 import { env } from "../env"
-import { DbStore } from "../mcp/store"
 import type { ServerStorage } from "./files"
 
 export interface AgentProcessInfo {
@@ -236,7 +234,6 @@ interface RunnerJobSnapshot {
 
 const AGENT_TAGS = new Set(["agy", "claude"])
 const INLINE_AGENT_RE = /(?:^|\s)#(agy|claude)(?=\s|$)/i
-const PROCESS_COL_NAMES = ["process", "analise"]
 const activeCardJobs = new Set<string>()
 
 function detectAgentFromCard(
@@ -251,174 +248,31 @@ function detectAgentFromCard(
   return match ? (match[1].toLowerCase() as "agy" | "claude") : null
 }
 
-function parseVerdict(output: string): "follow-up" | "yay" | "nay" | null {
-  const explicit = /verdict\s*:\s*(follow-up|yay|nay)\b/i.exec(output)
-  if (explicit) {
-    const v = explicit[1].toLowerCase()
-    if (v === "nay") return "nay"
-    if (v === "yay") return "yay"
-    return "follow-up"
-  }
-  const matches = [...output.matchAll(/\b(follow-up|yay|nay)\b/gi)]
-  if (matches.length === 0) return null
-  const last = matches[matches.length - 1][1].toLowerCase()
-  if (last === "nay") return "nay"
-  if (last === "yay") return "yay"
-  return "follow-up"
-}
-
-function parseMatchPriority(output: string): "high" | "medium" | "low" | null {
-  const match = /match\s*:\s*(high|medium|low)\b/i.exec(output)
-  return match ? (match[1].toLowerCase() as "high" | "medium" | "low") : null
-}
-
-async function watchAndApplyJobResult(opts: {
-  userId: string
-  boardId: string
+async function waitForJobFinish(opts: {
   cardId: string
   jobId: string
-  agent: string
   log: FastifyBaseLogger
 }): Promise<void> {
-  const { userId, boardId, cardId, jobId, agent, log } = opts
+  const { cardId, jobId, log } = opts
   const deadline = Date.now() + 5 * 60 * 1000
 
   try {
     while (Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, 2000))
-      let job: RunnerJobSnapshot
       try {
         const res = await fetch(`${env.agentRunnerUrl}/jobs/${jobId}`, {
           signal: AbortSignal.timeout(3000),
         })
         if (!res.ok) continue
-        job = (await res.json()) as RunnerJobSnapshot
+        const job = (await res.json()) as { status?: string }
+        if (job.status && job.status !== "running") {
+          log.info({ jobId, cardId, status: job.status }, "agents/watch: job finished")
+          return
+        }
       } catch {
         continue
       }
-
-      if (job.status === "running") continue
-
-      const output = (job.output ?? "").trim()
-      const verdict = parseVerdict(output)
-
-      try {
-        const store = new DbStore(userId)
-        const changes = await store.readBoard(boardId)
-
-        let existingCard: Card | null = null
-        const boardColumns: Column[] = []
-        for (const ch of changes) {
-          if (
-            ch.store === "cards" &&
-            ch.record.id === cardId &&
-            !ch.record.deletedAt
-          ) {
-            existingCard = ch.record
-          } else if (ch.store === "columns" && !ch.record.deletedAt) {
-            boardColumns.push(ch.record)
-          }
-        }
-
-        if (!existingCard) {
-          log.warn({ boardId, cardId, jobId }, "agents/watch: card not found")
-          return
-        }
-
-        const currentCol = boardColumns.find(
-          (c) => c.id === existingCard.columnId
-        )
-        if (
-          !currentCol ||
-          !PROCESS_COL_NAMES.includes(currentCol.title.trim().toLowerCase())
-        ) {
-          log.info(
-            {
-              boardId,
-              cardId,
-              jobId,
-              column: currentCol?.title ?? null,
-            },
-            "agents/watch: skipping card no longer in Process/Analise column"
-          )
-          return
-        }
-
-        const targetCol = verdict
-          ? boardColumns.find(
-              (c) => c.title.trim().toLowerCase() === verdict
-            ) ??
-            (verdict === "follow-up"
-              ? boardColumns.find(
-                  (c) => c.title.trim().toLowerCase() === "yay"
-                )
-              : undefined)
-          : undefined
-
-        const now = store.now()
-        const durationMs =
-          typeof job.durationMs === "number"
-            ? job.durationMs
-            : job.finishedAt && job.startedAt
-              ? job.finishedAt - job.startedAt
-              : null
-        const header =
-          durationMs != null && !/^thought for /i.test(output)
-            ? `Thought for ${Math.max(1, Math.round(durationMs / 1000))}s\n\n`
-            : ""
-        const outputBlock = output
-          ? `${header}${output}`
-          : `Job ${jobId} finished (${job.status}, exit ${job.exitCode ?? "?"}).`
-
-        const marker = `process as job-id: ${jobId} (${agent})`
-        const baseTrimmed = existingCard.body.trimEnd()
-        const withMarker = baseTrimmed.includes(marker)
-          ? baseTrimmed
-          : baseTrimmed
-            ? `${baseTrimmed}\n\n${marker}`
-            : marker
-        const nextBody = `${withMarker}\n\n---\n\n${outputBlock}`
-
-        const moved = Boolean(
-          targetCol && targetCol.id !== existingCard.columnId
-        )
-        const isPositive = verdict === "follow-up" || verdict === "yay"
-        const nextPriority = isPositive
-          ? (parseMatchPriority(output) ?? "medium")
-          : existingCard.priority
-
-        const updatedCard: Card = {
-          ...existingCard,
-          body: nextBody,
-          columnId: targetCol ? targetCol.id : existingCard.columnId,
-          priority: nextPriority,
-          updatedAt: now,
-          stamps: {
-            ...existingCard.stamps,
-            body: now,
-            ...(moved ? { place: now } : {}),
-            ...(isPositive ? { priority: now } : {}),
-          },
-        }
-
-        await store.pushBoard(boardId, [{ store: "cards", record: updatedCard }])
-        log.info(
-          {
-            jobId,
-            cardId,
-            verdict,
-            priority: nextPriority,
-            targetColumn: targetCol?.title ?? null,
-            outputChars: output.length,
-          },
-          "agents/watch: updated card with job output"
-        )
-      } catch (err) {
-        log.error({ err, jobId, cardId }, "agents/watch: failed to update card")
-      }
-      return
     }
-
     log.warn({ jobId, cardId }, "agents/watch: timed out waiting for job")
   } finally {
     activeCardJobs.delete(cardId)
@@ -513,12 +367,9 @@ async function dispatchAgentJob(opts: {
       "agents/run: agent-runner responded"
     )
     if (runnerRes.ok && result.jobId != null) {
-      void watchAndApplyJobResult({
-        userId,
-        boardId,
+      void waitForJobFinish({
         cardId,
         jobId: String(result.jobId),
-        agent,
         log,
       })
     } else {

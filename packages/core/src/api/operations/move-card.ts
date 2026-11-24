@@ -4,7 +4,6 @@ import { recordHistory } from "../history/record-history"
 import { sync } from "../sync"
 import { stamp } from "../sync/hlc"
 import { touchCard } from "../sync/touch"
-import { triggerAgentIfProcess } from "./trigger-agent"
 
 /**
  * Persists cards whose column/position changed during a drag. Only the move is
@@ -27,16 +26,13 @@ export async function moveCard(
         position: card.position,
       }
       await db.setCard(touchCard(moved, ["place"], now))
-      if (existing.columnId !== card.columnId) {
+      if (existing.columnId !== card.columnId)
         await recordColumnChange(
           card.id,
           existing.title,
           existing.columnId,
           card.columnId
         )
-        const to = await db.getColumn(card.columnId)
-        if (to) triggerAgentIfProcess(moved, to)
-      }
     })
   )
   for (const card of changed) sync.markDirty("cards", card.id)
