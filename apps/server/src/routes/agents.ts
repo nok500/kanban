@@ -1,10 +1,13 @@
+import { randomUUID } from "node:crypto"
 import type { IncomingMessage } from "node:http"
+import type { Card } from "@doska/contract"
 import { storageFromEnv } from "@doska/file-storage/server"
 import { and, eq, inArray, isNull, sql } from "drizzle-orm"
 import type { FastifyBaseLogger, FastifyInstance } from "fastify"
 import { getDB } from "../db/get-db"
 import { boardMembers, cards, columns, dashboards } from "../db/schema"
 import { env } from "../env"
+import { DbStore } from "../mcp/store"
 import type { ServerStorage } from "./files"
 
 export interface AgentProcessInfo {
@@ -248,12 +251,88 @@ function detectAgentFromCard(
   return match ? (match[1].toLowerCase() as "agy" | "claude") : null
 }
 
-async function waitForJobFinish(opts: {
+async function attachTailoredCv(opts: {
+  userId: string
+  boardId: string
   cardId: string
   jobId: string
+  tailoredCv: { name: string; contentBase64: string }
+  storage: ServerStorage
   log: FastifyBaseLogger
 }): Promise<void> {
-  const { cardId, jobId, log } = opts
+  const { userId, boardId, cardId, jobId, tailoredCv, storage, log } = opts
+  const bytes = Buffer.from(tailoredCv.contentBase64, "base64")
+  const stored = await storage.put(bytes, {
+    name: tailoredCv.name,
+    mime: "application/pdf",
+  })
+
+  const store = new DbStore(userId)
+  const changes = await store.readBoard(boardId)
+  let existingCard: Card | null = null
+  for (const ch of changes) {
+    if (
+      ch.store === "cards" &&
+      ch.record.id === cardId &&
+      !ch.record.deletedAt
+    ) {
+      existingCard = ch.record
+      break
+    }
+  }
+  if (!existingCard) {
+    log.warn({ boardId, cardId, jobId }, "agents/watch: card not found for CV")
+    return
+  }
+
+  const now = store.now()
+  const note = `Tailored CV generated: ${tailoredCv.name}`
+  const baseBody = existingCard.body.trimEnd()
+  const nextBody = baseBody.includes(note)
+    ? existingCard.body
+    : baseBody
+      ? `${baseBody}\n\n${note}`
+      : note
+
+  const nextAttachments = [
+    ...existingCard.attachments,
+    {
+      id: `att-${randomUUID().slice(0, 12)}`,
+      name: tailoredCv.name,
+      key: stored.key,
+      mime: stored.mime,
+      size: stored.size,
+    },
+  ]
+
+  const updatedCard: Card = {
+    ...existingCard,
+    body: nextBody,
+    attachments: nextAttachments,
+    updatedAt: now,
+    stamps: {
+      ...existingCard.stamps,
+      body: now,
+      attachments: now,
+    },
+  }
+
+  await store.pushBoard(boardId, [{ store: "cards", record: updatedCard }])
+  log.info(
+    { jobId, cardId, fileName: tailoredCv.name, size: stored.size },
+    "agents/watch: attached tailored CV PDF to card"
+  )
+}
+
+async function waitForJobFinish(opts: {
+  userId: string
+  boardId: string
+  cardId: string
+  jobId: string
+  storage: ServerStorage | null
+  log: FastifyBaseLogger
+}): Promise<void> {
+  const { userId, boardId, cardId, jobId, storage, log } = opts
   const deadline = Date.now() + 5 * 60 * 1000
 
   try {
@@ -264,15 +343,37 @@ async function waitForJobFinish(opts: {
           signal: AbortSignal.timeout(3000),
         })
         if (!res.ok) continue
-        const job = (await res.json()) as { status?: string }
+        const job = (await res.json()) as {
+          status?: string
+          tailoredCv?: { name?: string; contentBase64?: string }
+        }
         if (job.status && job.status !== "running") {
           log.info(
             { jobId, cardId, status: job.status },
             "agents/watch: job finished"
           )
+          if (
+            storage &&
+            job.tailoredCv?.name &&
+            job.tailoredCv?.contentBase64
+          ) {
+            await attachTailoredCv({
+              userId,
+              boardId,
+              cardId,
+              jobId,
+              tailoredCv: {
+                name: job.tailoredCv.name,
+                contentBase64: job.tailoredCv.contentBase64,
+              },
+              storage,
+              log,
+            })
+          }
           return
         }
-      } catch {
+      } catch (err) {
+        log.warn({ err, jobId, cardId }, "agents/watch: poll/attach error")
         continue
       }
     }
@@ -371,8 +472,11 @@ async function dispatchAgentJob(opts: {
     )
     if (runnerRes.ok && result.jobId != null) {
       void waitForJobFinish({
+        userId,
+        boardId,
         cardId,
         jobId: String(result.jobId),
+        storage,
         log,
       })
     } else {
