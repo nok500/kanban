@@ -1,6 +1,7 @@
 services:
   agent-probe:
-    image: python:3.12-alpine
+    image: ghcr.io/nok500/doska-agent-probe:${DOCKER_IMAGE_TAG:-latest}
+    pull_policy: always
     container_name: kanban-agent-probe
     pid: host
     cap_add:
@@ -9,7 +10,4 @@ services:
       - apparmor=unconfined
     ports:
       - "${AGENT_PROBE_PORT:-4747}:4747"
-    volumes:
-      - ./probe.py:/app/probe.py:ro
-    command: ["python", "/app/probe.py"]
     restart: unless-stopped
