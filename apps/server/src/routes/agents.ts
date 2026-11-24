@@ -234,12 +234,16 @@ interface RunnerJobSnapshot {
   output?: string
 }
 
-function parseVerdict(output: string): "yay" | "nay" | null {
-  const explicit = /verdict\s*:\s*(yay|nay)\b/i.exec(output)
-  if (explicit) return explicit[1].toLowerCase() as "yay" | "nay"
-  const matches = [...output.matchAll(/\b(yay|nay)\b/gi)]
+function parseVerdict(output: string): "follow-up" | "nay" | null {
+  const explicit = /verdict\s*:\s*(follow-up|yay|nay)\b/i.exec(output)
+  if (explicit) {
+    const v = explicit[1].toLowerCase()
+    return v === "nay" ? "nay" : "follow-up"
+  }
+  const matches = [...output.matchAll(/\b(follow-up|yay|nay)\b/gi)]
   if (matches.length === 0) return null
-  return matches[matches.length - 1][1].toLowerCase() as "yay" | "nay"
+  const last = matches[matches.length - 1][1].toLowerCase()
+  return last === "nay" ? "nay" : "follow-up"
 }
 
 function parseMatchPriority(output: string): "high" | "medium" | "low" | null {
@@ -297,7 +301,7 @@ async function watchAndApplyJobResult(opts: {
       const currentCol = boardColumns.find(
         (c) => c.id === existingCard.columnId
       )
-      if (!currentCol || currentCol.title.trim().toLowerCase() !== "process") {
+      if (!currentCol || currentCol.title.trim().toLowerCase() !== "analise") {
         log.info(
           {
             boardId,
@@ -305,7 +309,7 @@ async function watchAndApplyJobResult(opts: {
             jobId,
             column: currentCol?.title ?? null,
           },
-          "agents/watch: skipping card no longer in Process column"
+          "agents/watch: skipping card no longer in Analise column"
         )
         return
       }
@@ -335,7 +339,7 @@ async function watchAndApplyJobResult(opts: {
 
       const moved = Boolean(targetCol && targetCol.id !== existingCard.columnId)
       const nextPriority =
-        verdict === "yay"
+        verdict === "follow-up"
           ? (parseMatchPriority(output) ?? "medium")
           : existingCard.priority
 
@@ -349,7 +353,7 @@ async function watchAndApplyJobResult(opts: {
           ...existingCard.stamps,
           body: now,
           ...(moved ? { place: now } : {}),
-          ...(verdict === "yay" ? { priority: now } : {}),
+          ...(verdict === "follow-up" ? { priority: now } : {}),
         },
       }
 

@@ -20,10 +20,10 @@ function detectAgent(card: Card): string | null {
 /**
  * Triggers the selected agent CLI (`agy` or `claude`) when a card carrying
  * that tag (in `card.tags` or inline `#agy`/`#claude` in body) is moved into
- * the `Process` column, and appends the job-id to the card body.
+ * the `Analise` column, and appends the job-id to the card body.
  */
 export function triggerAgentIfProcess(card: Card, toColumn: Column): void {
-  if (toColumn.title.trim().toLowerCase() !== "process") return
+  if (toColumn.title.trim().toLowerCase() !== "analise") return
   const agent = detectAgent(card)
   if (!agent) return
 
