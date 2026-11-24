@@ -1,7 +1,7 @@
 ---
 title: Single sign-on
 nav: Single sign-on
-description: "Let people sign in to your self-hosted Doska through your identity provider: Authentik, Keycloak, Pocket ID, Google, or any OpenID Connect server."
+description: "Let people sign in to your self-hosted Kanban Job Board through your identity provider: Authentik, Keycloak, Pocket ID, Google, or any OpenID Connect server."
 order: 5
 updated: "2026-09-02"
 ---
@@ -10,7 +10,7 @@ Single sign-on is available only with the [self-hosted setup](/self-hosting). It
 
 ## How to enable single sign-on?
 
-### 1. Register Doska in your identity provider
+### 1. Register Kanban Job Board in your identity provider
 
 Create a web application with a client secret. Set the redirect URI to
 
@@ -18,7 +18,7 @@ Create a web application with a client secret. Set the redirect URI to
 <BASE_URL>/api/auth/oauth2/callback/oidc
 ```
 
-and allow the `openid`, `profile` and `email` scopes. Doska takes the login from the `preferred_username` claim, or from the email when there is none.
+and allow the `openid`, `profile` and `email` scopes. Kanban Job Board takes the login from the `preferred_username` claim, or from the email when there is none.
 
 Copy the issuer URL, the client id and the client secret.
 

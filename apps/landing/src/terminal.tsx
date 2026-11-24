@@ -68,7 +68,7 @@ const installSession: Line[] = [
   [{ text: "      Pulling images", className: dim }],
   [{ text: "      Starting containers", className: dim }],
   [{ text: " " }],
-  [{ text: "✓ Doska is up and running!", className: cn(ok, bold) }],
+  [{ text: "✓ Kanban Job Board is up and running!", className: cn(ok, bold) }],
   [
     { text: "  Open   ", className: bold },
     { text: "http://192.168.1.24:8080" },

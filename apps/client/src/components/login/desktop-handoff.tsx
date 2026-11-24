@@ -22,7 +22,7 @@ export function DesktopHandoff({ id }: { id: string }) {
         </h1>
         <p className="text-sm text-muted-foreground">
           {done
-            ? "Go back to Doska. You can close this tab."
+            ? "Go back to Kanban Job Board. You can close this tab."
             : (error ?? "Handing your session to the desktop app.")}
         </p>
       </div>

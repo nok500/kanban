@@ -1,5 +1,5 @@
 #!/bin/sh
-# Doska self-host bootstrapper. Downloads the compose file, scaffolds a .env
+# Kanban Job Board self-host bootstrapper. Downloads the compose file, scaffolds a .env
 # (generating secrets for you), and brings the stack up. Safe to re-run: it never
 # overwrites an existing .env, so a second run refreshes the compose file and the
 # backup helper (keeping a .bak of yours if they differed) and pulls newer images.
@@ -170,7 +170,7 @@ env_escape() { printf '%s' "$1" | sed 's/\$/$$/g'; }
 # Compose's default project name: the lowercased directory basename with any
 # character outside [a-z0-9_-] dropped, then any leading `-`/`_` stripped —
 # compose requires the name to start with a letter or digit. Scopes
-# volume/container lookups to THIS install so another Doska on the same host
+# volume/container lookups to THIS install so another Kanban Job Board on the same host
 # isn't mistaken for ours; get it wrong and an existing database looks absent.
 project_name() {
   if [ -n "${COMPOSE_PROJECT_NAME:-}" ]; then printf '%s' "$COMPOSE_PROJECT_NAME"; return; fi
@@ -293,7 +293,7 @@ done
 logo
 
 # --- 1. prerequisites --------------------------------------------------------
-step "Checking prerequisites" "Doska runs in Docker. Let's make sure the tools it needs are present."
+step "Checking prerequisites" "Kanban Job Board runs in Docker. Let's make sure the tools it needs are present."
 command -v docker > /dev/null 2>&1 || die "docker is not installed. See https://docs.docker.com/get-docker/"
 if docker compose version > /dev/null 2>&1; then
   COMPOSE="docker compose"
@@ -444,7 +444,7 @@ else
   OIDC_ISSUER=${OIDC_ISSUER:-}; OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-}; OIDC_NAME=${OIDC_NAME:-}
   OIDC_SECRET=""
   if [ -n "$OIDC_ISSUER" ] || ask_yn "Sign in through an identity provider (OIDC)"; then
-    info "Register Doska there as a web app with this redirect URI:"
+    info "Register Kanban Job Board there as a web app with this redirect URI:"
     info "  $BASE_URL/api/auth/oauth2/callback/oidc"
     info "and allow the openid, profile and email scopes."
     info "Docs: https://github.com/nok500/kanban-job-board#readme/user-guides/sso"
@@ -522,7 +522,7 @@ $COMPOSE -f "$COMPOSE_FILE" $PROFILE up -d
 URL=$(grep '^BASE_URL=' "$ENV_FILE" | cut -d= -f2-)
 printf '\n'
 printf '%b━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%b\n' "$C_GREEN" "$C_RESET"
-printf '%b ✓ Doska is up and running!%b\n' "$C_GREEN$C_BOLD" "$C_RESET"
+printf '%b ✓ Kanban Job Board is up and running!%b\n' "$C_GREEN$C_BOLD" "$C_RESET"
 printf '%b━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%b\n' "$C_GREEN" "$C_RESET"
 printf '  %bOpen%b   %s\n' "$C_BOLD" "$C_RESET" "$URL"
 printf '  %bLogin%b  %s\n' "$C_BOLD" "$C_RESET" "$(grep '^AUTH_LOGIN=' "$ENV_FILE" | cut -d= -f2-)"

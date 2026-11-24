@@ -4,7 +4,7 @@
  */
 export function llms(site, links) {
   const lines = [
-    "# Doska",
+    "# Kanban Job Board",
     "",
     "> An open-source, local-first Kanban board where every card is Markdown." +
       " Boards live in the browser and work offline, sync through a server you" +
@@ -13,7 +13,7 @@ export function llms(site, links) {
       " A self-hosted server can sign people in through any OpenID Connect (OIDC)" +
       " provider: Authentik, Keycloak, Pocket ID, Google.",
     "",
-    "Doska is free and MIT licensed.",
+    "Kanban Job Board is free and MIT licensed.",
     "",
     "## Docs",
     "",

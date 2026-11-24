@@ -143,8 +143,8 @@ jobs:
           TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --pattern "Doska_${VERSION}_universal.dmg"
-          SHA=$(sha256sum "Doska_${VERSION}_universal.dmg" | cut -d' ' -f1)
+          gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --pattern "Kanban Job Board_${VERSION}_universal.dmg"
+          SHA=$(sha256sum "Kanban Job Board_${VERSION}_universal.dmg" | cut -d' ' -f1)
 
           git clone "https://x-access-token:${TAP_TOKEN}@github.com/nok500/homebrew-tap.git" tap
           cd tap

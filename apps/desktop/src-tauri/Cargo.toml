@@ -1,8 +1,8 @@
 [package]
 name = "deck-desktop"
 version = "0.1.0"
-description = "Doska desktop"
-authors = ["Rita Romenkova"]
+description = "Kanban Job Board desktop"
+authors = ["nok500"]
 edition = "2021"
 
 [lib]
@@ -38,7 +38,7 @@ uuid = { version = "1", features = ["v4"] }
 
 # The quick-note popup is re-classed into a non-activating NSPanel, so it can
 # take the keyboard over another app's fullscreen Space without activating
-# Doska (which would switch Spaces). Tauri has no setting for any of this.
+# Kanban Job Board (which would switch Spaces). Tauri has no setting for any of this.
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"
 objc2-app-kit = { version = "0.3", default-features = false, features = [

@@ -1,7 +1,7 @@
 ---
 title: HTTPS
 nav: HTTPS
-description: "Give a public Doska deployment a certificate: Caddy proxy handles Let's Encrypt."
+description: "Give a public Kanban Job Board deployment a certificate: Caddy proxy handles Let's Encrypt."
 order: 2
 updated: "2026-08-07"
 ---

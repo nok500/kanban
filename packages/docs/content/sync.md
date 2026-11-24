@@ -1,7 +1,7 @@
 ---
 title: Sync
 nav: Sync
-description: "How Doska keeps devices in sync: two channels, one reconcile pass per board, and a per-field merge on a hybrid logical clock."
+description: "How Kanban Job Board keeps devices in sync: two channels, one reconcile pass per board, and a per-field merge on a hybrid logical clock."
 order: 7
 updated: "2026-09-13"
 ---

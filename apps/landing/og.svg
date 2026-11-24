@@ -13,7 +13,7 @@
     <path d="M5 12H2a10 10 0 0 0 20 0h-3" />
     <circle cx="12" cy="5" r="3" />
   </g>
-  <text x="582" y="76" font-family="Avenir Next, Helvetica, sans-serif" font-weight="600" font-size="32" fill="#f7f7f8">Doska</text>
+  <text x="582" y="76" font-family="Avenir Next, Helvetica, sans-serif" font-weight="600" font-size="32" fill="#f7f7f8">Kanban Job Board</text>
 
   <text x="600" y="174" text-anchor="middle" font-family="Avenir Next, Helvetica, sans-serif" font-weight="800" font-size="60" letter-spacing="-1.5" fill="#f7f7f8">Kanban for <tspan fill="#9585ff">your own projects</tspan></text>
 

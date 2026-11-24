@@ -33,7 +33,7 @@ jobs:
           context: .
           file: apps/server/Dockerfile
           load: true
-          tags: ghcr.io/${{ github.repository_owner }}/doska-server:ci
+          tags: ghcr.io/${{ github.repository_owner }}/kanban-server:ci
           cache-from: type=gha,scope=selfhost-server
           cache-to: type=gha,mode=max,scope=selfhost-server
 
@@ -43,15 +43,15 @@ jobs:
           context: .
           file: apps/client/Dockerfile
           load: true
-          tags: ghcr.io/${{ github.repository_owner }}/doska-web:ci
+          tags: ghcr.io/${{ github.repository_owner }}/kanban-web:ci
           cache-from: type=gha,scope=selfhost-web
           cache-to: type=gha,mode=max,scope=selfhost-web
 
       - name: Save images
         run: |
           docker save \
-            ghcr.io/${{ github.repository_owner }}/doska-server:ci \
-            ghcr.io/${{ github.repository_owner }}/doska-web:ci \
+            ghcr.io/${{ github.repository_owner }}/kanban-server:ci \
+            ghcr.io/${{ github.repository_owner }}/kanban-web:ci \
             | gzip -1 > /tmp/selfhost-images.tar.gz
 
       - uses: actions/upload-artifact@v4
@@ -97,20 +97,20 @@ jobs:
 
       - name: BASE_URL overrides the inferred origin
         run: |
-          sed -i 's|^BASE_URL=.*|BASE_URL=https://doska.ci.test|' .env
+          sed -i 's|^BASE_URL=.*|BASE_URL=https://kanban.ci.test|' .env
           $COMPOSE up -d --wait --force-recreate server
-          BASE=http://127.0.0.1:8080 EXPECT_BASE_URL=https://doska.ci.test \
+          BASE=http://127.0.0.1:8080 EXPECT_BASE_URL=https://kanban.ci.test \
             ./.github/scripts/selfhost-smoke.sh discovery
 
       # The http:// scheme in DOMAIN turns Caddy's automatic HTTPS off, so this
       # covers the proxy chain without going to Let's Encrypt for a fake name.
       - name: https profile proxies to the stack
         run: |
-          sed -i 's|^BASE_URL=.*|BASE_URL=http://doska.ci.test|' .env
-          echo "DOMAIN=http://doska.ci.test" >> .env
+          sed -i 's|^BASE_URL=.*|BASE_URL=http://kanban.ci.test|' .env
+          echo "DOMAIN=http://kanban.ci.test" >> .env
           $COMPOSE --profile https up -d --wait
-          BASE=http://127.0.0.1 HOST_HEADER=doska.ci.test \
-            EXPECT_BASE_URL=http://doska.ci.test \
+          BASE=http://127.0.0.1 HOST_HEADER=kanban.ci.test \
+            EXPECT_BASE_URL=http://kanban.ci.test \
             ./.github/scripts/selfhost-smoke.sh api web discovery
 
       - name: Container logs

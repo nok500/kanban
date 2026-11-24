@@ -11,7 +11,7 @@ test.describe("settings updates", () => {
     await page.getByRole("button", { name: "Settings" }).click()
 
     const modal = page.getByRole("dialog")
-    await expect(modal.getByText(/^Doska version:/)).toBeVisible()
+    await expect(modal.getByText(/^Kanban Job Board version:/)).toBeVisible()
     await modal.getByRole("button", { name: "Check for updates" }).click()
 
     await expect(modal.getByText("You're up to date.")).toBeVisible({

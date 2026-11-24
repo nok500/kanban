@@ -1,4 +1,4 @@
-# Doska
+# Kanban Job Board
 
 A kanban board with Markdown cards. Boards hold columns, columns hold cards.
 

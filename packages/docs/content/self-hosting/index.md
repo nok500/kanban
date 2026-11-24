@@ -1,7 +1,7 @@
 ---
 title: Self-hosting
 nav: Self-hosting
-description: "Run Doska with Docker: the one-line installer, the environment variables, and connecting your devices to it."
+description: "Run Kanban Job Board with Docker: the one-line installer, the environment variables, and connecting your devices to it."
 order: 2
 updated: "2026-08-11"
 ---

@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default capabilities for the Doska desktop windows.",
+  "description": "Default capabilities for the Kanban Job Board desktop windows.",
   "windows": ["main", "quick-note", "popout-*"],
   "permissions": [
     "core:default",

@@ -3,7 +3,7 @@ import { issues } from "./links"
 export function DevNotice() {
   return (
     <p className="mt-7 font-mono text-sm tracking-tight text-muted-foreground">
-      Doska is in active development.{" "}
+      Kanban Job Board is in active development.{" "}
       <a
         href={issues}
         target="_blank"

@@ -31,7 +31,7 @@ export function UpdatesSection() {
   return (
     <SettingsSection>
       <div className="text-sm">
-        Doska version: <span className="text-muted-foreground">{version}</span>
+        Kanban Job Board version: <span className="text-muted-foreground">{version}</span>
       </div>
       <div className="flex items-center gap-2">
         <Button

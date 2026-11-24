@@ -10,7 +10,7 @@ interface IProps {
 export function WhatsNewToastContent({ visible, onOpen, onDismiss }: IProps) {
   return (
     <Toast visible={visible} className="max-w-md gap-3">
-      <span className="min-w-0">Doska was updated</span>
+      <span className="min-w-0">Kanban Job Board was updated</span>
       <Button size="sm" className="shrink-0" onClick={onOpen}>
         <Sparkles className="size-4" />
         What's new

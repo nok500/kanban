@@ -2,7 +2,7 @@ import { test, expect, type Page } from "@playwright/test"
 import { seenModals } from "../helpers/seen-modals"
 
 function toast(page: Page) {
-  return page.getByText("Doska was updated")
+  return page.getByText("Kanban Job Board was updated")
 }
 
 /** Once the session check resolves, the toast has been decided either way. */
@@ -27,7 +27,7 @@ test.describe("what's new", () => {
   test("the toast opens the slides, and doesn't come back", async ({
     page,
   }) => {
-    await expect(page.getByRole("heading", { name: "Doska" })).toHaveCount(0)
+    await expect(page.getByRole("heading", { name: "Kanban Job Board" })).toHaveCount(0)
     await page.getByRole("button", { name: "What's new" }).click()
     await expect(toast(page)).toBeHidden()
 

@@ -1,12 +1,12 @@
 ---
 title: Attachments
 nav: Attachments
-description: "Where card files are stored on a self-hosted Doska: the local volume, or S3-compatible buckets."
+description: "Where card files are stored on a self-hosted Kanban Job Board: the local volume, or S3-compatible buckets."
 order: 3
 updated: "2026-08-07"
 ---
 
-Doska has two ways to store data: a **local volume**, or an **S3 bucket**.
+Kanban Job Board has two ways to store data: a **local volume**, or an **S3 bucket**.
 When no S3 env variables are set, it uses a local volume by default.
 
 The local volume is included in the [backup script](/self-hosting/backups).

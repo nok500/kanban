@@ -1,14 +1,14 @@
 ---
 title: Documentation
 nav: Overview
-description: "Doska is a Kanban board where the cards are Markdown."
+description: "Kanban Job Board is a Kanban board where the cards are Markdown."
 order: 1
 updated: "2026-08-09"
 ---
 
-Doska is a Kanban board where the cards are Markdown. 
+Kanban Job Board is a Kanban board where the cards are Markdown. 
 
-Doska uses IndexedDB as the intermediate data source, and every few seconds (3 by default) syncs to the destination of choice: a local folder, or a sync server's database.
+Kanban Job Board uses IndexedDB as the intermediate data source, and every few seconds (3 by default) syncs to the destination of choice: a local folder, or a sync server's database.
 
 ## How to run it
 

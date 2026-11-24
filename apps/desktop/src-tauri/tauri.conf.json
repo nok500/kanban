@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Doska",
+  "productName": "Kanban Job Board",
   "version": "0.1.0",
   "identifier": "com.deck.desktop",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Doska",
+        "title": "Kanban Job Board",
         "width": 1280,
         "height": 800,
         "minWidth": 640,
@@ -38,7 +38,7 @@
       },
       {
         "label": "tear-ghost",
-        "title": "Doska",
+        "title": "Kanban Job Board",
         "url": "/tear-ghost.html",
         "width": 128,
         "height": 128,
@@ -78,10 +78,10 @@
         "headerImage": "nsis/header.bmp"
       }
     },
-    "publisher": "Margarita Romenkova",
+    "publisher": "nok500",
     "homepage": "https://github.com/nok500/kanban-job-board",
     "shortDescription": "Offline-first kanban board with Markdown cards",
-    "longDescription": "Doska is a kanban board that is quick, Markdown-first, minimal, and still feature-rich. Boards are stored locally first and sync shortly after every change to a folder on disk or to your own server.",
+    "longDescription": "Kanban Job Board is a kanban board that is quick, Markdown-first, minimal, and still feature-rich. Boards are stored locally first and sync shortly after every change to a folder on disk or to your own server.",
     "linux": {
       "appimage": {
         "files": {

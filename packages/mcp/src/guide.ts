@@ -3,7 +3,7 @@
  * the Markdown dialect card bodies are rendered with. Served as the server's
  * `instructions`, so it's in context before the first call.
  */
-export const INSTRUCTIONS = `Doska is a kanban board: boards hold columns, columns hold cards.
+export const INSTRUCTIONS = `Kanban Job Board is a kanban board: boards hold columns, columns hold cards.
 
 Ids and references
 - Every tool takes opaque ids (board-xxxx, col-xxxx, card-xxxx). They never

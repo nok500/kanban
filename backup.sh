@@ -1,5 +1,5 @@
 #!/bin/sh
-# Back up a self-hosted Doska to ./backups/:
+# Back up a self-hosted Kanban Job Board to ./backups/:
 #
 #   doska-<timestamp>.sql.gz    the bundled Postgres
 #   doska-files-<timestamp>.tar.gz   card attachments, from the doska-files volume
@@ -44,10 +44,10 @@ elif command -v docker-compose > /dev/null 2>&1; then
 else
   die "docker compose is not available."
 fi
-[ -f "$COMPOSE_FILE" ] || die "$COMPOSE_FILE not found — run this from your Doska directory."
+[ -f "$COMPOSE_FILE" ] || die "$COMPOSE_FILE not found — run this from your Kanban Job Board directory."
 
 # Volume names are scoped to the compose project (default: lowercased dir
-# basename), so another Doska on the same host isn't mistaken for ours.
+# basename), so another Kanban Job Board on the same host isn't mistaken for ours.
 # Compose also requires the name to start with a letter or digit and drops any
 # leading `-`/`_` — miss that and we'd look for a volume that doesn't exist and
 # cheerfully report there was nothing to back up.

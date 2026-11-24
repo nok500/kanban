@@ -1,7 +1,7 @@
 ---
 title: Environment variables
 nav: Environment
-description: "Every variable a self-hosted Doska reads from .env: what it does, and whether it is required."
+description: "Every variable a self-hosted Kanban Job Board reads from .env: what it does, and whether it is required."
 order: 1
 updated: "2026-09-02"
 ---
@@ -43,7 +43,7 @@ app on beta too.
 ## Single sign-on
 
 Any OpenID Connect provider: Authentik, Keycloak, Pocket ID, Google. Register
-Doska there as a web app with this redirect URI
+Kanban Job Board there as a web app with this redirect URI
 
 ```
 <BASE_URL>/api/auth/oauth2/callback/oidc
@@ -55,7 +55,7 @@ issuer must serve the standard discovery document at
 **Continue with SSO** button, or whatever `OIDC_NAME` says. Passwords keep
 working, so the admin can always get in.
 
-Doska asks for the `openid`, `profile` and `email` scopes, with PKCE, so allow
+Kanban Job Board asks for the `openid`, `profile` and `email` scopes, with PKCE, so allow
 those for the client. It reads three claims from the profile, each with a
 fallback:
 

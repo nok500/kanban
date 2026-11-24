@@ -3,7 +3,7 @@
 set -euo pipefail
 
 missing=0
-for image in doska-server doska-web; do
+for image in kanban-server kanban-web; do
   docker image inspect "ghcr.io/nok500/$image:ci" > /dev/null 2>&1 && continue
   printf 'ghcr.io/nok500/%s:ci is not built\n' "$image" >&2
   missing=1

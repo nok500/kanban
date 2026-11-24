@@ -1,14 +1,14 @@
 ---
 title: Backups
 nav: Backups
-description: "Dump a self-hosted Doska's database and attachments with backup.sh, and restore them into an empty stack."
+description: "Dump a self-hosted Kanban Job Board's database and attachments with backup.sh, and restore them into an empty stack."
 order: 4
 updated: "2026-08-07"
 ---
 
 The backup script covers the bundled database and the local files volume. If you use S3 or a managed database, this guide **doesn't apply**.
 
-Run `backup.sh` from your Doska directory any time:
+Run `backup.sh` from your Kanban Job Board directory any time:
 
 ```sh
 ./backup.sh
@@ -73,7 +73,7 @@ aren't there.
 
 1. Checks that `docker` and either `docker compose` or `docker-compose` are
    available, and that `docker-compose.selfhost.yml` sits in the current
-   directory, otherwise you are not in your Doska directory and it stops.
+   directory, otherwise you are not in your Kanban Job Board directory and it stops.
 2. Works out the compose project name (`COMPOSE_PROJECT_NAME`, or the lowercased
    name of the directory, normalised the way compose normalises it), that is
    the prefix on the volumes.

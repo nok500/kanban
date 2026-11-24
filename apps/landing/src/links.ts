@@ -8,7 +8,7 @@ export const docs = import.meta.env.DEV
   ? "http://localhost:5175/docs/"
   : "/docs/"
 export const author = "https://github.com/nok500"
-export const repo = `${author}/doska`
+export const repo = `${author}/kanban-job-board`
 export const issues = `${repo}/issues`
 export const releases = `${repo}/releases`
 export const releasesLatest = `${releases}/latest`

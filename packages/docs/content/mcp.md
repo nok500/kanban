@@ -1,17 +1,17 @@
 ---
 title: MCP
 nav: MCP
-description: "Connect Claude Code, Claude Desktop or claude.ai to Doska so an agent can read and edit your boards: through your server, or straight to the desktop app."
+description: "Connect Claude Code, Claude Desktop or claude.ai to Kanban Job Board so an agent can read and edit your boards: through your server, or straight to the desktop app."
 order: 5
 updated: "2026-11-02"
 ---
 
-Doska exposes your boards as MCP tools, so an agent can read and edit them.
+Kanban Job Board exposes your boards as MCP tools, so an agent can read and edit them.
 There are two ways in:
 
 - **Local MCP**: the desktop app serves the tools itself, to agents on the same
   computer. No server or account needed.
-- **Server MCP**: your Doska server serves them over the internet, behind OAuth.
+- **Server MCP**: your Kanban Job Board server serves them over the internet, behind OAuth.
 
 Both give the agent the same [tools](#tools).
 

@@ -1,7 +1,7 @@
 ---
 title: Accounts
 nav: Accounts
-description: "More than one person on your Doska server: adding accounts, what each one gets, and how boards are shared."
+description: "More than one person on your Kanban Job Board server: adding accounts, what each one gets, and how boards are shared."
 order: 3
 updated: "2026-09-02"
 ---

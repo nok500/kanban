@@ -1,5 +1,5 @@
 {
-  "name": "Doska",
+  "name": "Kanban Job Board",
   "site": "https://github.com/nok500/kanban-job-board#readme",
   "home": "https://github.com/nok500/kanban-job-board",
   "description": "An open-source, local-first Kanban board where every card is Markdown.",
@@ -7,7 +7,7 @@
   "repo": "https://github.com/nok500/kanban-job-board",
   "image": "/og.png",
   "logo": "/favicon.svg",
-  "footer": "Doska. MIT licensed. 2026",
+  "footer": "Kanban Job Board. MIT licensed. 2026",
   "theme": "_theme.css",
   "themeColor": { "light": "#f7f7fa", "dark": "#232939" },
   "codeTheme": "github-dark-dimmed"

@@ -1,12 +1,12 @@
 ---
 title: Development
 nav: Development
-description: "Run the Doska monorepo locally: requirements, commands, repository layout, and the self-host smoke tests."
+description: "Run the Kanban Job Board monorepo locally: requirements, commands, repository layout, and the self-host smoke tests."
 order: 8
 updated: "2026-08-07"
 ---
 
-Doska is a pnpm + Turborepo monorepo. Requires **Node 22+** and **pnpm 11+**
+Kanban Job Board is a pnpm + Turborepo monorepo. Requires **Node 22+** and **pnpm 11+**
 (see `.nvmrc` / the root `package.json` engines).
 
 ```sh

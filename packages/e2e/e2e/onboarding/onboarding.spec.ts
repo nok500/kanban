@@ -29,7 +29,7 @@ test.describe("onboarding", () => {
     await page.goto("/")
 
     for (const name of [
-      "Doska",
+      "Kanban Job Board",
       "Cards",
       "Opening cards",
       "Organizing",
@@ -47,12 +47,12 @@ test.describe("onboarding", () => {
     await expectAppSettled(page)
     await expect(deck(page)).toHaveCount(0)
     // Finishing onboarding counts as having seen the current what's new
-    await expect(page.getByText("Doska was updated")).toHaveCount(0)
+    await expect(page.getByText("Kanban Job Board was updated")).toHaveCount(0)
   })
 
   test("Escape closes it for good", async ({ page }) => {
     await page.goto("/")
-    await expect(slide(page, "Doska")).toBeVisible()
+    await expect(slide(page, "Kanban Job Board")).toBeVisible()
 
     await page.keyboard.press("Escape")
     await expect(deck(page)).toBeHidden()
@@ -86,7 +86,7 @@ test.describe("onboarding", () => {
   }) => {
     await page.goto("/")
     for (const name of [
-      "Doska",
+      "Kanban Job Board",
       "Cards",
       "Opening cards",
       "Organizing",

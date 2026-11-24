@@ -1,7 +1,7 @@
 ---
 title: Public sharing
 nav: Public sharing
-description: "Publish a Doska board to a read-only link anyone can open, with no account."
+description: "Publish a Kanban Job Board board to a read-only link anyone can open, with no account."
 order: 4
 updated: "2026-08-11"
 ---

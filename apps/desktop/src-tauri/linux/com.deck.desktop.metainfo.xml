@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>com.deck.desktop</id>
-  <launchable type="desktop-id">Doska.desktop</launchable>
+  <launchable type="desktop-id">KanbanJobBoard.desktop</launchable>
 
-  <name>Doska</name>
+  <name>Kanban Job Board</name>
   <summary>Offline-first kanban board with Markdown cards</summary>
 
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
 
-  <developer id="sh.doska">
-    <name>Margarita Romenkova</name>
+  <developer id="io.github.nok500">
+    <name>nok500</name>
   </developer>
 
   <description>
     <p>
-     Doska is a kanban board that is quick, Markdown-first, minimal,
+     Kanban Job Board is a kanban board that is quick, Markdown-first, minimal,
      and still feature-rich.
     </p>
     <p>
@@ -64,7 +64,7 @@
   </screenshots>
 
   <provides>
-    <binary>doska</binary>
+    <binary>kanban-job-board</binary>
   </provides>
 
   <supports>

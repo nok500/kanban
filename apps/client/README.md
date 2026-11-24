@@ -1,4 +1,4 @@
-# Doska
+# Kanban Job Board
 
 A Kanban board web app with markdown cards
 
