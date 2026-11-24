@@ -1,27 +1,24 @@
-# Self-host the full app (web UI + sync server) from prebuilt images
+# Run the full app (web UI, sync server, agent runner, agent probe, and Postgres)
+# built from local source.
 #
-# Postgres is bundled by default (data lives in the doska-pgdata volume).
-# To use your own managed Postgres, set DATABASE_URL in .env
-#
-# For automatic HTTPS, set DOMAIN in .env and add `--profile https` to start a
-# Caddy reverse proxy in front (Let's Encrypt certs, auto-renewed):
-#   docker compose -f docker-compose.selfhost.yml --profile https up -d
+# Usage:
+#   docker compose -f docker-compose.local.yml up -d --build
 #
 services:
   server:
-    image: ghcr.io/nok500/kanban-server:${DOCKER_IMAGE_TAG:-latest}
-    pull_policy: always
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    image: kanban-server:local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      # Defaults to the bundled Postgres below; override with your own managed
-      # DATABASE_URL to skip it entirely.
       DATABASE_URL: ${DATABASE_URL:-postgres://doska:${POSTGRES_PASSWORD:-doska}@db:5432/doska}
-      # Auth credentials come from the env (see .env.selfhost.example).
       AUTH_LOGIN: ${AUTH_LOGIN:?set AUTH_LOGIN in .env}
       AUTH_PASSWORD: ${AUTH_PASSWORD:?set AUTH_PASSWORD in .env}
       AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in .env}
-      # The web UI shows sign in, and does not allow local unauthenticated usage
+      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:-}
       ALWAYS_AUTH: ${ALWAYS_AUTH:-true}
-      # Optional single sign-on (see the docs on environment variables).
       OIDC_ISSUER: ${OIDC_ISSUER:-}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
@@ -35,7 +32,10 @@ services:
       FILE_MAX_BYTES: ${FILE_MAX_BYTES:-}
       PORT: 3000
       NODE_ENV: production
-      BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://doska.example.com}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://kanban.example.com}
+      AGENT_MONITORS: ${AGENT_MONITORS:-VOODOO|http://192.168.8.229:4747/status,VERDUN|http://agent-probe:4747/status}
+      AGENT_RUNNER_URL: ${AGENT_RUNNER_URL:-http://agent-runner:4850}
     volumes:
       - doska-files:/data/files
     networks:
@@ -54,27 +54,25 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
-      # Migrations run on boot before the port opens.
       start_period: 40s
     restart: unless-stopped
 
   web:
-    image: ghcr.io/nok500/kanban-web:${DOCKER_IMAGE_TAG:-latest}
-    pull_policy: always
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+    image: kanban-web:local
     ports:
       - "${WEB_HOST_BIND:+${WEB_HOST_BIND}:}${WEB_PORT:-8080}:80"
     depends_on:
       - server
     healthcheck:
-      # 127.0.0.1, not localhost: busybox wget tries ::1 first, nginx is IPv4-only.
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
       interval: 15s
       timeout: 5s
       retries: 5
     restart: unless-stopped
 
-  # Remove this service (and the server's depends_on above)
-  # if you point DATABASE_URL at your own managed database.
   db:
     image: postgres:17-alpine
     environment:
@@ -90,26 +88,36 @@ services:
       retries: 10
     restart: unless-stopped
 
-  # Optional TLS terminator, only started with `--profile https`. Fetches and
-  # renews a Let's Encrypt cert for DOMAIN and proxies to the web container.
-  # Set BASE_URL=https://$DOMAIN in .env so OAuth/MCP advertise the right origin.
-  caddy:
-    image: caddy:2-alpine
-    profiles: ["https"]
-    ports:
-      - "80:80"
-      - "443:443"
-    # DOMAIN is required for this profile; unset it and Caddy errors on start.
-    command: caddy reverse-proxy --from ${DOMAIN:-} --to web:80
-    depends_on:
-      - web
+  agent-runner:
+    build:
+      context: .
+      dockerfile: packages/core/agent-runner/Dockerfile
+    image: kanban-agent-runner:local
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      HOME: /home/jvnl
     volumes:
-      - caddy-data:/data
-      - caddy-config:/config
+      - ${AGY_BIN}:/usr/local/bin/agy:ro
+      - ${CLAUDE_BIN_USR_SHARE}:/usr/local/bin/claude:ro
+      - ${GEMINI_BIN}:/home/jvnl/.gemini
+      - ${CLAUDE_BIN}:/home/jvnl/.claude
+      - ${CLAUDE_JSON}:/home/jvnl/.claude.json
+    restart: unless-stopped
+
+  agent-probe:
+    build:
+      context: .
+      dockerfile: packages/core/agent-probe/Dockerfile
+    image: kanban-probe:local
+    pid: host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor=unconfined
+    ports:
+      - "${AGENT_PROBE_PORT:-4747}:4747"
     restart: unless-stopped
 
 volumes:
   doska-pgdata:
   doska-files:
-  caddy-data:
-  caddy-config:

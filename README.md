@@ -28,10 +28,16 @@ Prebuilt images are published to GHCR on pushes to `main`:
 - `ghcr.io/nok500/kanban-probe:latest`
 - `ghcr.io/nok500/kanban-agent-runner:latest`
 
-Configure `.env` (see `.env.selfhost.example`) and run:
+Configure `.env` (see `.env.selfhost.example`) and run from GHCR:
 
 ```sh
 docker compose up -d
+```
+
+Or build all services locally:
+
+```sh
+docker compose -f docker-compose.local.yml up -d --build
 ```
 
 ## MCP

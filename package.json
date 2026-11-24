@@ -9,14 +9,13 @@
   },
   "packageManager": "pnpm@11.25.0",
   "scripts": {
-    "dev": "turbo run dev --filter=!desktop",
-    "build": "turbo run build --filter=!desktop",
-    "desktop": "pnpm --filter desktop dev",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
     "lint": "turbo run lint",
     "type-check": "turbo run typecheck",
-    "test": "turbo run test --filter=!desktop",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
-    "e2e": "turbo run e2e --filter=!desktop",
+    "e2e": "turbo run e2e",
     "e2e:ui": "pnpm --filter @doska/e2e e2e:ui",
     "e2e:container": "pnpm --filter @doska/e2e e2e:container",
     "test:install": "bash .github/scripts/install-test.sh",
@@ -24,7 +23,7 @@
     "test:selfhost:data": "bash .github/scripts/selfhost-data.sh",
     "test:selfhost:upgrade": "bash .github/scripts/selfhost-upgrade.sh",
     "test:selfhost:restore": "bash .github/scripts/selfhost-restore.sh",
-    "selfhost:down": "docker compose -f docker-compose.selfhost.yml --profile https down --volumes --remove-orphans",
+    "selfhost:down": "docker compose down --volumes --remove-orphans",
     "upd": "pnpm dlx npm-check-updates --workspaces --root -i"
   },
   "devDependencies": {
