@@ -12,7 +12,7 @@ Tauri desktop app.
 ## macOS app
 
 Download the latest build from
-[Releases](https://github.com/romenkova/doska/releases/latest). It wraps the client
+[Releases](https://github.com/nok500/kanban-job-board/releases/latest). It wraps the client
 with [Tauri](https://tauri.app) and auto-updates.
 
 Builds are signed with a Developer ID certificate and notarized by Apple.
@@ -30,7 +30,7 @@ first launch: click **More info**, then **Run anyway**.
 
 Linux ships as an AppImage, deb and rpm.
 
-Both are on the same [Releases](https://github.com/romenkova/doska/releases/latest)
+Both are on the same [Releases](https://github.com/nok500/kanban-job-board/releases/latest)
 page and sync the same way as the macOS app.
 
 ## Install as a PWA

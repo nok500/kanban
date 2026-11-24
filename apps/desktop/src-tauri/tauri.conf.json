@@ -79,7 +79,7 @@
       }
     },
     "publisher": "Margarita Romenkova",
-    "homepage": "https://doska.sh",
+    "homepage": "https://github.com/nok500/kanban-job-board",
     "shortDescription": "Offline-first kanban board with Markdown cards",
     "longDescription": "Doska is a kanban board that is quick, Markdown-first, minimal, and still feature-rich. Boards are stored locally first and sync shortly after every change to a folder on disk or to your own server.",
     "linux": {

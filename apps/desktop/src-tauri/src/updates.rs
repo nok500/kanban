@@ -4,7 +4,7 @@
 use serde::Serialize;
 use tauri::AppHandle;
 
-const RELEASES: &str = "https://github.com/romenkova/doska/releases";
+const RELEASES: &str = "https://github.com/nok500/kanban-job-board/releases";
 
 /// A release that differs from the running app.
 #[derive(Serialize)]

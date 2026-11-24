@@ -86,7 +86,7 @@ export function SharePreview() {
           </div>
           <div className="flex items-center gap-2">
             <span className="min-w-0 flex-1 truncate rounded-md border bg-muted/40 px-2 py-1.5 font-mono text-xs text-muted-foreground">
-              app.doska.sh/p/8f3c1a9e
+              kanban.radiono.name/p/8f3c1a9e
             </span>
             <Button variant="ghost" size="sm">
               <Copy />

@@ -4,12 +4,12 @@ const boards = [
   {
     title: "Product roadmap",
     note: "Features, releases, bugfixes",
-    href: "https://app.doska.sh/p/c941951c0ac518ff127f22fa72434b8a",
+    href: "https://kanban.radiono.name/p/c941951c0ac518ff127f22fa72434b8a",
   },
   {
     title: "Trip inspiration",
     note: "Places to visit",
-    href: "https://app.doska.sh/p/eea7fd332a6a268bc12dd41e3861ab54",
+    href: "https://kanban.radiono.name/p/eea7fd332a6a268bc12dd41e3861ab54",
   },
 ]
 

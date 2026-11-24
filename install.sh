@@ -7,7 +7,7 @@
 # (see backup.sh), and it refuses to write a fresh .env on top of one — new
 # secrets wouldn't match the old data.
 #
-#   curl -fsSL https://raw.githubusercontent.com/romenkova/doska/main/install.sh -o install.sh && sh install.sh
+#   curl -fsSL https://raw.githubusercontent.com/nok500/kanban-job-board/main/install.sh -o install.sh && sh install.sh
 #
 # Unattended: every question can be answered up front by exporting the variable
 # it writes, and --yes stops it asking anything.
@@ -16,7 +16,7 @@
 #     sh install.sh --yes
 set -eu
 
-REPO="romenkova/doska"
+REPO="nok500/kanban-job-board"
 # Where the compose file and backup helper come from. Empty means "work it out
 # from the release being installed" (see source_ref);
 RAW="${DOSKA_RAW:-}"
@@ -447,7 +447,7 @@ else
     info "Register Doska there as a web app with this redirect URI:"
     info "  $BASE_URL/api/auth/oauth2/callback/oidc"
     info "and allow the openid, profile and email scopes."
-    info "Docs: https://doska.sh/docs/user-guides/sso"
+    info "Docs: https://github.com/nok500/kanban-job-board#readme/user-guides/sso"
     OIDC_ISSUER=$(ask OIDC_ISSUER "  Issuer URL" "")
     OIDC_CLIENT_ID=$(ask OIDC_CLIENT_ID "  Client id" "")
     OIDC_SECRET=$(ask_secret OIDC_CLIENT_SECRET "  Client secret")

@@ -4,7 +4,7 @@ import { Check, Copy } from "lucide-react"
 import { errorLog, type ReportedError } from "@doska/core"
 import { isDesktop } from "@/lib/platform"
 
-const ISSUE_URL = "https://github.com/romenkova/doska/issues/new"
+const ISSUE_URL = "https://github.com/nok500/kanban-job-board/issues/new"
 
 /** GitHub drops the prefill past roughly 8k of URL, so the stack gets a budget. */
 const STACK_BUDGET = 4000

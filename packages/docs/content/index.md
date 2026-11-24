@@ -14,12 +14,12 @@ Doska uses IndexedDB as the intermediate data source, and every few seconds (3 b
 
 ### Demo
 
-The demo doesn't require any setup, and is available here: [app.doska.sh](https://app.doska.sh/d/welcome).
+The demo doesn't require any setup, and is available here: [kanban.radiono.name](https://kanban.radiono.name/d/welcome).
 You can point it at your own sync server.
 
 ### Fully local setup: folder sync
 
-Download the app from the [latest release](https://github.com/romenkova/doska/releases/latest). macOS, Linux (beta) and Windows (beta) are available.
+Download the app from the [latest release](https://github.com/nok500/kanban-job-board/releases/latest). macOS, Linux (beta) and Windows (beta) are available.
 
 Then, from the board page, select a folder to sync your data to. Columns are folders, and cards are Markdown files in that folder. Editing works both ways: edited files show up in the app, and vice versa.
 

@@ -51,14 +51,14 @@
     <keyword>self-hosted</keyword>
   </keywords>
 
-  <url type="homepage">https://doska.sh</url>
-  <url type="help">https://doska.sh/docs</url>
-  <url type="bugtracker">https://github.com/romenkova/doska/issues</url>
-  <url type="vcs-browser">https://github.com/romenkova/doska</url>
+  <url type="homepage">https://github.com/nok500/kanban-job-board</url>
+  <url type="help">https://github.com/nok500/kanban-job-board#readme</url>
+  <url type="bugtracker">https://github.com/nok500/kanban-job-board/issues</url>
+  <url type="vcs-browser">https://github.com/nok500/kanban-job-board</url>
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/romenkova/doska/main/.github/assets/board-demo-dark-5.png</image>
+      <image>https://raw.githubusercontent.com/nok500/kanban-job-board/main/.github/assets/board-demo-dark-5.png</image>
       <caption>A board with a card open in the Markdown editor</caption>
     </screenshot>
   </screenshots>

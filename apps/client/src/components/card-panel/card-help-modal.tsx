@@ -74,7 +74,7 @@ const TIPS: Tip[] = [
         Drop them on the card, paste them, or use the paperclip up top. Not
         working?{" "}
         <a
-          href="https://doska.sh/docs/user-guides/attachments"
+          href="https://github.com/nok500/kanban-job-board#readme"
           target="_blank"
           rel="noreferrer"
           className="text-foreground underline underline-offset-2"

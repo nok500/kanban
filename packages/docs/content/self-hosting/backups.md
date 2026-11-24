@@ -18,7 +18,7 @@ Run `backup.sh` from your Doska directory any time:
 first:
 
 ```sh
-curl -O https://raw.githubusercontent.com/romenkova/doska/main/backup.sh
+curl -O https://raw.githubusercontent.com/nok500/kanban-job-board/main/backup.sh
 chmod +x backup.sh
 ```
 

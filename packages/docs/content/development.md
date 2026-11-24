@@ -64,5 +64,5 @@ pnpm selfhost:down         # tear it all down, volumes included
 
 ## Contributing
 
-Issues and pull requests: [github.com/romenkova/doska](https://github.com/romenkova/doska).
-Security reports go through [SECURITY.md](https://github.com/romenkova/doska/blob/main/SECURITY.md).
+Issues and pull requests: [github.com/nok500/kanban-job-board](https://github.com/nok500/kanban-job-board).
+Security reports go through [SECURITY.md](https://github.com/nok500/kanban-job-board/blob/main/SECURITY.md).

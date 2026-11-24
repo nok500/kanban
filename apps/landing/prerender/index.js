@@ -4,7 +4,7 @@ import { app, releases, render, repo } from "../dist/server/entry-server.js"
 import { llms } from "./llms.js"
 import { sitemap } from "./sitemap.js"
 
-const SITE = "https://doska.sh"
+const SITE = "https://github.com/nok500/kanban-job-board"
 
 /**
  * The home page's `<lastmod>`. Its copy lives in components rather than in

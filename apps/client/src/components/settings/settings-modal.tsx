@@ -61,12 +61,12 @@ export function SettingsModal({
               <SettingsRow
                 icon={<BookOpen className="size-4" />}
                 label="Docs"
-                href="https://doska.sh/docs"
+                href="https://github.com/nok500/kanban-job-board#readme"
               />
               <SettingsRow
                 icon={<FaGithub className="size-4" />}
                 label="GitHub"
-                href="https://github.com/romenkova/doska"
+                href="https://github.com/nok500/kanban-job-board"
               />
             </div>
           </SettingsSection>

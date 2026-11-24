@@ -1,147 +1,52 @@
-<div align="center">
+# kanban-job-board
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/logo-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset=".github/assets/logo-light.png">
-  <img alt="Doska" src=".github/assets/logo-light.png" width="180">
-</picture>
-<p></p>
+A self-hosted Kanban job-application board with automated CLI agent JD analysis (`agy` and `claude`), live host agent monitoring, and MCP integration.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/tagline-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset=".github/assets/tagline-light.png">
-  <img alt="Open source · self-hosted · Kanban board · Markdown cards" src=".github/assets/tagline-light.png" width="460">
-</picture>
-<p></p>
+## Workflow
 
-<p align="center">
-  <a href="https://github.com/romenkova/doska/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/romenkova/doska?color=9585ff&label=release"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/romenkova/doska?color=7b8199"></a>
-</p>
-<p></p>
+The default board (`Default`) starts with five columns:
 
-<p align="center">
-  <strong><a href="https://app.doska.sh/d/welcome">Open demo</a></strong> ·
-  <a href="https://doska.sh/docs">Documentation</a> ·
-  <a href="https://github.com/romenkova/doska/releases/latest">Download the app</a>
-</p>
+- **`JDs`** — Add job descriptions (formatted as `Company: Job Title`) and tag them with `agy` or `claude` (via card **Tags** or inline `#agy` / `#claude`).
+- **`Analise`** — Moving a tagged card into `Analise` triggers the selected CLI agent inside `agent-runner`, passing the JD title/body and any CV files attached to cards in `Docs`.
+- **`Follow-up`** — If the agent recommends following up, it appends `---` + `Thought for <N>s` + the fit analysis (including company career-page search results), sets the card `priority` (`high` / `medium` / `low`), and moves the card here.
+- **`Nay`** — If not a fit, the analysis is appended and the card is moved here.
+- **`Docs`** — Store your CV card(s) with attached CV files here.
 
-![A Doska board with a card open in the editor](.github/assets/board-demo-dark-5.png)
+## Architecture
 
-</div>
+- `apps/client` — React + Vite web UI (with sidebar CLI agent & job monitor).
+- `apps/server` — Fastify + Drizzle + Postgres sync server, MCP endpoint (`/mcp`), and `/api/agents/*` routes.
+- `packages/core` — Shared sync engine, board operations, `packages/core/agent-probe`, and `packages/core/agent-runner`.
+- `packages/mcp` — MCP tool definitions for reading and editing boards.
 
-> [!NOTE]
-> Doska is in active development.
-> [Report bugs and request features](https://github.com/romenkova/doska/issues).
+## Docker Images & Compose
 
-## Why
+Prebuilt images are published to GHCR on pushes to `main`:
 
-I wanted a kanban app that is quick, Markdown-first, minimal, and still feature-rich. I couldn't find all of that in one app, so I made Doska.
+- `ghcr.io/nok500/kanban-server:latest`
+- `ghcr.io/nok500/kanban-web:latest`
+- `ghcr.io/nok500/kanban-probe:latest`
+- `ghcr.io/nok500/kanban-agent-runner:latest`
 
-Doska keeps everything in IndexedDB first, because it's fast and persistent. Then it syncs to a destination of your choice, a folder or a server, shortly after every change.
-
-When the destination is a server, you also get multiple users with live updates, public boards, SSO, and MCP over the internet.
-
-Doska never makes you wait on the server, doesn't keep features behind a paywall, and aims to have everything necessary without looking bloated.
-
-## Features
-
-- **Offline-first**, local-first
-- **Markdown editor**: syntax highlighting, tasks with a counter, slash menu
-- Server to **sync** boards across devices
-- **Accounts:** members, shared boards, public boards
-- **Local folder sync:** boards and columns as folders, cards as Markdown files
-- **Attachments:** files, images
-- **SSO:** OIDC-compatible auth provider
-- **Deadlines, priorities** and sorting for cards on the board
-- **MCP**: on the server, or local from the desktop app
-- **Folders** and subfolders for boards in the sidebar
-- **Templates** for cards and boards
-- **Cross-board deadlines view**
-- **Quick note window**: always on top, opened with a keyboard shortcut
-- **Tags** with colors, renaming and merging
-- **Assign users** to cards
-- **Activity history view**
-
-## Apps
-
-Desktop builds are on [Releases](https://github.com/romenkova/doska/releases/latest), or on macOS via Homebrew:
+Configure `.env` (see `.env.selfhost.example`) and run:
 
 ```sh
-brew install romenkova/tap/doska
+docker compose up -d
 ```
-
-- **Web**: PWA, mobile-friendly layout.
-- **macOS**: universal build, signed and notarized.
-- **Windows** (beta): NSIS installer, unsigned. See [desktop docs](https://doska.sh/docs/desktop).
-- **Linux** (beta): AppImage, deb and rpm.
-
-## Self-hosting guide
-
-The easiest way to self-host is to use the script:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/romenkova/doska/main/install.sh -o install.sh && sh install.sh
-```
-
-For manual setup:
-
-1. Copy [docker-compose.selfhost.yml](docker-compose.selfhost.yml)
-2. Copy [.env.selfhost.example](.env.selfhost.example) to `.env` next to it
-3. Fill in `AUTH_LOGIN`, `AUTH_PASSWORD`, `AUTH_SECRET` and `BASE_URL`
-4. Run `docker compose -f docker-compose.selfhost.yml up -d`
-
-Then open `http://<your-host>:8080` and sign in with the credentials you gave it.
-
-Environment variables, HTTPS, attachments and
-backups: [doska.sh/docs/self-hosting](https://doska.sh/docs/self-hosting).
-
-What the compose file contains:
-
-- Sync server
-- Web interface server
-- Database: pass a database URL, or the bundled Postgres is used.
-- File storage: pass S3 credentials, or files are stored on the server.
-
-## Updating
-
-The same script updates an existing install, and the useful part is that it takes a backup first.
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/romenkova/doska/main/install.sh -o install.sh && sh install.sh
-```
-
-Or, for a manual update, back up your instance and then rerun compose.
-
-The desktop app follows whatever version its server runs, so update the server
-first. The app's settings modal then has a button to check for updates and
-install them.
 
 ## MCP
 
-The server exposes your boards to an MCP client at `/mcp`:
+The server exposes your boards over Streamable HTTP at `/mcp` behind OAuth 2.1:
 
 ```sh
-claude mcp add --transport http doska https://your-server/mcp
+claude mcp add --transport http kanban https://your-server/mcp
 ```
-
-The desktop app can serve the same tools to agents on your computer, no server
-needed: turn it on in Settings > Local MCP and paste the command it shows.
-
-Tools are listed in [packages/mcp/README.md](packages/mcp/README.md); setup is at
-[doska.sh/docs/mcp](https://doska.sh/docs/mcp).
 
 ## Development
 
+Node 22+ and pnpm 11+ are required:
+
 ```sh
 pnpm install
-pnpm dev        # web client + server, in watch mode
-pnpm desktop    # native desktop shell (Tauri)
+pnpm dev
 ```
-
-Requirements, the full command list and the repository layout:
-[doska.sh/docs/development](https://doska.sh/docs/development).
-
-## License
-
-MIT, see [LICENSE](LICENSE).

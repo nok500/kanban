@@ -34,7 +34,7 @@ export function ServerMcpModal({ open, onOpenChange }: IProps) {
             <CopyField label="URL" value={url} />
           </div>
           <a
-            href="https://doska.sh/docs/mcp"
+            href="https://github.com/nok500/kanban-job-board#mcp"
             target="_blank"
             rel="noreferrer"
             className="text-xs text-muted-foreground underline underline-offset-2"

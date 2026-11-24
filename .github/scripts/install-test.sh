@@ -368,7 +368,7 @@ CASE_RAW=""
 case_name="a pinned version fetches that version's compose file"
 printf '\n%s\n' "$case_name"
 run pinned AUTH_PASSWORD=x DOCKER_IMAGE_TAG=0.17.0 -- --yes --no-start
-fetched_from pinned "/romenkova/doska/v0.17.0/docker-compose.selfhost.yml" &&
+fetched_from pinned "/nok500/kanban-job-board/v0.17.0/docker-compose.selfhost.yml" &&
   pass "fetched from v0.17.0" ||
   fail "wrong source: $(cat "$WORK/pinned/curl.log")"
 grep -q "v0.17.0 stack definition" "$WORK/pinned/out.log" && pass "says which release it used" ||
@@ -383,7 +383,7 @@ fetched_from pinnedv "/doska/v0.17.0/docker-compose" && pass "no doubled v" ||
 case_name="the latest channel resolves to the newest release"
 printf '\n%s\n' "$case_name"
 run chanlatest AUTH_PASSWORD=x -- --yes --no-start
-fetched_from chanlatest "api.github.com/repos/romenkova/doska/releases/latest" &&
+fetched_from chanlatest "api.github.com/repos/nok500/kanban-job-board/releases/latest" &&
   pass "asked the API which release is latest" ||
   fail "did not resolve the channel: $(cat "$WORK/chanlatest/curl.log")"
 fetched_from chanlatest "/doska/v0.18.0/docker-compose" && pass "fetched from that release" ||
