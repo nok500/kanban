@@ -26,13 +26,13 @@ jobs:
       matrix:
         include:
           - name: server
-            image: doska-server
+            image: kanban-server
             dockerfile: apps/server/Dockerfile
           - name: web
-            image: doska-web
+            image: kanban-web
             dockerfile: apps/client/Dockerfile
-          - name: agent-probe
-            image: doska-agent-probe
+          - name: probe
+            image: kanban-probe
             dockerfile: scripts/agent-probe/Dockerfile
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
