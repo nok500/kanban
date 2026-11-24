@@ -68,7 +68,7 @@ def build_prompt(title: str, body: str, cv_paths: list[Path]) -> str:
             "End your response with:",
             "- `VERDICT: FOLLOW-UP` (worth following up) or `VERDICT: NAY` (not worth following up)",
             "- If `VERDICT: FOLLOW-UP`, also include `MATCH: HIGH` (strong match), `MATCH: MEDIUM` (good match), or `MATCH: LOW` (borderline/partial match).",
-            "Do not call any Kanban MCP tools — the runner will attach your output to the card and move it to Follow-up or Nay automatically.",
+            "IMPORTANT: Do NOT call any Kanban MCP tools (or any external MCP tools) — the runner will attach your output to the card and move it to Follow-up or Nay automatically.",
             "",
             cv_section,
             "",

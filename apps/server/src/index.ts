@@ -3,6 +3,7 @@ import { seedAccount } from "./auth/seed"
 import { runMigrations } from "./db/utils/run-migrations"
 import { env } from "./env"
 import { startPurgeJob } from "./purge-job"
+import { startAgentPoller } from "./routes/agents"
 
 const app = buildApp()
 
@@ -21,6 +22,7 @@ runMigrations()
   .then(seedAccount)
   .then(() => app.listen({ port, host }))
   .then(() => startPurgeJob(app.log))
+  .then(() => startAgentPoller(app.log))
   .catch((err) => {
     app.log.error(err)
     process.exit(1)

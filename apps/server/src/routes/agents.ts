@@ -1,7 +1,7 @@
 import type { IncomingMessage } from "node:http"
 import type { Card, Column } from "@doska/contract"
 import { storageFromEnv } from "@doska/file-storage/server"
-import { and, eq, inArray, isNull } from "drizzle-orm"
+import { and, eq, inArray, isNull, sql } from "drizzle-orm"
 import type { FastifyBaseLogger, FastifyInstance } from "fastify"
 import { getDB } from "../db/get-db"
 import { boardMembers, cards, columns, dashboards } from "../db/schema"
@@ -234,16 +234,37 @@ interface RunnerJobSnapshot {
   output?: string
 }
 
-function parseVerdict(output: string): "follow-up" | "nay" | null {
+const AGENT_TAGS = new Set(["agy", "claude"])
+const INLINE_AGENT_RE = /(?:^|\s)#(agy|claude)(?=\s|$)/i
+const PROCESS_COL_NAMES = ["process", "analise"]
+const activeCardJobs = new Set<string>()
+
+function detectAgentFromCard(
+  tags: string[] | null | undefined,
+  body: string | null | undefined
+): "agy" | "claude" | null {
+  const fromTags = (tags ?? [])
+    .map((t) => t.trim().toLowerCase())
+    .find((t) => AGENT_TAGS.has(t))
+  if (fromTags === "agy" || fromTags === "claude") return fromTags
+  const match = INLINE_AGENT_RE.exec(body ?? "")
+  return match ? (match[1].toLowerCase() as "agy" | "claude") : null
+}
+
+function parseVerdict(output: string): "follow-up" | "yay" | "nay" | null {
   const explicit = /verdict\s*:\s*(follow-up|yay|nay)\b/i.exec(output)
   if (explicit) {
     const v = explicit[1].toLowerCase()
-    return v === "nay" ? "nay" : "follow-up"
+    if (v === "nay") return "nay"
+    if (v === "yay") return "yay"
+    return "follow-up"
   }
   const matches = [...output.matchAll(/\b(follow-up|yay|nay)\b/gi)]
   if (matches.length === 0) return null
   const last = matches[matches.length - 1][1].toLowerCase()
-  return last === "nay" ? "nay" : "follow-up"
+  if (last === "nay") return "nay"
+  if (last === "yay") return "yay"
+  return "follow-up"
 }
 
 function parseMatchPriority(output: string): "high" | "medium" | "low" | null {
@@ -256,126 +277,328 @@ async function watchAndApplyJobResult(opts: {
   boardId: string
   cardId: string
   jobId: string
+  agent: string
   log: FastifyBaseLogger
 }): Promise<void> {
-  const { userId, boardId, cardId, jobId, log } = opts
+  const { userId, boardId, cardId, jobId, agent, log } = opts
   const deadline = Date.now() + 5 * 60 * 1000
 
-  while (Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 2000))
-    let job: RunnerJobSnapshot
-    try {
-      const res = await fetch(`${env.agentRunnerUrl}/jobs/${jobId}`, {
-        signal: AbortSignal.timeout(3000),
-      })
-      if (!res.ok) continue
-      job = (await res.json()) as RunnerJobSnapshot
-    } catch {
-      continue
-    }
+  try {
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 2000))
+      let job: RunnerJobSnapshot
+      try {
+        const res = await fetch(`${env.agentRunnerUrl}/jobs/${jobId}`, {
+          signal: AbortSignal.timeout(3000),
+        })
+        if (!res.ok) continue
+        job = (await res.json()) as RunnerJobSnapshot
+      } catch {
+        continue
+      }
 
-    if (job.status === "running") continue
+      if (job.status === "running") continue
 
-    const output = (job.output ?? "").trim()
-    const verdict = parseVerdict(output)
+      const output = (job.output ?? "").trim()
+      const verdict = parseVerdict(output)
 
-    try {
-      const store = new DbStore(userId)
-      const changes = await store.readBoard(boardId)
+      try {
+        const store = new DbStore(userId)
+        const changes = await store.readBoard(boardId)
 
-      let existingCard: Card | null = null
-      const boardColumns: Column[] = []
-      for (const ch of changes) {
-        if (ch.store === "cards" && ch.record.id === cardId && !ch.record.deletedAt) {
-          existingCard = ch.record
-        } else if (ch.store === "columns" && !ch.record.deletedAt) {
-          boardColumns.push(ch.record)
+        let existingCard: Card | null = null
+        const boardColumns: Column[] = []
+        for (const ch of changes) {
+          if (
+            ch.store === "cards" &&
+            ch.record.id === cardId &&
+            !ch.record.deletedAt
+          ) {
+            existingCard = ch.record
+          } else if (ch.store === "columns" && !ch.record.deletedAt) {
+            boardColumns.push(ch.record)
+          }
         }
-      }
 
-      if (!existingCard) {
-        log.warn({ boardId, cardId, jobId }, "agents/watch: card not found")
-        return
-      }
+        if (!existingCard) {
+          log.warn({ boardId, cardId, jobId }, "agents/watch: card not found")
+          return
+        }
 
-      const currentCol = boardColumns.find(
-        (c) => c.id === existingCard.columnId
-      )
-      if (!currentCol || currentCol.title.trim().toLowerCase() !== "analise") {
-        log.info(
-          {
-            boardId,
-            cardId,
-            jobId,
-            column: currentCol?.title ?? null,
-          },
-          "agents/watch: skipping card no longer in Analise column"
+        const currentCol = boardColumns.find(
+          (c) => c.id === existingCard.columnId
         )
-        return
-      }
+        if (
+          !currentCol ||
+          !PROCESS_COL_NAMES.includes(currentCol.title.trim().toLowerCase())
+        ) {
+          log.info(
+            {
+              boardId,
+              cardId,
+              jobId,
+              column: currentCol?.title ?? null,
+            },
+            "agents/watch: skipping card no longer in Process/Analise column"
+          )
+          return
+        }
 
-      const targetCol = verdict
-        ? boardColumns.find((c) => c.title.trim().toLowerCase() === verdict)
-        : undefined
+        const targetCol = verdict
+          ? boardColumns.find(
+              (c) => c.title.trim().toLowerCase() === verdict
+            ) ??
+            (verdict === "follow-up"
+              ? boardColumns.find(
+                  (c) => c.title.trim().toLowerCase() === "yay"
+                )
+              : undefined)
+          : undefined
 
-      const now = store.now()
-      const durationMs =
-        typeof job.durationMs === "number"
-          ? job.durationMs
-          : job.finishedAt && job.startedAt
-            ? job.finishedAt - job.startedAt
-            : null
-      const header =
-        durationMs != null && !/^thought for /i.test(output)
-          ? `Thought for ${Math.max(1, Math.round(durationMs / 1000))}s\n\n`
-          : ""
-      const outputBlock = output
-        ? `${header}${output}`
-        : `Job ${jobId} finished (${job.status}, exit ${job.exitCode ?? "?"}).`
-      const baseBody = existingCard.body.trimEnd()
-      const nextBody = baseBody
-        ? `${baseBody}\n\n---\n\n${outputBlock}`
-        : `---\n\n${outputBlock}`
+        const now = store.now()
+        const durationMs =
+          typeof job.durationMs === "number"
+            ? job.durationMs
+            : job.finishedAt && job.startedAt
+              ? job.finishedAt - job.startedAt
+              : null
+        const header =
+          durationMs != null && !/^thought for /i.test(output)
+            ? `Thought for ${Math.max(1, Math.round(durationMs / 1000))}s\n\n`
+            : ""
+        const outputBlock = output
+          ? `${header}${output}`
+          : `Job ${jobId} finished (${job.status}, exit ${job.exitCode ?? "?"}).`
 
-      const moved = Boolean(targetCol && targetCol.id !== existingCard.columnId)
-      const nextPriority =
-        verdict === "follow-up"
+        const marker = `process as job-id: ${jobId} (${agent})`
+        const baseTrimmed = existingCard.body.trimEnd()
+        const withMarker = baseTrimmed.includes(marker)
+          ? baseTrimmed
+          : baseTrimmed
+            ? `${baseTrimmed}\n\n${marker}`
+            : marker
+        const nextBody = `${withMarker}\n\n---\n\n${outputBlock}`
+
+        const moved = Boolean(
+          targetCol && targetCol.id !== existingCard.columnId
+        )
+        const isPositive = verdict === "follow-up" || verdict === "yay"
+        const nextPriority = isPositive
           ? (parseMatchPriority(output) ?? "medium")
           : existingCard.priority
 
-      const updatedCard: Card = {
-        ...existingCard,
-        body: nextBody,
-        columnId: targetCol ? targetCol.id : existingCard.columnId,
-        priority: nextPriority,
-        updatedAt: now,
-        stamps: {
-          ...existingCard.stamps,
-          body: now,
-          ...(moved ? { place: now } : {}),
-          ...(verdict === "follow-up" ? { priority: now } : {}),
-        },
-      }
-
-      await store.pushBoard(boardId, [{ store: "cards", record: updatedCard }])
-      log.info(
-        {
-          jobId,
-          cardId,
-          verdict,
+        const updatedCard: Card = {
+          ...existingCard,
+          body: nextBody,
+          columnId: targetCol ? targetCol.id : existingCard.columnId,
           priority: nextPriority,
-          targetColumn: targetCol?.title ?? null,
-          outputChars: output.length,
-        },
-        "agents/watch: updated card with job output"
-      )
-    } catch (err) {
-      log.error({ err, jobId, cardId }, "agents/watch: failed to update card")
+          updatedAt: now,
+          stamps: {
+            ...existingCard.stamps,
+            body: now,
+            ...(moved ? { place: now } : {}),
+            ...(isPositive ? { priority: now } : {}),
+          },
+        }
+
+        await store.pushBoard(boardId, [{ store: "cards", record: updatedCard }])
+        log.info(
+          {
+            jobId,
+            cardId,
+            verdict,
+            priority: nextPriority,
+            targetColumn: targetCol?.title ?? null,
+            outputChars: output.length,
+          },
+          "agents/watch: updated card with job output"
+        )
+      } catch (err) {
+        log.error({ err, jobId, cardId }, "agents/watch: failed to update card")
+      }
+      return
     }
-    return
+
+    log.warn({ jobId, cardId }, "agents/watch: timed out waiting for job")
+  } finally {
+    activeCardJobs.delete(cardId)
+  }
+}
+
+async function dispatchAgentJob(opts: {
+  userId: string
+  boardId: string
+  cardId: string
+  title: string
+  body: string
+  agent: "agy" | "claude"
+  storage: ServerStorage | null
+  log: FastifyBaseLogger
+}): Promise<{ status: number; body: Record<string, unknown> }> {
+  const { userId, boardId, cardId, title, body, agent, storage, log } = opts
+  if (activeCardJobs.has(cardId)) {
+    return { status: 200, body: { ok: true, skipped: true } }
+  }
+  activeCardJobs.add(cardId)
+
+  const db = getDB()
+  const boardCols = await db
+    .select({ id: columns.id, title: columns.title })
+    .from(columns)
+    .where(and(eq(columns.boardId, boardId), isNull(columns.deletedAt)))
+
+  const docsColIds = boardCols
+    .filter((c) => c.title.trim().toLowerCase() === "docs")
+    .map((c) => c.id)
+
+  const cvs: Array<{ name: string; mime: string; contentBase64: string }> = []
+  if (docsColIds.length > 0 && storage) {
+    const docCards = await db
+      .select({ attachments: cards.attachments })
+      .from(cards)
+      .where(
+        and(
+          eq(cards.boardId, boardId),
+          inArray(cards.columnId, docsColIds),
+          isNull(cards.deletedAt)
+        )
+      )
+
+    for (const docCard of docCards) {
+      for (const att of docCard.attachments ?? []) {
+        try {
+          const fetched = await storage.fetch(att.key)
+          cvs.push({
+            name: att.name,
+            mime: att.mime,
+            contentBase64: await streamToBase64(fetched.body),
+          })
+        } catch (err) {
+          log.warn(
+            { err, key: att.key },
+            "agents/run: failed to fetch CV attachment"
+          )
+        }
+      }
+    }
   }
 
-  log.warn({ jobId, cardId }, "agents/watch: timed out waiting for job")
+  try {
+    log.info(
+      {
+        runnerUrl: env.agentRunnerUrl,
+        agent,
+        cardId,
+        cvCount: cvs.length,
+        cvNames: cvs.map((c) => c.name),
+      },
+      "agents/run: dispatching job to agent-runner"
+    )
+    const runnerRes = await fetch(`${env.agentRunnerUrl}/run`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        agent,
+        boardId,
+        cardId,
+        title,
+        body,
+        cvs,
+      }),
+      signal: AbortSignal.timeout(5000),
+    })
+    const result = (await runnerRes.json()) as Record<string, unknown>
+    log.info(
+      { status: runnerRes.status, result },
+      "agents/run: agent-runner responded"
+    )
+    if (runnerRes.ok && result.jobId != null) {
+      void watchAndApplyJobResult({
+        userId,
+        boardId,
+        cardId,
+        jobId: String(result.jobId),
+        agent,
+        log,
+      })
+    } else {
+      activeCardJobs.delete(cardId)
+    }
+    return { status: runnerRes.status, body: result }
+  } catch (err) {
+    activeCardJobs.delete(cardId)
+    log.error({ err }, "agents/run: failed to reach agent-runner")
+    return {
+      status: 502,
+      body: {
+        error: err instanceof Error ? err.message : "agent-runner unreachable",
+      },
+    }
+  }
+}
+
+/** Polls Process/Analise columns every 10s for tagged cards and dispatches them. */
+export function startAgentPoller(
+  log: FastifyBaseLogger,
+  storage: ServerStorage | null = storageFromEnv()
+): NodeJS.Timeout {
+  const tick = async () => {
+    try {
+      const db = getDB()
+      const targetCols = await db
+        .select({
+          colId: columns.id,
+          boardId: columns.boardId,
+          ownerId: dashboards.ownerId,
+        })
+        .from(columns)
+        .innerJoin(dashboards, eq(columns.boardId, dashboards.id))
+        .where(
+          and(
+            isNull(columns.deletedAt),
+            isNull(dashboards.deletedAt),
+            sql`lower(trim(${columns.title})) in ('process', 'analise')`
+          )
+        )
+
+      if (targetCols.length === 0) return
+
+      const colIds = targetCols.map((c) => c.colId)
+      const ownerByBoard = new Map<string, string>()
+      for (const c of targetCols) {
+        if (c.ownerId) ownerByBoard.set(c.boardId, c.ownerId)
+      }
+
+      const pendingCards = await db
+        .select()
+        .from(cards)
+        .where(and(inArray(cards.columnId, colIds), isNull(cards.deletedAt)))
+
+      for (const card of pendingCards) {
+        if (activeCardJobs.has(card.id)) continue
+        if (/process as job-id:/i.test(card.body)) continue
+        const agent = detectAgentFromCard(card.tags, card.body)
+        if (!agent) continue
+        const userId = ownerByBoard.get(card.boardId)
+        if (!userId) continue
+
+        void dispatchAgentJob({
+          userId,
+          boardId: card.boardId,
+          cardId: card.id,
+          title: card.title,
+          body: card.body,
+          agent,
+          storage,
+          log,
+        })
+      }
+    } catch (err) {
+      log.warn({ err }, "agents/poller: tick failed")
+    }
+  }
+
+  return setInterval(() => void tick(), 10_000)
 }
 
 /** Reports live status of CLI agents and dispatches JD analysis jobs. */
@@ -438,95 +661,16 @@ export function registerAgentRoutes(
       return reply.code(403).send({ error: "Forbidden" })
     }
 
-    const db = getDB()
-    const boardCols = await db
-      .select({ id: columns.id, title: columns.title })
-      .from(columns)
-      .where(
-        and(eq(columns.boardId, payload.boardId), isNull(columns.deletedAt))
-      )
-
-    const docsColIds = boardCols
-      .filter((c) => c.title.trim().toLowerCase() === "docs")
-      .map((c) => c.id)
-
-    const cvs: Array<{ name: string; mime: string; contentBase64: string }> = []
-    if (docsColIds.length > 0 && storage) {
-      const docCards = await db
-        .select({ attachments: cards.attachments })
-        .from(cards)
-        .where(
-          and(
-            eq(cards.boardId, payload.boardId),
-            inArray(cards.columnId, docsColIds),
-            isNull(cards.deletedAt)
-          )
-        )
-
-      for (const docCard of docCards) {
-        for (const att of docCard.attachments ?? []) {
-          try {
-            const fetched = await storage.fetch(att.key)
-            cvs.push({
-              name: att.name,
-              mime: att.mime,
-              contentBase64: await streamToBase64(fetched.body),
-            })
-          } catch (err) {
-            req.log.warn(
-              { err, key: att.key },
-              "agents/run: failed to fetch CV attachment"
-            )
-          }
-        }
-      }
-    }
-
-    try {
-      req.log.info(
-        {
-          runnerUrl: env.agentRunnerUrl,
-          agent: payload.agent,
-          cardId: payload.cardId,
-          cvCount: cvs.length,
-          cvNames: cvs.map((c) => c.name),
-        },
-        "agents/run: dispatching job to agent-runner"
-      )
-      const runnerRes = await fetch(`${env.agentRunnerUrl}/run`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          agent: payload.agent,
-          boardId: payload.boardId,
-          cardId: payload.cardId,
-          title: payload.title ?? "",
-          body: payload.body ?? "",
-          cvs,
-        }),
-        signal: AbortSignal.timeout(5000),
-      })
-      const result = (await runnerRes.json()) as Record<string, unknown>
-      req.log.info(
-        { status: runnerRes.status, result },
-        "agents/run: agent-runner responded"
-      )
-      if (runnerRes.ok && result.jobId != null) {
-        void watchAndApplyJobResult({
-          userId: req.userId,
-          boardId: payload.boardId,
-          cardId: payload.cardId,
-          jobId: String(result.jobId),
-          log: req.log,
-        })
-      }
-      return reply.code(runnerRes.status).send(result)
-    } catch (err) {
-      req.log.error({ err }, "agents/run: failed to reach agent-runner")
-      return reply.code(502).send({
-        error:
-          err instanceof Error ? err.message : "agent-runner unreachable",
-      })
-    }
+    const res = await dispatchAgentJob({
+      userId: req.userId,
+      boardId: payload.boardId,
+      cardId: payload.cardId,
+      title: payload.title ?? "",
+      body: payload.body ?? "",
+      agent: payload.agent,
+      storage,
+      log: req.log,
+    })
+    return reply.code(res.status).send(res.body)
   })
 }
