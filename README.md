@@ -2,6 +2,8 @@
 
 A self-hosted Kanban job-application board with automated CLI agent JD analysis (`agy` and `claude`), live host agent monitoring, and MCP integration.
 
+> Based on [romenkova/doska](https://github.com/romenkova/doska).
+
 ## Workflow
 
 The default board (`Default`) starts with five columns:
