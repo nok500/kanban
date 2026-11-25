@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
-import type { Column } from "@doska/contract"
+import type { Column } from "@kanban/contract"
 import { getDB } from "../src/db/get-db"
 import { columns } from "../src/db/schema"
 import { rpcClient, resetTables, startServer, type Harness } from "./harness"

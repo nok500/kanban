@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react"
 import { runtime } from "../runtime"
 import type { DashboardView } from "../types"
 
-const BOARD_VIEWS_KEY = "doska:board-views"
+const BOARD_VIEWS_KEY = "kanban:board-views"
 
 let views: Record<string, DashboardView> | null = null
 

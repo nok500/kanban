@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 import { PublicHeader } from "./public-header"
 
 interface IProps {

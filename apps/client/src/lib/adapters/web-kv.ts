@@ -1,4 +1,4 @@
-import type { KeyValue } from "@doska/ports"
+import type { KeyValue } from "@kanban/ports"
 
 /**
  * `localStorage` throws rather than no-ops when it is unavailable — Safari's

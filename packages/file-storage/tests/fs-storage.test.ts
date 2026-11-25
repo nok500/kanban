@@ -8,7 +8,7 @@ let dir: string
 let storage: FsServerStorage
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), "doska-files-"))
+  dir = await mkdtemp(join(tmpdir(), "kanban-files-"))
   storage = new FsServerStorage({ dir })
 })
 
@@ -101,7 +101,7 @@ describe("fsStorageFromEnv", () => {
     expect(fsStorageFromEnv({})).toBeInstanceOf(FsServerStorage)
   })
 
-  // The compose file mounts the doska-files volume at exactly this path. Change
+  // The compose file mounts the kanban-files volume at exactly this path. Change
   // one without the other and uploads land in the container's writable layer,
   // where they vanish on the next `docker compose pull`.
   test("defaults to the fixed path the compose volume mounts at", () => {

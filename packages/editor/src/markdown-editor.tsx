@@ -1,4 +1,4 @@
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 import type { ComponentType } from "react"
 import {
   toggleTaskByIndex,
@@ -7,7 +7,7 @@ import {
   type PrefixOption,
   type SlashCommand,
   type WikilinkOption,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import { Editor } from "./editor/editor"
 
 interface PreviewProps {

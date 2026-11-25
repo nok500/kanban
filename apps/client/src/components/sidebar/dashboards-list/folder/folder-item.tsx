@@ -1,6 +1,6 @@
-import { SidebarMenuButton, cn } from "@doska/ui-kit"
+import { SidebarMenuButton, cn } from "@kanban/ui-kit"
 import { Folder, FolderOpen } from "lucide-react"
-import type { SidebarFolderNode } from "@doska/core"
+import type { SidebarFolderNode } from "@kanban/core"
 import { useCardDrop } from "@/providers/card-drop/card-drop-context"
 import { FolderContextMenu } from "./folder-context-menu"
 import { FolderMenu } from "./folder-menu"

@@ -4,7 +4,7 @@ import type {
   DigestCard,
   DigestFilter,
   DigestGroup,
-} from "@doska/core"
+} from "@kanban/core"
 import { TagFilterPills } from "../deck/deck-header/tag-filter-pills"
 import { DigestBody } from "./digest-body"
 import { DigestHeader } from "./digest-header"

@@ -1,4 +1,4 @@
-import { Button, useIsMobile } from "@doska/ui-kit"
+import { Button, useIsMobile } from "@kanban/ui-kit"
 import { useState } from "react"
 import { getCardView, setCardView, type CardView } from "@/lib/card-view"
 import { SettingsSection } from "../section"

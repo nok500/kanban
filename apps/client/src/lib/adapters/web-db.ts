@@ -1,4 +1,4 @@
-import { IDB } from "@doska/client-db"
+import { IDB } from "@kanban/client-db"
 import {
   CARDS_BY_COLUMN,
   CARDS_BY_DEADLINE,
@@ -8,7 +8,7 @@ import {
   HISTORY_BY_ENTITY,
   META_STORE,
   STORES,
-} from "@doska/core"
+} from "@kanban/core"
 
 const DB_NAME = "deck"
 const VERSION = 16

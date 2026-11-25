@@ -1,4 +1,4 @@
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 import { Upload } from "lucide-react"
 import { useRef, useState, type ReactNode } from "react"
 import { useUploads } from "@/providers/attachment-upload/attachment-upload-context"

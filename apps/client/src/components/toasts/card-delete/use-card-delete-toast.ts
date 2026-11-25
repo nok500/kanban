@@ -1,4 +1,4 @@
-import { getCard, useRestore, keys } from "@doska/core"
+import { getCard, useRestore, keys } from "@kanban/core"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-hot-toast"
 import { createElement, useCallback } from "react"

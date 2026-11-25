@@ -1,4 +1,4 @@
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
 import { PublicLink } from "./public-link"
 import { ShareRoster } from "./share-roster"
 

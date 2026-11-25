@@ -1,4 +1,4 @@
-import { useRemoveMember, useBoardMembers, useConnection } from "@doska/core"
+import { useRemoveMember, useBoardMembers, useConnection } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
 import { AddMember } from "./add-member"
 import { MemberRow } from "./member-row"

@@ -4,7 +4,7 @@ import {
   type AttachmentSource,
   useConnection,
   type Connection,
-} from "@doska/core"
+} from "@kanban/core"
 
 type Status = Connection["status"]
 

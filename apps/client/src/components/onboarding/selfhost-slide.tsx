@@ -1,4 +1,4 @@
-import { Markdown } from "@doska/ui-kit"
+import { Markdown } from "@kanban/ui-kit"
 import { SyncSetup } from "../login/sync-setup"
 import selfhost from "./slides/selfhost.md?raw"
 

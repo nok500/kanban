@@ -1,17 +1,9 @@
-// The session rides in a cookie on web. The desktop webview has no usable
-// cookie jar, so the token the server echoes back on `set-auth-token` is kept
-// here and sent as a bearer from then on.
+// The session rides in a cookie, so there is no token to keep on the client.
 
-import type { Auth } from "@doska/ports"
-import { isDesktop } from "@/lib/platform"
-import { webKeyValue } from "./web-kv"
-
-const TOKEN_KEY = "deck:session-token"
+import type { Auth } from "@kanban/ports"
 
 export const webAuth: Auth = {
-  token: () => (isDesktop() ? webKeyValue.get(TOKEN_KEY) : null),
-  capture: (token) => {
-    if (isDesktop()) webKeyValue.set(TOKEN_KEY, token)
-  },
-  clear: () => webKeyValue.remove(TOKEN_KEY),
+  token: () => null,
+  capture: () => {},
+  clear: () => {},
 }

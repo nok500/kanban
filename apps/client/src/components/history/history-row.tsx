@@ -1,6 +1,6 @@
 import { Fragment } from "react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@doska/ui-kit"
-import { describeEntry, useBoardMembers, type HistoryEntry } from "@doska/core"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kanban/ui-kit"
+import { describeEntry, useBoardMembers, type HistoryEntry } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
 import { timeAgo } from "@/lib/time-ago"
 import { UserAvatar } from "../accounts/user-avatar"

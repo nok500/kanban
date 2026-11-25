@@ -1,4 +1,4 @@
-import { fallbackCard, useCard, useCardCol, useUpdateCard } from "@doska/core"
+import { fallbackCard, useCard, useCardCol, useUpdateCard } from "@kanban/core"
 import { CardMeta } from "./card-meta"
 
 interface IProps {

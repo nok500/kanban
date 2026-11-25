@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { KeyRange } from "@doska/ports"
+import type { KeyRange } from "@kanban/ports"
 import type { Runtime } from "../src/runtime"
 import { installRuntime } from "../src/runtime"
 import { CARDS, COLUMNS, DASHBOARDS, META_STORE } from "../src/api/constants"
@@ -104,7 +104,7 @@ describe("reconcileIdentity", () => {
 
   it("wipes records, cursors and dirty queues when a different user signs in", async () => {
     seedAccountA()
-    kvStore.set("doska:last-board", "board-a")
+    kvStore.set("kanban:last-board", "board-a")
 
     const { reconcileIdentity } = await import("../src/api/identity")
     expect(await reconcileIdentity("user-b")).toBe(true)
@@ -118,7 +118,7 @@ describe("reconcileIdentity", () => {
     // timestamps that lose LWW silently.
     expect(rows.get(`${META_STORE}/hlc:last`)).toBe(9_000)
     // The board Home would reopen was the previous account's.
-    expect(kvStore.has("doska:last-board")).toBe(false)
+    expect(kvStore.has("kanban:last-board")).toBe(false)
     expect(reset).toHaveBeenCalledOnce()
   })
 

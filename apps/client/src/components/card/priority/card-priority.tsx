@@ -6,7 +6,7 @@ import {
   PRIORITIES,
   PriorityChip,
   cn,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { Check, Flag } from "lucide-react"
 
 interface IProps {

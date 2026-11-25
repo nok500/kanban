@@ -1,10 +1,10 @@
-import { MenuItem } from "@doska/ui-kit"
+import { MenuItem } from "@kanban/ui-kit"
 import { CopyPlus, SquareText } from "lucide-react"
 import {
   useDuplicateDashboard,
   useDashboards,
   useSetDashboardTemplate,
-} from "@doska/core"
+} from "@kanban/core"
 import { useDashboardNav } from "@/lib/hooks/use-dashboard-nav"
 
 export function BoardTemplateItems({ boardId }: { boardId: string }) {

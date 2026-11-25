@@ -7,7 +7,7 @@ services:
     environment:
       # Defaults to the bundled Postgres below; override with your own managed
       # DATABASE_URL to skip it entirely.
-      DATABASE_URL: ${DATABASE_URL:-postgres://doska:${POSTGRES_PASSWORD:-doska}@db:5432/doska}
+      DATABASE_URL: ${DATABASE_URL:-postgres://kanban:${POSTGRES_PASSWORD:-kanban}@db:5432/kanban}
       # Auth credentials come from the env (see .env.selfhost.example).
       AUTH_LOGIN: ${AUTH_LOGIN:?set AUTH_LOGIN in .env}
       AUTH_PASSWORD: ${AUTH_PASSWORD:?set AUTH_PASSWORD in .env}
@@ -30,7 +30,7 @@ services:
       PORT: 3000
       NODE_ENV: production
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://doska.example.com}
+      BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://kanban.example.com}
       AGENT_MONITORS: ${AGENT_MONITORS:-VOODOO|http://192.168.8.229:4747/status,VERDUN|http://agent-probe:4747/status}
       AGENT_RUNNER_URL: ${AGENT_RUNNER_URL:-http://agent-runner:4850}
       # Card chat: llama.cpp instances as `Name|API URL[|UI URL]`, comma-separated.
@@ -38,11 +38,11 @@ services:
       # endpoints (full domains such as https://llama.example.com work there).
       LLAMA_ENDPOINTS: ${LLAMA_ENDPOINTS:-}
     volumes:
-      - doska-files:/data/files
+      - kanban-files:/data/files
     networks:
       default:
         aliases:
-          - doska-api
+          - kanban-api
     depends_on: { db: { condition: service_healthy } }
     healthcheck:
       test:
@@ -77,13 +77,13 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: doska
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-doska}
-      POSTGRES_DB: doska
+      POSTGRES_USER: kanban
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kanban}
+      POSTGRES_DB: kanban
     volumes:
-      - doska-pgdata:/var/lib/postgresql/data
+      - kanban-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U doska -d doska"]
+      test: ["CMD-SHELL", "pg_isready -U kanban -d kanban"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -93,18 +93,20 @@ services:
     image: ghcr.io/nok500/kanban-agent-runner:${DOCKER_IMAGE_TAG:-latest}
     pull_policy: always
     user: "${UID:-1000}:${GID:-1000}"
-    # pi's llama.cpp provider points at the host's localhost:8081; the runner
-    # relays its own localhost:8081 there (LOCALHOST_FORWARDS), so the pi config
-    # works unchanged inside the container.
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     environment:
       HOME: /home/jvnl
-      # `pi` agent tag: provider/model. Empty model: the provider's first one.
-      PI_PROVIDER: ${PI_PROVIDER:-llama.cpp}
+      # `pi` agent tag: OpenAI-compatible servers (llama.cpp, ...) tried in
+      # order; the first that answers runs the job. A JSON list or
+      # comma-separated; `host:port/v1|api-key` for a server with a key. These
+      # are called from inside the container: LAN IPs work as they are, and
+      # localhost is the container itself.
+      LOCAL_PROVIDERS: '${LOCAL_PROVIDERS:-}'
+      # Model to ask for. Empty: a model the server already has loaded, else its
+      # first chat model.
       PI_MODEL: ${PI_MODEL:-}
-      # Comma-separated `localPort:host:port` relays from the container's localhost.
-      LOCALHOST_FORWARDS: ${LOCALHOST_FORWARDS:-8081:host.docker.internal:8081}
+      # Without LOCAL_PROVIDERS, pi runs on its own config (~/.pi below) and
+      # PI_PROVIDER picks one of its providers.
+      PI_PROVIDER: ${PI_PROVIDER:-}
     volumes:
       - ${AGY_BIN}:/usr/local/bin/agy:ro
       - ${CLAUDE_BIN_USR_SHARE}:/usr/local/bin/claude:ro
@@ -129,7 +131,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  doska-pgdata:
-  doska-files:
+  kanban-pgdata:
+  kanban-files:
   caddy-data:
   caddy-config:

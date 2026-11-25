@@ -1,5 +1,5 @@
-import { Button, cn } from "@doska/ui-kit"
-import type { Dashboard, DigestFilter } from "@doska/core"
+import { Button, cn } from "@kanban/ui-kit"
+import type { Dashboard, DigestFilter } from "@kanban/core"
 import { PageHeader } from "../app/page-header"
 import { BoardFilter } from "./board-filter"
 

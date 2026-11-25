@@ -1,4 +1,4 @@
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 
 interface IProps {
   children: string

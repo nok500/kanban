@@ -5,7 +5,7 @@ import {
   ModalContentCentered,
   ModalDescription,
   ModalTitle,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { DoneColumnDemo } from "./done-column-demo"
 import { DoneColumnPicker } from "./done-column-picker"
 

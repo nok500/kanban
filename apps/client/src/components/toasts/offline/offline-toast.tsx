@@ -3,7 +3,7 @@ import {
   sync,
   useConnection,
   useOfflineAcknowledged,
-} from "@doska/core"
+} from "@kanban/core"
 import { toast } from "react-hot-toast"
 import { useEffect } from "react"
 import { OfflineToastContent } from "./offline-toast-content"

@@ -4,7 +4,7 @@ import {
   filterSlashCommands,
   matchSlashTrigger,
   type SlashCommand,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import { insertAt } from "./insert-at"
 
 /**

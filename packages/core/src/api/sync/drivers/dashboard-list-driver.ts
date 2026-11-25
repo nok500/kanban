@@ -1,5 +1,5 @@
-import type { DashboardChange } from "@doska/contract"
-import type { DirtyStore, PushInput, PushResult, SyncDriver } from "@doska/sync"
+import type { DashboardChange } from "@kanban/contract"
+import type { DirtyStore, PushInput, PushResult, SyncDriver } from "@kanban/sync"
 import { orpc } from "../orpc"
 import * as dashboards from "./dashboard-channel"
 import * as generic from "./channel-shared"

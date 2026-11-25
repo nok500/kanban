@@ -1,4 +1,4 @@
-import type { DashboardChange } from "@doska/contract"
+import type { DashboardChange } from "@kanban/contract"
 import {
   and,
   eq,

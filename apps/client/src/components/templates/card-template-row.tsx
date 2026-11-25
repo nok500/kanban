@@ -1,7 +1,7 @@
-import { Button, Card as CardBase } from "@doska/ui-kit"
+import { Button, Card as CardBase } from "@kanban/ui-kit"
 import { StickyNote, X } from "lucide-react"
 import { useLocation } from "wouter"
-import { useSetCardTemplate, type TemplateCard } from "@doska/core"
+import { useSetCardTemplate, type TemplateCard } from "@kanban/core"
 import { routes } from "@/lib/routes"
 
 export function CardTemplateRow({ entry }: { entry: TemplateCard }) {

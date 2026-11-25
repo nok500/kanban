@@ -1,6 +1,6 @@
-import { cardDisplayId } from "@doska/contract"
-import type { SearchHit, Segment } from "@doska/core"
-import { cn } from "@doska/ui-kit"
+import { cardDisplayId } from "@kanban/contract"
+import type { SearchHit, Segment } from "@kanban/core"
+import { cn } from "@kanban/ui-kit"
 import { useEffect, useRef } from "react"
 import { ColumnSwatch } from "../column/column-swatch"
 

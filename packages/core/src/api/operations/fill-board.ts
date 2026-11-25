@@ -1,4 +1,4 @@
-import { CARD_GROUPS } from "@doska/contract"
+import { CARD_GROUPS } from "@kanban/contract"
 import { BOARD_COLUMNS } from "../../seed"
 import type { Column } from "../../types"
 import { db } from "../db/db"

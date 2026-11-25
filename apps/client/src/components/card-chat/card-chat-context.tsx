@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react"
-import { fallbackCard, useCard } from "@doska/core"
+import { fallbackCard, useCard } from "@kanban/core"
 import { CardChatContext } from "@/lib/chat/card-chat-opener"
 import type { ChatFocus } from "@/lib/chat/use-card-chat"
 import { CardChatModal } from "./card-chat-modal"

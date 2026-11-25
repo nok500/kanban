@@ -1,7 +1,7 @@
 import type { Compartment } from "@codemirror/state"
 import type { EditorView } from "@codemirror/view"
 import { useEffect } from "react"
-import type { WikilinkOption } from "@doska/markdown"
+import type { WikilinkOption } from "@kanban/markdown"
 import { normalizeTarget, wikilinkTargets } from "../decorations"
 
 /** Tells the decorations which `[[targets]]` resolve, so broken ones can be marked. */

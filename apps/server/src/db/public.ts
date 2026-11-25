@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto"
-import type { PublicBoard } from "@doska/contract"
+import type { PublicBoard } from "@kanban/contract"
 import { and, eq, isNotNull, isNull, or, sql } from "drizzle-orm"
 import { user } from "./auth-schema"
 import { db } from "./client"

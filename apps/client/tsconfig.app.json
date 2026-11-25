@@ -1,5 +1,5 @@
 {
-  "extends": "@doska/configs/tsconfig/vite.json",
+  "extends": "@kanban/configs/tsconfig/vite.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "paths": {

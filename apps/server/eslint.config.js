@@ -1,3 +1,3 @@
-import base from "@doska/configs/eslint/base"
+import base from "@kanban/configs/eslint/base"
 
 export default base

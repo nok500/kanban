@@ -1,4 +1,4 @@
-import type { BlockInfo } from "@doska/markdown"
+import type { BlockInfo } from "@kanban/markdown"
 import type { ChatFocus } from "./use-card-chat"
 
 /** The agent's own bookkeeping line, not something to chat about. */

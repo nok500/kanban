@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
-import type { Card } from "@doska/contract"
+import type { Card } from "@kanban/contract"
 import { getDB } from "../src/db/get-db"
 import { cards } from "../src/db/schema"
 import {

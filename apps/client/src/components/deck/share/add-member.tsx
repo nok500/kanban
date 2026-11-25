@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { UserPlus } from "lucide-react"
-import { Button, Input } from "@doska/ui-kit"
-import { useAddMember, useActiveUsers, type Member } from "@doska/core"
+import { Button, Input } from "@kanban/ui-kit"
+import { useAddMember, useActiveUsers, type Member } from "@kanban/core"
 
 interface IProps {
   boardId: string

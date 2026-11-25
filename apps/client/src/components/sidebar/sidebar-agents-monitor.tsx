@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
-import { apiUrl, appFetch } from "@doska/core"
-import { SidebarGroup, cn } from "@doska/ui-kit"
+import { apiUrl, appFetch } from "@kanban/core"
+import { SidebarGroup, cn } from "@kanban/ui-kit"
 import { FiRefreshCw } from "react-icons/fi"
 import { useAuth } from "@/lib/hooks"
 import { useAgentJobs, type AgentJobInfo } from "@/lib/hooks/use-agent-jobs"

@@ -3,8 +3,8 @@ import {
   matchWikilinkTrigger,
   toWikilink,
   type WikilinkOption,
-} from "@doska/markdown"
-import { rankBy } from "@doska/core"
+} from "@kanban/markdown"
+import { rankBy } from "@kanban/core"
 import { insertAt } from "./insert-at"
 
 /**

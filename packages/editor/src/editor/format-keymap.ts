@@ -4,7 +4,7 @@ import {
   type StateCommand,
 } from "@codemirror/state"
 import { keymap } from "@codemirror/view"
-import { toggleTaskLine } from "@doska/markdown"
+import { toggleTaskLine } from "@kanban/markdown"
 
 /** Wraps each selection in `marker`, or unwraps it if already wrapped. */
 function toggleMark(marker: string): StateCommand {

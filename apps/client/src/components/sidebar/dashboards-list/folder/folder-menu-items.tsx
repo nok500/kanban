@@ -1,4 +1,4 @@
-import { MenuContent, MenuItem } from "@doska/ui-kit"
+import { MenuContent, MenuItem } from "@kanban/ui-kit"
 import { FolderPlus, Pencil, Plus, Trash2 } from "lucide-react"
 
 export interface FolderActions {

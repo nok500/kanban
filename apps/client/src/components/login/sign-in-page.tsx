@@ -1,9 +1,7 @@
-import { Button, Input } from "@doska/ui-kit"
+import { Button, Input } from "@kanban/ui-kit"
 import { useMemo, useState } from "react"
 import { useSearch } from "wouter"
-import { authClient, apiUrl, markSignedIn } from "@doska/core"
-import { useAuth } from "@/lib/hooks"
-import { DesktopHandoff } from "./desktop-handoff"
+import { authClient, apiUrl, markSignedIn } from "@kanban/core"
 import { SsoButtons } from "./sso-buttons"
 
 /**
@@ -13,13 +11,9 @@ import { SsoButtons } from "./sso-buttons"
  * with the original query string. Signing in resumes it: we replay the request
  * against the authorize endpoint, which now sees a session and redirects on to
  * the MCP client.
- *
- * The desktop app sends its person here too, with `?desktop=<id>`: once there
- * is a session, by any means, it is handed over and the tab is done.
  */
 export function SignInPage() {
   const search = useSearch()
-  const { authed } = useAuth()
   const [login, setLogin] = useState("")
   const [password, setPassword] = useState("")
   const [pending, setPending] = useState(false)
@@ -27,21 +21,13 @@ export function SignInPage() {
 
   const params = new URLSearchParams(search)
   const pendingOAuth = params.has("client_id")
-  const desktopId = params.get("desktop")
   const ssoError = params.get("error")
 
   const done = useMemo(
     () =>
-      desktopId
-        ? `/sign-in?desktop=${desktopId}`
-        : pendingOAuth
-          ? `${apiUrl("/api/auth/mcp/authorize")}?${search}`
-          : "/",
-    [desktopId, pendingOAuth, search]
+      pendingOAuth ? `${apiUrl("/api/auth/mcp/authorize")}?${search}` : "/",
+    [pendingOAuth, search]
   )
-
-  if (desktopId && authed) return <DesktopHandoff id={desktopId} />
-  if (desktopId && authed === null) return null
 
   async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -85,11 +71,9 @@ export function SignInPage() {
         <div className="flex flex-col gap-1">
           <h1 className="text-lg font-medium">Sign in</h1>
           <p className="text-sm text-muted-foreground">
-            {desktopId
-              ? "The desktop app is asking you to sign in."
-              : pendingOAuth
-                ? "An app is asking to connect to your boards."
-                : "Sign in to sync your boards."}
+            {pendingOAuth
+              ? "An app is asking to connect to your boards."
+              : "Sign in to sync your boards."}
           </p>
         </div>
 

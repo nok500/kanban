@@ -1,7 +1,7 @@
 import type { DroppableProvidedProps } from "@hello-pangea/dnd"
 import { createElement, type ReactNode, type Ref } from "react"
 import { toast } from "react-hot-toast"
-import { COLUMN_COLORS, Button, cn } from "@doska/ui-kit"
+import { COLUMN_COLORS, Button, cn } from "@kanban/ui-kit"
 import {
   Check,
   FoldVertical,
@@ -10,7 +10,7 @@ import {
   UnfoldVertical,
 } from "lucide-react"
 import { ColumnSwatch } from "./column-swatch"
-import type { Card } from "@doska/core"
+import type { Card } from "@kanban/core"
 import { CardTemplatePicker } from "../templates/card-template-picker"
 import { ColumnTitle } from "./column-title"
 import { AddCardBlockedToast } from "@/components/toasts/add-card-blocked/add-card-blocked-toast"

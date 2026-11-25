@@ -8,7 +8,7 @@ import {
   filterByUsers,
   keyBetween,
   sortCards,
-} from "@doska/core"
+} from "@kanban/core"
 
 /**
  * Builds the drop handler for the board: translates a drag result into the

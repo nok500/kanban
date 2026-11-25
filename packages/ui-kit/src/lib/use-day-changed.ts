@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react"
-import { todayIso } from "@doska/utils"
+import { todayIso } from "@kanban/utils"
 
 function subscribe(onChange: () => void) {
   const id = setInterval(onChange, 60_000)

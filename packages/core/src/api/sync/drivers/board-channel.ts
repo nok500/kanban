@@ -2,9 +2,9 @@ import {
   CARD_FIELD_GROUP,
   COLUMN_FIELD_GROUP,
   type Change,
-} from "@doska/contract"
-import { mergeRecord } from "@doska/merge"
-import type { DirtyStore } from "@doska/sync"
+} from "@kanban/contract"
+import { mergeRecord } from "@kanban/merge"
+import type { DirtyStore } from "@kanban/sync"
 import type { Card, Column, Dashboard } from "../../../types"
 import { keys } from "../../../data/keys"
 import { queryClient } from "../../../query-client"

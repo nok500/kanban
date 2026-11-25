@@ -5,7 +5,7 @@ import {
   useRestore,
   useDashboards,
   useTrash,
-} from "@doska/core"
+} from "@kanban/core"
 import { Trash } from "./trash"
 
 /**

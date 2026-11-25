@@ -1,5 +1,5 @@
-import { toggleTaskByIndex } from "@doska/markdown"
-import { Markdown } from "@doska/ui-kit"
+import { toggleTaskByIndex } from "@kanban/markdown"
+import { Markdown } from "@kanban/ui-kit"
 
 interface IProps {
   /** The card body already reduced to the visible portion (before the cut). */

@@ -1,4 +1,4 @@
-import { Button, cn } from "@doska/ui-kit"
+import { Button, cn } from "@kanban/ui-kit"
 import { LoaderCircle, Paperclip } from "lucide-react"
 import { useRef } from "react"
 import { useUploads } from "@/providers/attachment-upload/attachment-upload-context"

@@ -1,5 +1,5 @@
-import { initials } from "@doska/core"
-import { Avatar, AvatarFallback, AvatarImage } from "@doska/ui-kit"
+import { initials } from "@kanban/core"
+import { Avatar, AvatarFallback, AvatarImage } from "@kanban/ui-kit"
 import { UserRound } from "lucide-react"
 import { useAvatarUrl } from "@/lib/hooks"
 

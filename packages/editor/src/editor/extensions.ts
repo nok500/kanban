@@ -13,7 +13,7 @@ import {
   type PrefixOption,
   type SlashCommand,
   type WikilinkOption,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import {
   completions,
   prefixCompletion,

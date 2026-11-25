@@ -1,5 +1,5 @@
 # API server. It runs TypeScript directly with tsx in production — the
-# @doska/contract workspace package is consumed as .ts source, so there is no
+# @kanban/contract workspace package is consumed as .ts source, so there is no
 # separate compile step. The build context is the monorepo root (see compose).
 FROM node:22-slim AS base
 RUN corepack enable
@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile --filter server...
 FROM base AS runtime
 ENV NODE_ENV=production
 # Bake the release version into the image so a prebuilt/published image (e.g.
-# ghcr.io/.../doska-server:0.3.2) self-describes its /api/version without the
+# ghcr.io/.../kanban-server:0.3.2) self-describes its /api/version without the
 # puller setting anything or having git. The publishing CI passes the tag:
 #   docker build --build-arg APP_VERSION=0.3.2 ...
 # A runtime APP_VERSION (compose `environment:`) still overrides this, and if

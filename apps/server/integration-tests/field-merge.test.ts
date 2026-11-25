@@ -5,7 +5,7 @@ import {
   type CardGroup,
   type Column,
   type ColumnGroup,
-} from "@doska/contract"
+} from "@kanban/contract"
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { rpcClient, resetTables, startServer, type Harness } from "./harness"
 

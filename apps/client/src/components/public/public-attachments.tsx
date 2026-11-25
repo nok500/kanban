@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type Attachment, publicAttachmentUrl } from "@doska/core"
+import { type Attachment, publicAttachmentUrl } from "@kanban/core"
 import { AttachmentList } from "../card/attachments/attachment-list"
 import { AttachmentViewer } from "../card/attachments/attachment-viewer"
 import { isRenderableImage } from "../card/attachments/renderable-image"

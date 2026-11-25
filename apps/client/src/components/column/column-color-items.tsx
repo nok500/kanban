@@ -1,4 +1,4 @@
-import { COLUMN_COLORS, MenuItem } from "@doska/ui-kit"
+import { COLUMN_COLORS, MenuItem } from "@kanban/ui-kit"
 import { Check } from "lucide-react"
 import { ColumnSwatch } from "./column-swatch"
 

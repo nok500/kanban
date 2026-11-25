@@ -1,11 +1,11 @@
-import { DEFAULT_SLASH_COMMANDS, toAttachmentSrc, cut } from "@doska/markdown"
+import { DEFAULT_SLASH_COMMANDS, toAttachmentSrc, cut } from "@kanban/markdown"
 import { useMemo } from "react"
 import {
   useCardRefOptions,
   useCard,
   useTagOptions,
   useMembersOptions,
-} from "@doska/core"
+} from "@kanban/core"
 import { useDeck } from "@/providers/deck/deck-context"
 import { useAuth } from "@/lib/hooks"
 import { imageSlashCommands } from "../card/attachments/image-slash-commands"
@@ -13,8 +13,8 @@ import { isRenderableImage } from "../card/attachments/renderable-image"
 import { useUploads } from "@/providers/attachment-upload/attachment-upload-context"
 import { CardMarkdown } from "../card/card-markdown"
 import { ChatBlockDecorations } from "../card-chat/chat-block-decorations"
-import { cn, Markdown } from "@doska/ui-kit"
-import { MarkdownEditor } from "@doska/editor"
+import { cn, Markdown } from "@kanban/ui-kit"
+import { MarkdownEditor } from "@kanban/editor"
 
 const PREVIEW_MARKERS = [cut]
 

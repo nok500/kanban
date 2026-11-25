@@ -1,4 +1,4 @@
-import { MenuContent, MenuItem } from "@doska/ui-kit"
+import { MenuContent, MenuItem } from "@kanban/ui-kit"
 import { CopyPlus, Trash2 } from "lucide-react"
 
 export interface BoardActions {

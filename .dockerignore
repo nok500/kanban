@@ -11,8 +11,6 @@
 **/playwright-report
 **/playwright/.cache
 **/*.tsbuildinfo
-**/src-tauri/target
-**/src-tauri/gen
 backups
 **/.DS_Store
 .claude

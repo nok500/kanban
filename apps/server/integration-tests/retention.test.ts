@@ -1,4 +1,4 @@
-import { RETENTION_MS } from "@doska/contract"
+import { RETENTION_MS } from "@kanban/contract"
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { getDB } from "../src/db/get-db"
 import { cards, columns, dashboards, history } from "../src/db/schema"

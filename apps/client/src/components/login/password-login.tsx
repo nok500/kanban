@@ -1,6 +1,6 @@
-import { Button, Input } from "@doska/ui-kit"
+import { Button, Input } from "@kanban/ui-kit"
 import { useState } from "react"
-import { useLogin } from "@doska/core"
+import { useLogin } from "@kanban/core"
 import { SsoButtons } from "./sso-buttons"
 
 interface IProps {

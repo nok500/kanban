@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useRestore, popUndo } from "@doska/core"
+import { useRestore, popUndo } from "@kanban/core"
 
 /** Text fields own their own undo history; ⌘Z there must not reach the board. */
 function isEditing(target: EventTarget | null): boolean {

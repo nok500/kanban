@@ -7,7 +7,6 @@ import {
   type ReactNode,
 } from "react"
 import { CardRevealCtx } from "./card-reveal-context"
-import { useRevealFromWindow } from "./use-reveal-from-window"
 
 /** How long the highlight stays on: a flash, not a mode. */
 const FLASH_MS = 1200
@@ -46,8 +45,6 @@ export function CardRevealProvider({ children }: { children: ReactNode }) {
         })
     }, PANEL_SETTLE_MS)
   }, [])
-
-  useRevealFromWindow(reveal)
 
   // Memoised: board cards read it, and they are memoised on their props.
   const value = useMemo(() => ({ revealed, reveal }), [revealed, reveal])

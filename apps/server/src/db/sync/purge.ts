@@ -1,4 +1,4 @@
-import { RETENTION_MS } from "@doska/contract"
+import { RETENTION_MS } from "@kanban/contract"
 import { and, inArray, isNotNull, lt } from "drizzle-orm"
 import type { PgColumn } from "drizzle-orm/pg-core"
 import { db } from "../client"

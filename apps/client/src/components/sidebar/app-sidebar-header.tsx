@@ -1,4 +1,4 @@
-import { cn, SidebarHeader, SidebarMenu, SidebarMenuItem } from "@doska/ui-kit"
+import { cn, SidebarHeader, SidebarMenu, SidebarMenuItem } from "@kanban/ui-kit"
 import { Link } from "wouter"
 
 export function AppSidebarHeader() {

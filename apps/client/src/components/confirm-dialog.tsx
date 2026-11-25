@@ -5,7 +5,7 @@ import {
   ModalContentCentered,
   ModalDescription,
   ModalTitle,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 
 interface IProps {
   open: boolean

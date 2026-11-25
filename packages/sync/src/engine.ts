@@ -1,4 +1,4 @@
-import type { KeyValue } from "@doska/ports"
+import type { KeyValue } from "@kanban/ports"
 import { DirtyStore } from "./dirty"
 import type { PushResult, SyncDriver } from "./driver"
 

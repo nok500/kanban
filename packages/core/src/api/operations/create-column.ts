@@ -1,4 +1,4 @@
-import { COLUMN_GROUPS } from "@doska/contract"
+import { COLUMN_GROUPS } from "@kanban/contract"
 import { generateKeyBetween } from "fractional-indexing"
 import { db } from "../db/db"
 import { recordHistory } from "../history/record-history"

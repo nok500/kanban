@@ -7,7 +7,7 @@ import {
   isUnauthorized,
   reportError,
   setErrorReporter,
-} from "@doska/core"
+} from "@kanban/core"
 import { ErrorToast } from "@/components/toasts/error/error-toast"
 
 // One id for every failure

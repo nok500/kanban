@@ -1,4 +1,4 @@
-import type { DashboardChange } from "@doska/contract"
+import type { DashboardChange } from "@kanban/contract"
 import { eq } from "drizzle-orm"
 import { type Tx } from "../core/counter"
 import { dashboards, sidebarLayouts } from "../../schema"

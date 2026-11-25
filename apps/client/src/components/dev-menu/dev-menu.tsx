@@ -8,7 +8,7 @@ import {
   MenuSub,
   MenuSubTrigger,
   MenuTrigger,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { Check, Wrench } from "lucide-react"
 import { webKeyValue } from "@/lib/adapters/web-kv"
 import { ASKED_KEY } from "@/lib/persist"

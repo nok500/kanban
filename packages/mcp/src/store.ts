@@ -4,7 +4,7 @@ import type {
   DashboardChange,
   Member,
   SidebarLayout,
-} from "@doska/contract"
+} from "@kanban/contract"
 
 /**
  * The board, as the MCP tools need it — the sync protocol and nothing else:

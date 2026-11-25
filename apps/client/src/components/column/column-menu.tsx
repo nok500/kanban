@@ -5,7 +5,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuTrigger,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { CircleCheck, MoreHorizontal, Trash2 } from "lucide-react"
 import { ColumnColorSubmenu } from "./column-color"
 

@@ -1,4 +1,4 @@
-import type { DirtyStore, PushInput, PushResult, SyncDriver } from "@doska/sync"
+import type { DirtyStore, PushInput, PushResult, SyncDriver } from "@kanban/sync"
 import { keys } from "../../../data/keys"
 import { queryClient } from "../../../query-client"
 import { runtime } from "../../../runtime"

@@ -1,5 +1,5 @@
 {
-  "name": "@doska/utils",
+  "name": "@kanban/utils",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/node": "^22",
     "eslint": "^10.11.0",
     "typescript": "~6"

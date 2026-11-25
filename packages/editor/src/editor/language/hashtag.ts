@@ -1,4 +1,4 @@
-import { PREFIXED_NAME } from "@doska/markdown"
+import { PREFIXED_NAME } from "@kanban/markdown"
 import { Tag } from "@lezer/highlight"
 import type { MarkdownExtension } from "@lezer/markdown"
 

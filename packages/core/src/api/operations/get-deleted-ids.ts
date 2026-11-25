@@ -8,8 +8,8 @@ export interface DeletedIds {
 }
 
 /**
- * Ids the board deleted, live ones excluded. The vault needs the difference
- * between a record this board threw away and one it has simply never seen.
+ * Ids the board deleted, live ones excluded: the difference between a record
+ * this board threw away and one it has simply never seen.
  */
 export async function getDeletedIds(deckId: string): Promise<DeletedIds> {
   const mine = (await db.getColumns()).filter((c) => c.dashboardId === deckId)

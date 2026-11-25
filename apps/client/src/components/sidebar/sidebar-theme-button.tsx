@@ -1,4 +1,4 @@
-import { SidebarMenuButton, SidebarMenuItem } from "@doska/ui-kit"
+import { SidebarMenuButton, SidebarMenuItem } from "@kanban/ui-kit"
 import { useTheme } from "@/providers/theme/theme-context"
 import { THEME_ICON, themeLabel } from "@/lib/theme-display"
 

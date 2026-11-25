@@ -1,5 +1,5 @@
 {
-  "name": "@doska/core",
+  "name": "@kanban/core",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -13,14 +13,14 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@doska/contract": "workspace:*",
-    "@doska/file-storage": "workspace:*",
-    "@doska/markdown": "workspace:*",
-    "@doska/merge": "workspace:*",
-    "@doska/ports": "workspace:*",
-    "@doska/sync": "workspace:*",
-    "@doska/tokens": "workspace:*",
-    "@doska/utils": "workspace:*",
+    "@kanban/contract": "workspace:*",
+    "@kanban/file-storage": "workspace:*",
+    "@kanban/markdown": "workspace:*",
+    "@kanban/merge": "workspace:*",
+    "@kanban/ports": "workspace:*",
+    "@kanban/sync": "workspace:*",
+    "@kanban/tokens": "workspace:*",
+    "@kanban/utils": "workspace:*",
     "@orpc/client": "^1.15.4",
     "@orpc/contract": "^1.15.4",
     "@tanstack/react-query": "5.104.0",
@@ -32,7 +32,7 @@
     "react": "^19"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/node": "^22",
     "@types/react": "~19.2.18",
     "eslint": "^10.11.0",

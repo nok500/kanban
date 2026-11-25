@@ -1,1 +1,1 @@
-export { default } from "@doska/configs/prettier"
+export { default } from "@kanban/configs/prettier"

@@ -16,11 +16,11 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@doska/contract": "workspace:*",
-    "@doska/file-storage": "workspace:*",
-    "@doska/mcp": "workspace:*",
-    "@doska/merge": "workspace:*",
-    "@doska/sync": "workspace:*",
+    "@kanban/contract": "workspace:*",
+    "@kanban/file-storage": "workspace:*",
+    "@kanban/mcp": "workspace:*",
+    "@kanban/merge": "workspace:*",
+    "@kanban/sync": "workspace:*",
     "@electric-sql/pglite": "^0.5.8",
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@orpc/server": "^1.15.4",
@@ -31,7 +31,7 @@
     "unpdf": "^2.2.2"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@electric-sql/pglite-socket": "^0.2.11",
     "@orpc/client": "^1.15.4",
     "@orpc/contract": "^1.15.4",

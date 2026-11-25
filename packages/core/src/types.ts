@@ -1,4 +1,4 @@
-import type { Card, Column } from "@doska/contract"
+import type { Card, Column } from "@kanban/contract"
 
 export type {
   Attachment,
@@ -9,7 +9,7 @@ export type {
   Member,
   SidebarItem,
   SidebarLayout,
-} from "@doska/contract"
+} from "@kanban/contract"
 
 /** A board assembled for the UI: its columns and the cards that live in them. */
 export type Board = {

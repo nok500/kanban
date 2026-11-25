@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { DiffLine } from "@doska/merge"
+import type { DiffLine } from "@kanban/merge"
 import { diffHunks } from "./diff-hunks"
 
 const same = (text: string): DiffLine => ({ kind: "same", text })

@@ -1,5 +1,5 @@
-import { Button, cn } from "@doska/ui-kit"
-import { useSetAccountActive, type Account } from "@doska/core"
+import { Button, cn } from "@kanban/ui-kit"
+import { useSetAccountActive, type Account } from "@kanban/core"
 import { useState } from "react"
 import { AccountTag } from "./account-tag"
 import { UserAvatar } from "./user-avatar"

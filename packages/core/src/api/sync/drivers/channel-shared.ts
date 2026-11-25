@@ -2,8 +2,8 @@ import {
   RETENTION_MS,
   type Change,
   type DashboardChange,
-} from "@doska/contract"
-import type { DirtyStore } from "@doska/sync"
+} from "@kanban/contract"
+import type { DirtyStore } from "@kanban/sync"
 import { runtime } from "../../../runtime"
 import { META_STORE, type StoreName } from "../../constants"
 import { db } from "../../db/db"

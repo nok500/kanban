@@ -1,4 +1,4 @@
-import { contract, type MemberRole } from "@doska/contract"
+import { contract, type MemberRole } from "@kanban/contract"
 import { implement, ORPCError } from "@orpc/server"
 import {
   assertAdmin,

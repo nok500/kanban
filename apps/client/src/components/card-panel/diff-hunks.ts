@@ -1,4 +1,4 @@
-import type { DiffLine } from "@doska/merge"
+import type { DiffLine } from "@kanban/merge"
 
 export type DiffRow = DiffLine | { kind: "gap" }
 

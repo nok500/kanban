@@ -6,8 +6,8 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:8080"
 /**
  * Runs the `@container`-tagged specs against an already-running self-host stack
  *
- *   docker compose -f docker-compose.selfhost.yml up -d --wait
- *   pnpm --filter @doska/e2e e2e:container
+ *   docker compose -f docker-compose.yml up -d --wait
+ *   pnpm --filter @kanban/e2e e2e:container
  */
 export default defineConfig({
   testDir: "./e2e",

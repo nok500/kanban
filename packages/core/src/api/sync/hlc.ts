@@ -1,4 +1,4 @@
-import { HybridClock } from "@doska/sync"
+import { HybridClock } from "@kanban/sync"
 import { runtime } from "../../runtime"
 import { META_STORE } from "../constants"
 

@@ -1,4 +1,4 @@
-import { RETENTION_MS } from "@doska/contract"
+import { RETENTION_MS } from "@kanban/contract"
 import { eq } from "drizzle-orm"
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { auth } from "../src/auth"

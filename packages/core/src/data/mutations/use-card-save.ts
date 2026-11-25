@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef } from "react"
 import { runtime } from "../../runtime"
 import { useSaveCard, type CardPatch } from "./card"
 
-/** The card edited most recently, in any window; the desktop popup continues it. */
-export const LAST_CARD_KEY = "doska:last-card"
+/** The card edited most recently; the panel reopens it on wide screens. */
+export const LAST_CARD_KEY = "kanban:last-card"
 
 /** Long enough to coalesce a burst of typing, short enough to read as live. */
 const SAVE_DELAY = 500

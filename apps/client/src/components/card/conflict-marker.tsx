@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@doska/ui-kit"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kanban/ui-kit"
 import { TriangleAlert } from "lucide-react"
 
 export function ConflictMarker() {

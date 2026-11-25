@@ -4,7 +4,7 @@ import {
   type Locator,
   type Page,
 } from "@playwright/test"
-import type { Change } from "@doska/contract"
+import type { Change } from "@kanban/contract"
 import { newerThan, sync, waitForChange } from "./rpc"
 import { column } from "./column"
 import { menu } from "./menu"

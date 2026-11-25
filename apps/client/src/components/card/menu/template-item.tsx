@@ -1,6 +1,6 @@
-import { MenuItem } from "@doska/ui-kit"
+import { MenuItem } from "@kanban/ui-kit"
 import { SquareText } from "lucide-react"
-import { useCard, useSetCardTemplate } from "@doska/core"
+import { useCard, useSetCardTemplate } from "@kanban/core"
 
 export function TemplateItem({ cardId }: { cardId: string }) {
   const { data: card } = useCard(cardId)

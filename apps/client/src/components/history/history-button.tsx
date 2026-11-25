@@ -1,4 +1,4 @@
-import { SidebarMenuButton, SidebarMenuItem } from "@doska/ui-kit"
+import { SidebarMenuButton, SidebarMenuItem } from "@kanban/ui-kit"
 import { History } from "lucide-react"
 import { useState } from "react"
 import { HistoryFeedModal } from "./history-feed-modal"

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react"
 import { runtime } from "../runtime"
 
-const LAST_BOARD_KEY = "doska:last-board"
+const LAST_BOARD_KEY = "kanban:last-board"
 
 // Storage is the cross-session copy, not something to re-read every render.
 let selected: string | null = null

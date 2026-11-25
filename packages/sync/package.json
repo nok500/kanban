@@ -1,5 +1,5 @@
 {
-  "name": "@doska/sync",
+  "name": "@kanban/sync",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -7,10 +7,10 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@doska/ports": "workspace:*"
+    "@kanban/ports": "workspace:*"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/node": "^22",
     "typescript": "~6",
     "vitest": "^5.0.5"

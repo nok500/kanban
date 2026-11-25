@@ -1,4 +1,4 @@
-import type { Net } from "@doska/ports"
+import type { Net } from "@kanban/ports"
 
 export const webNet: Net = {
   online: () => navigator.onLine,

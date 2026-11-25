@@ -1,4 +1,4 @@
-import { SidebarInset, SidebarProvider, cn } from "@doska/ui-kit"
+import { SidebarInset, SidebarProvider, cn } from "@kanban/ui-kit"
 import type { ReactNode } from "react"
 import { AppSidebar } from "@/components"
 import { CardRevealProvider } from "@/providers/card-reveal/card-reveal-provider"

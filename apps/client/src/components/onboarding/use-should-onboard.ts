@@ -1,4 +1,4 @@
-import { useDashboards } from "@doska/core"
+import { useDashboards } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
 import { webKeyValue } from "@/lib/adapters/web-kv"
 import {

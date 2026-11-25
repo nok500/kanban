@@ -5,9 +5,9 @@ import {
   MenuSubTrigger,
   PRIORITIES,
   PriorityChip,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { Check, Flag } from "lucide-react"
-import type { Card, CardPatch } from "@doska/core"
+import type { Card, CardPatch } from "@kanban/core"
 
 /** The priority picker, for a card whose chip the board hides when unset. */
 export function PrioritySub({

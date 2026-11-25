@@ -1,4 +1,4 @@
-import { priorityRank } from "@doska/tokens"
+import { priorityRank } from "@kanban/tokens"
 import type { Card } from "../types"
 import { byPosition } from "./position"
 

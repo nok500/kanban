@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react"
-import { MarkdownRenderersProvider } from "@doska/markdown"
+import { MarkdownRenderersProvider } from "@kanban/markdown"
 import { CardAttachmentImage } from "./attachments/card-attachment-image"
 import { CardRefLink } from "./refs/card-ref-link"
 import { useDeck } from "@/providers/deck/deck-context"

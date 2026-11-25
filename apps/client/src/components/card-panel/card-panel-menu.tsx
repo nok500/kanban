@@ -6,17 +6,16 @@ import {
   MenuSeparator,
   MenuTrigger,
   type MenuActions,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import {
   History,
   LocateFixed,
   MoreHorizontal,
   Pencil,
-  PictureInPicture2,
   Trash2,
 } from "lucide-react"
 import { useRef, useState } from "react"
-import { fallbackCard, useCard, useUpdateCard } from "@doska/core"
+import { fallbackCard, useCard, useUpdateCard } from "@kanban/core"
 import { CopyIdItem } from "../card/menu/copy-id-item"
 import { DeadlineSub } from "../card/menu/deadline-sub"
 import { MoveToColumnSub } from "../card/menu/move-to-column-sub"
@@ -32,8 +31,6 @@ interface IProps {
   onEdit: () => void
   onReveal: () => void
   onDelete: () => void
-  /** Desktop only, and never inside a popout: it is already its own window. */
-  onPopOut?: () => void
 }
 
 /**
@@ -47,7 +44,6 @@ export function CardPanelMenu({
   onEdit,
   onReveal,
   onDelete,
-  onPopOut,
 }: IProps) {
   const actionsRef = useRef<MenuActions>(null)
   const [historyOpen, setHistoryOpen] = useState(false)
@@ -80,12 +76,6 @@ export function CardPanelMenu({
             <LocateFixed />
             Reveal on board
           </MenuItem>
-          {onPopOut && (
-            <MenuItem onClick={onPopOut}>
-              <PictureInPicture2 />
-              Open in new window
-            </MenuItem>
-          )}
           <MenuSeparator />
           <MoveToColumnSub cardId={cardId} />
           <MenuSeparator />

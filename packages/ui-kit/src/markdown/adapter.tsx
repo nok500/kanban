@@ -23,8 +23,8 @@ import { MdTableCell } from "./table-cell"
 import { MdTaskItem } from "./task-item"
 import { MdUser } from "./user"
 import { MdWikilink } from "./wikilink"
-import { toAttachmentSrc } from "@doska/markdown"
-import type { MarkdownAdapter, MarkdownRenderers } from "@doska/markdown"
+import { toAttachmentSrc } from "@kanban/markdown"
+import type { MarkdownAdapter, MarkdownRenderers } from "@kanban/markdown"
 
 export function createWebAdapter({
   renderImage,

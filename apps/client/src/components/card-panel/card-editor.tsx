@@ -1,4 +1,4 @@
-import { TitleEditor, cn, useIsMobile } from "@doska/ui-kit"
+import { TitleEditor, useIsMobile } from "@kanban/ui-kit"
 import { useState, type ReactNode } from "react"
 import { CardPaneLayout } from "./card-pane-layout"
 import { CardPanelHeader } from "./card-panel-header"
@@ -29,8 +29,6 @@ interface IProps {
   onClose: () => void
   onDelete?: () => void
   onReveal?: () => void
-  onPopOut?: () => void
-  inWindow?: boolean
 }
 
 /** Presentational card editor: renders the draft and reports edits upward. */
@@ -49,8 +47,6 @@ export function CardEditor({
   onClose,
   onDelete,
   onReveal,
-  onPopOut,
-  inWindow,
 }: IProps) {
   const [overlay, setOverlay] = useState<HTMLDivElement | null>(null)
   const isMobile = useIsMobile()
@@ -71,14 +67,12 @@ export function CardEditor({
               className="relative flex min-h-0 flex-1 flex-col"
             >
               <CardPaneLayout
-                inWindow={inWindow}
                 header={
                   withHeader && (
                     <CardPanelHeader
                       isPreview={isPreview}
                       onClose={onClose}
                       onTogglePreivew={onTogglePreview}
-                      inWindow={inWindow}
                       actions={
                         <>
                           <CardChatButton />
@@ -94,7 +88,6 @@ export function CardEditor({
                             onEdit={onEdit}
                             onReveal={onReveal}
                             onDelete={onDelete}
-                            onPopOut={onPopOut}
                           />
                         )
                       }
@@ -131,12 +124,7 @@ export function CardEditor({
                 }
               />
               {withHeader && !isMobile && (
-                <div
-                  className={cn(
-                    "absolute right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 rounded-md bg-card/80 backdrop-blur-xs in-[.no-blur]:bg-card",
-                    inWindow && "fixed"
-                  )}
-                >
+                <div className="absolute right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 rounded-md bg-card/80 backdrop-blur-xs">
                   <CardHelpButton />
                 </div>
               )}

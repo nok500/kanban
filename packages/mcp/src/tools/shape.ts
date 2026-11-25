@@ -1,5 +1,5 @@
-import { type Card, type Column, cardDisplayId } from "@doska/contract"
-import { taskProgress } from "@doska/markdown/core"
+import { type Card, type Column, cardDisplayId } from "@kanban/contract"
+import { taskProgress } from "@kanban/markdown/core"
 
 /**
  * How a card goes back to a client: the ids it can be addressed by, its

@@ -6,7 +6,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-COMPOSE="docker compose -f docker-compose.selfhost.yml -f .github/ci/selfhost.override.yml"
+COMPOSE="docker compose -f docker-compose.yml -f .github/ci/selfhost.override.yml"
 export COMPOSE
 
 ./.github/scripts/selfhost-require-images.sh
@@ -27,7 +27,7 @@ $COMPOSE down --volumes
 printf '\n== restoring ==\n'
 $COMPOSE up -d --wait db
 dump=$(ls -t backups/*.sql.gz | head -1)
-gunzip -c "$dump" | $COMPOSE exec -T db psql -U doska -d doska -v ON_ERROR_STOP=1 --quiet
+gunzip -c "$dump" | $COMPOSE exec -T db psql -U kanban -d kanban -v ON_ERROR_STOP=1 --quiet
 $COMPOSE up -d --wait
 ./.github/scripts/selfhost-data.sh verify
 

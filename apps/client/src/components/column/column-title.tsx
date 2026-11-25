@@ -1,4 +1,4 @@
-import { InvisibleInput } from "@doska/ui-kit"
+import { InvisibleInput } from "@kanban/ui-kit"
 
 interface IProps {
   title: string

@@ -41,42 +41,6 @@ importers:
 
   apps/client:
     dependencies:
-      '@doska/client-db':
-        specifier: workspace:*
-        version: link:../../packages/client-db
-      '@doska/contract':
-        specifier: workspace:*
-        version: link:../../packages/contract
-      '@doska/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@doska/editor':
-        specifier: workspace:*
-        version: link:../../packages/editor
-      '@doska/markdown':
-        specifier: workspace:*
-        version: link:../../packages/markdown
-      '@doska/mcp':
-        specifier: workspace:*
-        version: link:../../packages/mcp
-      '@doska/merge':
-        specifier: workspace:*
-        version: link:../../packages/merge
-      '@doska/ports':
-        specifier: workspace:*
-        version: link:../../packages/ports
-      '@doska/sync':
-        specifier: workspace:*
-        version: link:../../packages/sync
-      '@doska/tokens':
-        specifier: workspace:*
-        version: link:../../packages/tokens
-      '@doska/ui-kit':
-        specifier: workspace:*
-        version: link:../../packages/ui-kit
-      '@doska/vault':
-        specifier: workspace:*
-        version: link:../../packages/vault
       '@fontsource-variable/geist-mono':
         specifier: 5.3.0
         version: 5.3.0
@@ -86,33 +50,45 @@ importers:
       '@hello-pangea/dnd':
         specifier: 18.0.1
         version: 18.0.1(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.32.1
-        version: 1.32.2(supports-color@10.2.2)(zod@4.6.7)
+      '@kanban/client-db':
+        specifier: workspace:*
+        version: link:../../packages/client-db
+      '@kanban/contract':
+        specifier: workspace:*
+        version: link:../../packages/contract
+      '@kanban/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@kanban/editor':
+        specifier: workspace:*
+        version: link:../../packages/editor
+      '@kanban/folder-tree':
+        specifier: workspace:*
+        version: link:../../packages/folder-tree
+      '@kanban/markdown':
+        specifier: workspace:*
+        version: link:../../packages/markdown
+      '@kanban/merge':
+        specifier: workspace:*
+        version: link:../../packages/merge
+      '@kanban/ports':
+        specifier: workspace:*
+        version: link:../../packages/ports
+      '@kanban/sync':
+        specifier: workspace:*
+        version: link:../../packages/sync
+      '@kanban/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
+      '@kanban/ui-kit':
+        specifier: workspace:*
+        version: link:../../packages/ui-kit
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       '@tanstack/react-query':
         specifier: 5.104.0
         version: 5.104.0(react@19.2.3)
-      '@tauri-apps/api':
-        specifier: ^2.12.0
-        version: 2.12.4
-      '@tauri-apps/plugin-dialog':
-        specifier: ^2.8.0
-        version: 2.8.4
-      '@tauri-apps/plugin-fs':
-        specifier: ^2.6.0
-        version: 2.7.1
-      '@tauri-apps/plugin-http':
-        specifier: ^2.7.0
-        version: 2.8.3
-      '@tauri-apps/plugin-opener':
-        specifier: ^2.6.0
-        version: 2.7.2
-      '@tauri-apps/plugin-process':
-        specifier: ^2.4.0
-        version: 2.4.0
       fractional-indexing:
         specifier: ^3.2.0
         version: 3.4.0
@@ -128,9 +104,6 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
-      react-draggable-folders:
-        specifier: ^0.0.3
-        version: 0.0.3(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-hot-toast:
         specifier: ^2.6.1
         version: 2.6.1(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -153,7 +126,7 @@ importers:
         specifier: 3.11.1
         version: 3.11.1(react@19.2.3)
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@types/node':
@@ -193,93 +166,26 @@ importers:
         specifier: ^7.4.1
         version: 7.4.1
 
-  apps/landing:
-    dependencies:
-      '@doska/tokens':
-        specifier: workspace:*
-        version: link:../../packages/tokens
-      '@fontsource-variable/geist-mono':
-        specifier: 5.3.0
-        version: 5.3.0
-      '@fontsource-variable/mulish':
-        specifier: 5.3.0
-        version: 5.3.0
-    devDependencies:
-      '@doska/configs':
-        specifier: workspace:*
-        version: link:../../packages/configs
-      '@doska/ui-kit':
-        specifier: workspace:*
-        version: link:../../packages/ui-kit
-      '@tailwindcss/vite':
-        specifier: ^4.3.3
-        version: 4.3.3(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      '@types/node':
-        specifier: ^22
-        version: 22.20.5
-      '@types/react':
-        specifier: ~19.2.18
-        version: 19.2.18
-      '@types/react-dom':
-        specifier: ~19.2.5
-        version: 19.2.7(@types/react@19.2.18)
-      '@vitejs/plugin-react':
-        specifier: ^6.1.1
-        version: 6.1.2(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      bakemd:
-        specifier: ^0.2.4
-        version: 0.2.4(@types/node@22.20.5)(@types/react@19.2.18)(esbuild@0.28.2)(jiti@2.7.0)(supports-color@10.2.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
-      eslint:
-        specifier: ^10.11.0
-        version: 10.14.0(jiti@2.7.0)(supports-color@10.2.2)
-      lucide-react:
-        specifier: 1.48.0
-        version: 1.48.0(react@19.2.3)
-      prettier:
-        specifier: ^3.9.9
-        version: 3.9.10
-      prettier-plugin-tailwindcss:
-        specifier: ^0.8.1
-        version: 0.8.1(prettier@3.9.10)
-      react:
-        specifier: 19.2.3
-        version: 19.2.3
-      react-dom:
-        specifier: 19.2.3
-        version: 19.2.3(react@19.2.3)
-      react-icons:
-        specifier: ^5.7.0
-        version: 5.7.0(react@19.2.3)
-      tailwindcss:
-        specifier: ^4
-        version: 4.3.3
-      typescript:
-        specifier: ~6
-        version: 6.0.3
-      vite:
-        specifier: ^8.3.3
-        version: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
-
   apps/server:
     dependencies:
-      '@doska/contract':
-        specifier: workspace:*
-        version: link:../../packages/contract
-      '@doska/file-storage':
-        specifier: workspace:*
-        version: link:../../packages/file-storage
-      '@doska/mcp':
-        specifier: workspace:*
-        version: link:../../packages/mcp
-      '@doska/merge':
-        specifier: workspace:*
-        version: link:../../packages/merge
-      '@doska/sync':
-        specifier: workspace:*
-        version: link:../../packages/sync
       '@electric-sql/pglite':
         specifier: ^0.5.8
         version: 0.5.14
+      '@kanban/contract':
+        specifier: workspace:*
+        version: link:../../packages/contract
+      '@kanban/file-storage':
+        specifier: workspace:*
+        version: link:../../packages/file-storage
+      '@kanban/mcp':
+        specifier: workspace:*
+        version: link:../../packages/mcp
+      '@kanban/merge':
+        specifier: workspace:*
+        version: link:../../packages/merge
+      '@kanban/sync':
+        specifier: workspace:*
+        version: link:../../packages/sync
       '@modelcontextprotocol/sdk':
         specifier: ^1.32.1
         version: 1.32.2(supports-color@10.2.2)(zod@4.6.7)
@@ -302,12 +208,12 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2
     devDependencies:
-      '@doska/configs':
-        specifier: workspace:*
-        version: link:../../packages/configs
       '@electric-sql/pglite-socket':
         specifier: ^0.2.11
         version: 0.2.17(@electric-sql/pglite-age@0.0.15(@electric-sql/pglite@0.5.14))(@electric-sql/pglite-pg_hashids@0.0.15(@electric-sql/pglite@0.5.14))(@electric-sql/pglite-pg_ivm@0.0.15(@electric-sql/pglite@0.5.14))(@electric-sql/pglite-pg_textsearch@0.0.16(@electric-sql/pglite@0.5.14))(@electric-sql/pglite-pg_uuidv7@0.0.15(@electric-sql/pglite@0.5.14))(@electric-sql/pglite-pgtap@0.0.15(@electric-sql/pglite@0.5.14))(@electric-sql/pglite-pgvector@0.0.15(@electric-sql/pglite@0.5.14))(@electric-sql/pglite@0.5.14)
+      '@kanban/configs':
+        specifier: workspace:*
+        version: link:../../packages/configs
       '@orpc/client':
         specifier: ^1.15.4
         version: 1.16.1
@@ -344,7 +250,7 @@ importers:
 
   packages/client-db:
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       fake-indexeddb:
@@ -387,7 +293,7 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -399,28 +305,28 @@ importers:
 
   packages/core:
     dependencies:
-      '@doska/contract':
+      '@kanban/contract':
         specifier: workspace:*
         version: link:../contract
-      '@doska/file-storage':
+      '@kanban/file-storage':
         specifier: workspace:*
         version: link:../file-storage
-      '@doska/markdown':
+      '@kanban/markdown':
         specifier: workspace:*
         version: link:../markdown
-      '@doska/merge':
+      '@kanban/merge':
         specifier: workspace:*
         version: link:../merge
-      '@doska/ports':
+      '@kanban/ports':
         specifier: workspace:*
         version: link:../ports
-      '@doska/sync':
+      '@kanban/sync':
         specifier: workspace:*
         version: link:../sync
-      '@doska/tokens':
+      '@kanban/tokens':
         specifier: workspace:*
         version: link:../tokens
-      '@doska/utils':
+      '@kanban/utils':
         specifier: workspace:*
         version: link:../utils
       '@orpc/client':
@@ -442,7 +348,7 @@ importers:
         specifier: ^14.0.2
         version: 14.0.3
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -464,18 +370,12 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
-  packages/docs:
-    devDependencies:
-      bakemd:
-        specifier: ^0.2.4
-        version: 0.2.4(@types/node@22.20.5)(@types/react@19.2.18)(esbuild@0.28.2)(jiti@2.7.0)(supports-color@10.2.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
-
   packages/e2e:
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
-      '@doska/contract':
+      '@kanban/contract':
         specifier: workspace:*
         version: link:../contract
       '@playwright/test':
@@ -508,13 +408,13 @@ importers:
       '@codemirror/view':
         specifier: ^6.43.13
         version: 6.43.15
-      '@doska/core':
+      '@kanban/core':
         specifier: workspace:*
         version: link:../core
-      '@doska/markdown':
+      '@kanban/markdown':
         specifier: workspace:*
         version: link:../markdown
-      '@doska/ui-kit':
+      '@kanban/ui-kit':
         specifier: workspace:*
         version: link:../ui-kit
       '@lezer/highlight':
@@ -524,7 +424,7 @@ importers:
         specifier: ^1.7.2
         version: 1.8.1
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/react':
@@ -552,12 +452,43 @@ importers:
         specifier: ^3.1142.0
         version: 3.1161.0
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
         specifier: ^22
         version: 22.20.5
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/folder-tree:
+    dependencies:
+      '@hello-pangea/dnd':
+        specifier: 18.0.1
+        version: 18.0.1(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+    devDependencies:
+      '@kanban/configs':
+        specifier: workspace:*
+        version: link:../configs
+      '@types/react':
+        specifier: ~19.2.18
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ~19.2.5
+        version: 19.2.7(@types/react@19.2.18)
+      eslint:
+        specifier: ^10.11.0
+        version: 10.14.0(jiti@2.7.0)(supports-color@10.2.2)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      typescript:
+        specifier: ~6
+        version: 6.0.3
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
@@ -577,7 +508,7 @@ importers:
         specifier: ^11.0.5
         version: 11.0.5
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/mdast':
@@ -598,16 +529,16 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@doska/contract':
+      '@kanban/contract':
         specifier: workspace:*
         version: link:../contract
-      '@doska/markdown':
+      '@kanban/markdown':
         specifier: workspace:*
         version: link:../markdown
-      '@doska/tokens':
+      '@kanban/tokens':
         specifier: workspace:*
         version: link:../tokens
-      '@doska/utils':
+      '@kanban/utils':
         specifier: workspace:*
         version: link:../utils
       '@modelcontextprotocol/sdk':
@@ -620,7 +551,7 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -639,7 +570,7 @@ importers:
         specifier: ^8.0.4
         version: 8.0.4
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -657,14 +588,14 @@ importers:
 
   packages/ports:
     dependencies:
-      '@doska/client-db':
+      '@kanban/client-db':
         specifier: workspace:*
         version: link:../client-db
-      '@doska/file-storage':
+      '@kanban/file-storage':
         specifier: workspace:*
         version: link:../file-storage
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -676,11 +607,11 @@ importers:
 
   packages/sync:
     dependencies:
-      '@doska/ports':
+      '@kanban/ports':
         specifier: workspace:*
         version: link:../ports
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -695,7 +626,7 @@ importers:
 
   packages/tokens:
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -713,13 +644,13 @@ importers:
       '@base-ui/react':
         specifier: 1.8.0
         version: 1.8.0(@date-fns/tz@1.5.0)(@types/react@19.2.18)(date-fns@4.4.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@doska/markdown':
+      '@kanban/markdown':
         specifier: workspace:*
         version: link:../markdown
-      '@doska/tokens':
+      '@kanban/tokens':
         specifier: workspace:*
         version: link:../tokens
-      '@doska/utils':
+      '@kanban/utils':
         specifier: workspace:*
         version: link:../utils
       class-variance-authority:
@@ -744,7 +675,7 @@ importers:
         specifier: 3.7.0
         version: 3.7.0
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/react':
@@ -768,7 +699,7 @@ importers:
 
   packages/utils:
     devDependencies:
-      '@doska/configs':
+      '@kanban/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':
@@ -780,37 +711,6 @@ importers:
       typescript:
         specifier: ~6
         version: 6.0.3
-
-  packages/vault:
-    dependencies:
-      '@doska/contract':
-        specifier: workspace:*
-        version: link:../contract
-      yaml:
-        specifier: ^2.9.1
-        version: 2.9.1
-    devDependencies:
-      '@doska/configs':
-        specifier: workspace:*
-        version: link:../configs
-      '@doska/core':
-        specifier: workspace:*
-        version: link:../core
-      '@doska/ports':
-        specifier: workspace:*
-        version: link:../ports
-      '@types/node':
-        specifier: ^22
-        version: 22.20.5
-      eslint:
-        specifier: ^10.11.0
-        version: 10.14.0(jiti@2.7.0)(supports-color@10.2.2)
-      typescript:
-        specifier: ~6
-        version: 6.0.3
-      vitest:
-        specifier: ^5.0.5
-        version: 5.0.5(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
 packages:
 
@@ -2634,11 +2534,6 @@ packages:
     resolution: {integrity: sha512-krXjAikiaFSPaK/FkAQT5UTx3VormQaiZ5hBFlJZ9UFQGB/rwg1MZIhHAG9smMQRTdyJxP6Qt5MwMtdyU5FWrA==}
     engines: {node: '>= 20'}
 
-  '@tailwindcss/typography@0.5.20':
-    resolution: {integrity: sha512-hwbzQuNUfcPvbegQFatVPl/MY/tcM9KLl963hQ5laJKPh81TEZ1+dNG9PirGvcaDBkp+BCshExAyKVPW91dozw==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || >=4.0.0 || insiders'
-
   '@tailwindcss/vite@4.3.3':
     resolution: {integrity: sha512-yYU8cogLeSh/ms2jh8Fj7jaba/EWa7Ja6GoUqYZaraEuCI5YS6ms6ObZgjjedm+jm6XZjdNRWBpPP6Z86oOxcw==}
     peerDependencies:
@@ -2651,24 +2546,6 @@ packages:
     resolution: {integrity: sha512-e1TZmDCQnWIfiDVryIHeA6Idj+Lfx1hORLOhXS/l5wcgvtVD4yYqbTDl378sGQKIi2cSgb0TEMC9cKK8GGoJEw==}
     peerDependencies:
       react: 19.2.3
-
-  '@tauri-apps/api@2.12.4':
-    resolution: {integrity: sha512-pVmfis+4zT8H0Qhp3xPZx9Ju7kpzvA6rr/PSJPyuwfvucTQ8sVt61NYU9KMkK703UFlYadFmjKA4HhybOtN0gg==}
-
-  '@tauri-apps/plugin-dialog@2.8.4':
-    resolution: {integrity: sha512-+6ZOiXenOaxXwb8qCbBPdT2jX2cFPaVVHGIskrpmJLpmWj+qKRTD6X/z9x7hTdSQn7NedcoXCkWGej4a7dC4lw==}
-
-  '@tauri-apps/plugin-fs@2.7.1':
-    resolution: {integrity: sha512-4TBVjpi/q8PuNzjpkAc2iBGXMTLjOrAyfTiiOL8ORaJCZJRG3tjzmQ4sqs2CMG75FvLyRkOkERfP7AyY4iBNwQ==}
-
-  '@tauri-apps/plugin-http@2.8.3':
-    resolution: {integrity: sha512-MrgCnnxSnzxkMX+Tk1XXB8rSI9hfhUHQmtbn0EpflEDcSx04K1BDfrv51tcK27SCuU/B1j8sNHL0UZur/1iqKA==}
-
-  '@tauri-apps/plugin-opener@2.7.2':
-    resolution: {integrity: sha512-LyybP1VSzTMQiaFYcsbAse47KpivlyXdLZMQzGLEnkgQacGESnpjAfFoQ6h5sqWgAdZDH9szYjPzHMpv0Sz+TQ==}
-
-  '@tauri-apps/plugin-process@2.4.0':
-    resolution: {integrity: sha512-GddrmsSLAYrLa/yTXlXK/YRDzUgYeeOnUXTbiyvJWkmI424RmDPD3FVLeqcon7rv6O6ZfhBilcrHWnSo7o6hIQ==}
 
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     resolution: {integrity: sha512-/67zpWDBLV+oYAEL682s1ktXL0HgqX76f6gaVGkGnVZlBbm1zd0v4Bz8MFF2GGhoX9rvfq3KSQHubFHwa6w6/Q==}
@@ -2719,14 +2596,8 @@ packages:
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
 
-  '@types/estree-jsx@1.0.5':
-    resolution: {integrity: sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==}
-
   '@types/estree@1.0.10':
     resolution: {integrity: sha512-lTyOMnOcmRBzdCv6/4zUZCrEhV0xrqQiUZBZtVcbmLHBXKLnN8q89v/wKRF/Q0HbwVsqbIG3o5HDoFl9sduM+g==}
-
-  '@types/hast@3.0.5':
-    resolution: {integrity: sha512-rp/ezSWaD1m44dPKICGhiskI13nVr7qTloFwDa/IYkhhf5nzwP+zIQcIJh3WIFSBOy/H1PzB40jPjMDksN4F+g==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2756,9 +2627,6 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
-
-  '@types/unist@2.0.11':
-    resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -2827,9 +2695,6 @@ packages:
   '@typescript-eslint/visitor-keys@8.72.1':
     resolution: {integrity: sha512-SB8xqipSzZHUePCCLNeYxqnxq83X61/qzNhjQGbTfjxGZIeOEP7tBgWYX05Tcd6CgE02WdTJnh5b8kMZJ/+bnQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@ungap/structured-clone@1.4.0':
-    resolution: {integrity: sha512-1mEZtMKPM09vDmQt5y7YvmN2+DFTP7Tg0EWXdic8/C6VRnpb33e4ghisCIE3WZjsE2N8mf+QV1Zqh7ZFYLWInQ==}
 
   '@vitejs/plugin-react@6.1.2':
     resolution: {integrity: sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw==}
@@ -2979,11 +2844,6 @@ packages:
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
 
-  bakemd@0.2.4:
-    resolution: {integrity: sha512-URVxj0FpHo7ueTZPlYlutvhH/GJtFZniA68hDciQwKH8yCS/GoPaUbqYla9Ovg2YvBZqUKOb8Coflufn6VeEPw==}
-    engines: {node: '>=22'}
-    hasBin: true
-
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
@@ -3127,17 +2987,8 @@ packages:
     resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
-  character-entities-html4@2.1.0:
-    resolution: {integrity: sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==}
-
-  character-entities-legacy@3.0.0:
-    resolution: {integrity: sha512-RpPp0asT/6ufRm//AJVwpViZbGM/MkjQFxJccQRHmISF/22NBtsHqAWmL+/pmkPWoIUJdWyeVleTl1wydHATVQ==}
-
   character-entities@2.0.2:
     resolution: {integrity: sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==}
-
-  character-reference-invalid@2.0.1:
-    resolution: {integrity: sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==}
 
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
@@ -3168,9 +3019,6 @@ packages:
 
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
-
-  comma-separated-tokens@2.0.3:
-    resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
 
   commander@11.1.0:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
@@ -3618,9 +3466,6 @@ packages:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
 
-  estree-util-is-identifier-name@3.0.0:
-    resolution: {integrity: sha512-hFtqIDZTIUZ9BXLb8y4pYGyk6+wekIivNVTcmvk8NoOh+VeRn5y6cEHzbURrWbfp1fIqdVipilzj+lfaadNZmg==}
-
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
 
@@ -3857,9 +3702,6 @@ packages:
   get-tsconfig@4.14.3:
     resolution: {integrity: sha512-++QEw4DIY7WGoukz+/+A/8dGYPT9l9yIadnmSgZ8Rjr3YVSVDipQSO9CdnJo9ePqFqUUqh+wk9uIaoiAwsiPkA==}
 
-  github-slugger@2.0.0:
-    resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
-
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -3919,24 +3761,6 @@ packages:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
-  hast-util-heading-rank@3.0.0:
-    resolution: {integrity: sha512-EJKb8oMUXVHcWZTDepnr+WNbfnXKFNf9duMesmr4S8SXTJBJ9M4Yok08pu9vxdJwdlGRhVumk9mEhkEvKGifwA==}
-
-  hast-util-is-element@3.0.0:
-    resolution: {integrity: sha512-Val9mnv2IWpLbNPqc/pUem+a7Ipj2aHacCwgNfTiK0vJKl0LF+4Ba4+v1oPHFpf3bLYmreq0/l3Gud9S5OH42g==}
-
-  hast-util-to-jsx-runtime@2.3.7:
-    resolution: {integrity: sha512-F7DNV2NMcTxA4GqPVHnXzX+mpoPHAIY9rJAVH3CZ1FdBZOcBUEjUuvMkMpHVs/sicEtznh9tMGj5WUR9S4E2rg==}
-
-  hast-util-to-string@3.0.1:
-    resolution: {integrity: sha512-XelQVTDWvqcl3axRfI0xSeoVKzyIFPwsAGSLIsKdJKQMXDYJS4WYrBNF/8J7RdhIcFI2BOHgAifggsvsxp/3+A==}
-
-  hast-util-to-text@4.0.3:
-    resolution: {integrity: sha512-5yrlWOvGFs6CqHriUpSsNrjzT/Tdo+IOQudbznxOn8K5qblp18MJyzOg8IgDOKQ8MYgQcJA7SusuCjSpDr8mSA==}
-
-  hast-util-whitespace@3.0.0:
-    resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
-
   help-me@5.0.0:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
 
@@ -3945,14 +3769,6 @@ packages:
 
   hermes-parser@0.25.1:
     resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
-
-  highlight.js@11.11.2:
-    resolution: {integrity: sha512-oaXMACAU0kzOMXBjWpNcX+vlwSBCIAiZ9BHa7gA15NOTtT2L/l8OSZDuqS2XppOhZBPJ7hm4o8ep2kyuip2uEQ==}
-    engines: {node: '>=12.0.0'}
-
-  highlight.js@11.12.0:
-    resolution: {integrity: sha512-nbfWpyRMcMrPMmDwJB+dhX/eiaPKtc2RB+0QZskqJ3WjRA/FDS0e9hZrx8EC/lbEv8gXy98FcDbNa/dspAaJMg==}
-    engines: {node: '>=12.0.0'}
 
   hono@4.13.16:
     resolution: {integrity: sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A==}
@@ -3963,9 +3779,6 @@ packages:
 
   hookified@2.2.0:
     resolution: {integrity: sha512-p/LgFzRN5FeoD3DLS6bkUapeye6E4SI6yJs6KetENd18S+FBthqYq2amJUWpt5z0EQwwHemidjY5OqJGEKm5uA==}
-
-  html-url-attributes@3.0.1:
-    resolution: {integrity: sha512-ol6UPyBWqsrO6EJySPz2O7ZSr856WDrEzM5zMqp+FJJLGMW35cLYmmZnl0vztAZxRUoNZJFTCohfjuIJ8I4QBQ==}
 
   http-errors@2.0.1:
     resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
@@ -4005,9 +3818,6 @@ packages:
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
-  inline-style-parser@0.2.9:
-    resolution: {integrity: sha512-IttN8BqKLxzUrnTqHI+/hwAJQItBAUjdoHERCDv+oOuX48VP6bzW8+QjOXSfoevzq3YrYAwX1uLHp8TqO9yIeg==}
-
   internal-slot@1.1.0:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==}
     engines: {node: '>= 0.4'}
@@ -4023,12 +3833,6 @@ packages:
   ipaddr.js@2.5.0:
     resolution: {integrity: sha512-aq+t5NAc+cS6rZQQVWC2x98CPqGtKKTMDd4Gaodv0wShnItdKg/51djkGJ1hqH+Oy0ivDftCbSLCQob8zso01w==}
     engines: {node: '>= 10'}
-
-  is-alphabetical@2.0.1:
-    resolution: {integrity: sha512-FWyyY60MeTNyeSRpkM2Iry0G9hpr7/9kD40mD/cGQEuilcZYS4okz8SN2Q6rLCJ8gbCt6fN+rC+6tMGS99LaxQ==}
-
-  is-alphanumerical@2.0.1:
-    resolution: {integrity: sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==}
 
   is-array-buffer@3.0.5:
     resolution: {integrity: sha512-DDfANUiiG2wC1qawP66qlTugJeL5HyzMpfr8lLK+jMQirGzNod0B12cFB/9q838Ru27sBwfw78/rdoU7RERz6A==}
@@ -4065,9 +3869,6 @@ packages:
     resolution: {integrity: sha512-PwwhEakHVKTdRNVOw+/Gyh0+MzlCl4R6qKvkhuvLtPMggI1WAHt9sOwZxQLSGpUaDnrdyDsomoRgNnCfKNSXXg==}
     engines: {node: '>= 0.4'}
 
-  is-decimal@2.0.1:
-    resolution: {integrity: sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==}
-
   is-docker@2.2.1:
     resolution: {integrity: sha512-F+i2BKsFrH66iaUFc0woD8sLy8getkwTwtOBjvs56Cx4CgJDeKQeqfz8wAYiSb8JOprWhHH5p77PbmYCvvUuXQ==}
     engines: {node: '>=8'}
@@ -4097,9 +3898,6 @@ packages:
   is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
     engines: {node: '>=0.10.0'}
-
-  is-hexadecimal@2.0.1:
-    resolution: {integrity: sha512-DgZQp241c8oO6cA1SbTEWiXeoxV42vlcJxgH+B3hi1AiqqKruZR3ZGF8In3fj4+/y/7rHvlOZLZtgJ/4ttYGZg==}
 
   is-in-ssh@1.0.0:
     resolution: {integrity: sha512-jYa6Q9rH90kR1vKB6NM7qqd1mge3Fx4Dhw5TVlK1MUBqhEOuCagrEHMevNuCcbECmXZ0ThXkRm+Ymr51HwEPAw==}
@@ -4486,20 +4284,12 @@ packages:
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
 
-  lowlight@3.3.0:
-    resolution: {integrity: sha512-0JNhgFoPvP6U6lE/UdVsSq99tn6DhjjpAj5MxG49ewd2mOBVtwWYIT8ClyABhq198aXXODMU6Ox8DrGy/CpTZQ==}
-
   lru-cache@11.5.3:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
-
-  lucide-react@1.39.0:
-    resolution: {integrity: sha512-y8nXoEwvqqIsF927NBWXODa4bfMrcUeEb/9sgpwFqg0gUjgn3j5Hznk+v7STmPgZ2iQ11JKlbQGdFRuTOwvYkA==}
-    peerDependencies:
-      react: 19.2.3
 
   lucide-react@1.48.0:
     resolution: {integrity: sha512-R0CIKY/fXiC6y9xRBADgsK+VW2p/pcTJOMhLZf1T+uG+vJUvyUR02nGOgmIIC7MPkiNK4Ox8QDnbqF8rJYWPZQ==}
@@ -4543,20 +4333,8 @@ packages:
   mdast-util-gfm@3.1.0:
     resolution: {integrity: sha512-0ulfdQOM3ysHhCJ1p06l0b0VKlhU0wuQs3thxZQagjcjPrlFRqY215uZGHHJan9GEAXd9MbfPjFJz+qMkVR6zQ==}
 
-  mdast-util-mdx-expression@2.0.1:
-    resolution: {integrity: sha512-J6f+9hUp+ldTZqKRSg7Vw5V6MqjATc+3E4gf3CFNcuZNWD8XdyI6zQ8GqH7f8169MM6P7hMBRDVGnn7oHB9kXQ==}
-
-  mdast-util-mdx-jsx@3.2.0:
-    resolution: {integrity: sha512-lj/z8v0r6ZtsN/cGNNtemmmfoLAFZnjMbNyLzBafjzikOM+glrjNHPlf6lQDOTccj9n5b0PPihEBbhneMyGs1Q==}
-
-  mdast-util-mdxjs-esm@2.0.1:
-    resolution: {integrity: sha512-EcmOpxsZ96CvlP03NghtH1EsLtr0n9Tm4lPUJUBccV9RwUOneqSycg19n5HGzCf+10LozMRSObtVr3ee1WoHtg==}
-
   mdast-util-phrasing@4.1.0:
     resolution: {integrity: sha512-TqICwyvJJpBwvGAMZjj4J2n0X8QWp21b9l0o7eXyVJ25YNWYbJDVIyD1bZXE6WtV6RmKJVYmQAKWa0zWOABz2w==}
-
-  mdast-util-to-hast@13.2.1:
-    resolution: {integrity: sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==}
 
   mdast-util-to-markdown@2.2.1:
     resolution: {integrity: sha512-ThatlCBxG2GE+mljhNSfZPv56d3QrGiRh97jjYgIk80IzS4uU6d7cHAaexCYSAmUCCcOs3grJ07kX3oTGsFUOw==}
@@ -4843,9 +4621,6 @@ packages:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
 
-  parse-entities@4.0.2:
-    resolution: {integrity: sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==}
-
   parse-json@5.2.0:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
@@ -5079,9 +4854,6 @@ packages:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
     engines: {node: '>= 6'}
 
-  property-information@7.2.0:
-    resolution: {integrity: sha512-IAtzIB6sUiWaJYrX9smp3V46pBGbBeLFRGdh25kg1334VcBlD8HzhPeNIWQH9zhGmo2itIe25EHt9dQP7G5hmg==}
-
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
@@ -5137,12 +4909,6 @@ packages:
     peerDependencies:
       react: 19.2.3
 
-  react-draggable-folders@0.0.3:
-    resolution: {integrity: sha512-TUn/sVerSX6DDeQM8r/w/Wjs9BORMk31h7SBNwWfQTTWlzwHHxTmUFuX9J7XCxPs3/To5sI7B3UG1q4bW1Weow==}
-    peerDependencies:
-      react: 19.2.3
-      react-dom: 19.2.3
-
   react-hot-toast@2.6.1:
     resolution: {integrity: sha512-gjFsf05dxcku0FkyMtFH+XmYFdA2odXfBVknEr/IZ+XpUjwsgvtY2616sOpUynK+l9ykQDRNpaJ1hYfuximUiA==}
     engines: {node: '>=10'}
@@ -5160,12 +4926,6 @@ packages:
   react-icons@5.7.0:
     resolution: {integrity: sha512-LBLy340Rzqy6+/yVhZKT3B/QpP1BZaesGqasf09HPOBzRarcDIFH0WwXlXQfE7q7ipxK4MSiC5DIBWURCny6fw==}
     peerDependencies:
-      react: 19.2.3
-
-  react-markdown@10.1.0:
-    resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
-    peerDependencies:
-      '@types/react': '>=18'
       react: 19.2.3
 
   react-redux@9.3.1:
@@ -5224,15 +4984,6 @@ packages:
     resolution: {integrity: sha512-EWV80YgFaVgFrjGCAsV7oybp4GOxbls5RzBg8OB0nKEVXsBJR1JlV8Di1JhCROg3MzTfe1RI8yitIm1eOs68iA==}
     hasBin: true
 
-  rehype-autolink-headings@7.1.0:
-    resolution: {integrity: sha512-rItO/pSdvnvsP4QRB1pmPiNHUskikqtPojZKJPPPAVx9Hj8i8TwMBhofrrAYRhYOOBZH9tgmG5lPqDLuIWPWmw==}
-
-  rehype-highlight@7.0.2:
-    resolution: {integrity: sha512-k158pK7wdC2qL3M5NcZROZ2tR/l7zOzjxXd5VGdcfIyoijjQqpHd3JKtYSBDpDZ38UI2WJWuFAtkMDxmx5kstA==}
-
-  rehype-slug@6.0.0:
-    resolution: {integrity: sha512-lWyvf/jwu+oS5+hL5eClVd3hNdmwM1kAC0BUvEGD19pajQMIzcNUd/k9GsfQ+FfECvX+JE+e9/btsKH0EjJT6A==}
-
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
 
@@ -5241,9 +4992,6 @@ packages:
 
   remark-parse@11.0.0:
     resolution: {integrity: sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA==}
-
-  remark-rehype@11.1.2:
-    resolution: {integrity: sha512-Dh7l57ianaEoIpzbp0PC9UKAdCSVklD8E5Rpw7ETfbTl3FqcOOgq5q2LVDhgGCkaBv7p24JXikPdvhhmHvKMsw==}
 
   remark-stringify@11.0.0:
     resolution: {integrity: sha512-1OSmLd3awB/t8qdoEOMazZkNsfVTeY4fTsgzcQFdXNq8ToTN4ZGwrMnlda4K6smTFKD+GRV6O48i6Z4iKgPPpw==}
@@ -5453,9 +5201,6 @@ packages:
     resolution: {integrity: sha512-d8EqvL+k/SOXCreS/SUzg2ciyHqBBLcN/yuRjFsbvVhHTE2pgei7oAhmPM7kWFbkX6OSMQfUq4KbkF3au9lhYQ==}
     engines: {node: '>= 12'}
 
-  space-separated-tokens@2.0.2:
-    resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
-
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
@@ -5494,9 +5239,6 @@ packages:
   string.prototype.trimstart@1.0.8:
     resolution: {integrity: sha512-UXSH262CSZY1tfu3G3Secr6uGLCFVPMhIqHjlgCUtCCcgihYc/xKs9djMTMUOb2j1mVSeU8EU6NWc/iQKU6Gfg==}
     engines: {node: '>= 0.4'}
-
-  stringify-entities@4.0.4:
-    resolution: {integrity: sha512-IwfBptatlO+QCJUo19AqvrPNqlVMpW9YEL2LIVY+Rpv2qsjCGxaDLNRgeGsQWJhfItebuJhsGSLjaBbNSQ+ieg==}
 
   stringify-object@3.3.0:
     resolution: {integrity: sha512-rHqiFh1elqCQ9WPLIC8I0Q/g/wj5J1eMkyoiD6eoQApWHP0FtlK7rqnhmabL5VUY9JQCcqwwvlOaSuutekgyrw==}
@@ -5537,9 +5279,6 @@ packages:
   style-mod@4.1.4:
     resolution: {integrity: sha512-XXWIQt633/EpAFx8aZDOTjBzrCaGmhvEQlQo6MVPfa2OzO2cWo+4hV9h+6UkHYlXGfy+ODXKUdP7Pthmcu5ATw==}
 
-  style-to-object@2.0.2:
-    resolution: {integrity: sha512-QmbXPUylqU80HAgTOJeEOdbA40W9KtxmjMhQy+tq+b8F2aoh3aQLuy82hh2jm2qsC9hR9eI0+eQidTMydKcqRA==}
-
   supports-color@10.2.2:
     resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
     engines: {node: '>=18'}
@@ -5557,9 +5296,6 @@ packages:
   tagged-tag@1.0.0:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
     engines: {node: '>=20'}
-
-  tailwind-merge@3.6.0:
-    resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
 
   tailwind-merge@3.7.0:
     resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
@@ -5618,9 +5354,6 @@ packages:
   tree-kill@1.2.2:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
-
-  trim-lines@3.0.1:
-    resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
 
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
@@ -5738,9 +5471,6 @@ packages:
   unist-util-is@6.0.1:
     resolution: {integrity: sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==}
 
-  unist-util-position@5.0.0:
-    resolution: {integrity: sha512-fucsC7HjXvkB5R3kTCO7kUjRdrS0BJt3M/FPxmHMBOm8JQi2BsHAHFsy27E0EolP8rp0NzXsJ+jNPyDWvOJZPA==}
-
   unist-util-stringify-position@4.0.0:
     resolution: {integrity: sha512-0ASV06AAoKCDkS2+xw5RXJywruurpbC4JZSm7nr7MOt1ojAzvyyaO+UxZf18j8FCF6kmzCZKcAgN/yu2gm2XgQ==}
 
@@ -5802,9 +5532,6 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
-
-  vfile-matter@5.0.1:
-    resolution: {integrity: sha512-o6roP82AiX0XfkyTHyRCMXgHfltUNlXSEqCIS80f+mbAyiQBE2fxtDVMtseyytGx75sihiJFo/zR6r/4LTs2Cw==}
 
   vfile-message@4.0.3:
     resolution: {integrity: sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==}
@@ -7932,11 +7659,6 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.3.3
       '@tailwindcss/oxide-win32-x64-msvc': 4.3.3
 
-  '@tailwindcss/typography@0.5.20(tailwindcss@4.3.3)':
-    dependencies:
-      postcss-selector-parser: 7.1.7
-      tailwindcss: 4.3.3
-
   '@tailwindcss/vite@4.3.3(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
       '@tailwindcss/node': 4.3.3
@@ -7950,28 +7672,6 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.104.0
       react: 19.2.3
-
-  '@tauri-apps/api@2.12.4': {}
-
-  '@tauri-apps/plugin-dialog@2.8.4':
-    dependencies:
-      '@tauri-apps/api': 2.12.4
-
-  '@tauri-apps/plugin-fs@2.7.1':
-    dependencies:
-      '@tauri-apps/api': 2.12.4
-
-  '@tauri-apps/plugin-http@2.8.3':
-    dependencies:
-      '@tauri-apps/api': 2.12.4
-
-  '@tauri-apps/plugin-opener@2.7.2':
-    dependencies:
-      '@tauri-apps/api': 2.12.4
-
-  '@tauri-apps/plugin-process@2.4.0':
-    dependencies:
-      '@tauri-apps/api': 2.12.4
 
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     dependencies:
@@ -8017,15 +7717,7 @@ snapshots:
 
   '@types/esrecurse@4.3.1': {}
 
-  '@types/estree-jsx@1.0.5':
-    dependencies:
-      '@types/estree': 1.0.10
-
   '@types/estree@1.0.10': {}
-
-  '@types/hast@3.0.5':
-    dependencies:
-      '@types/unist': 3.0.3
 
   '@types/json-schema@7.0.15': {}
 
@@ -8056,8 +7748,6 @@ snapshots:
   '@types/resolve@1.20.2': {}
 
   '@types/trusted-types@2.0.7': {}
-
-  '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
 
@@ -8155,8 +7845,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.72.1
       eslint-visitor-keys: 5.0.1
-
-  '@ungap/structured-clone@1.4.0': {}
 
   '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
@@ -8285,49 +7973,6 @@ snapshots:
 
   bail@2.0.2: {}
 
-  bakemd@0.2.4(@types/node@22.20.5)(@types/react@19.2.18)(esbuild@0.28.2)(jiti@2.7.0)(supports-color@10.2.2)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1):
-    dependencies:
-      '@fontsource-variable/geist-mono': 5.3.0
-      '@fontsource-variable/mulish': 5.3.0
-      '@tailwindcss/typography': 0.5.20(tailwindcss@4.3.3)
-      '@tailwindcss/vite': 4.3.3(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      '@vitejs/plugin-react': 6.1.2(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      clsx: 2.1.1
-      highlight.js: 11.12.0
-      lowlight: 3.3.0
-      lucide-react: 1.39.0(react@19.2.3)
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-      react-icons: 5.7.0(react@19.2.3)
-      react-markdown: 10.1.0(@types/react@19.2.18)(react@19.2.3)(supports-color@10.2.2)
-      rehype-autolink-headings: 7.1.0
-      rehype-highlight: 7.0.2
-      rehype-slug: 6.0.0
-      remark-gfm: 4.0.1(supports-color@10.2.2)
-      tailwind-merge: 3.6.0
-      tailwindcss: 4.3.3
-      vfile: 6.0.3
-      vfile-matter: 5.0.1
-      vite: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
-    transitivePeerDependencies:
-      - '@rolldown/plugin-babel'
-      - '@types/node'
-      - '@types/react'
-      - '@vitejs/devtools'
-      - babel-plugin-react-compiler
-      - esbuild
-      - jiti
-      - less
-      - oxc-transform-react
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
   balanced-match@4.0.4: {}
 
   baseline-browser-mapping@2.11.34: {}
@@ -8445,13 +8090,7 @@ snapshots:
 
   chalk@5.6.2: {}
 
-  character-entities-html4@2.1.0: {}
-
-  character-entities-legacy@3.0.0: {}
-
   character-entities@2.0.2: {}
-
-  character-reference-invalid@2.0.1: {}
 
   class-variance-authority@0.7.1:
     dependencies:
@@ -8476,8 +8115,6 @@ snapshots:
   code-block-writer@13.0.3: {}
 
   colorette@2.0.20: {}
-
-  comma-separated-tokens@2.0.3: {}
 
   commander@11.1.0: {}
 
@@ -8935,8 +8572,6 @@ snapshots:
 
   estraverse@5.3.0: {}
 
-  estree-util-is-identifier-name@3.0.0: {}
-
   estree-walker@2.0.2: {}
 
   estree-walker@3.0.3:
@@ -9240,8 +8875,6 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  github-slugger@2.0.0: {}
-
   glob-parent@5.1.2:
     dependencies:
       is-glob: 4.0.3
@@ -9295,46 +8928,6 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hast-util-heading-rank@3.0.0:
-    dependencies:
-      '@types/hast': 3.0.5
-
-  hast-util-is-element@3.0.0:
-    dependencies:
-      '@types/hast': 3.0.5
-
-  hast-util-to-jsx-runtime@2.3.7(supports-color@10.2.2):
-    dependencies:
-      '@types/estree': 1.0.10
-      '@types/hast': 3.0.5
-      '@types/unist': 3.0.3
-      comma-separated-tokens: 2.0.3
-      devlop: 1.1.0
-      estree-util-is-identifier-name: 3.0.0
-      hast-util-whitespace: 3.0.0
-      mdast-util-mdx-expression: 2.0.1(supports-color@10.2.2)
-      mdast-util-mdx-jsx: 3.2.0(supports-color@10.2.2)
-      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.2.2)
-      property-information: 7.2.0
-      space-separated-tokens: 2.0.2
-      style-to-object: 2.0.2
-      unist-util-position: 5.0.0
-      vfile-message: 4.0.3
-    transitivePeerDependencies:
-      - supports-color
-
-  hast-util-to-string@3.0.1:
-    dependencies:
-      '@types/hast': 3.0.5
-
-  hast-util-to-text@4.0.3:
-    dependencies:
-      '@types/hast': 3.0.5
-
-  hast-util-whitespace@3.0.0:
-    dependencies:
-      '@types/hast': 3.0.5
-
   help-me@5.0.0: {}
 
   hermes-estree@0.25.1: {}
@@ -9343,17 +8936,11 @@ snapshots:
     dependencies:
       hermes-estree: 0.25.1
 
-  highlight.js@11.11.2: {}
-
-  highlight.js@11.12.0: {}
-
   hono@4.13.16: {}
 
   hookified@1.15.1: {}
 
   hookified@2.2.0: {}
-
-  html-url-attributes@3.0.1: {}
 
   http-errors@2.0.1:
     dependencies:
@@ -9386,8 +8973,6 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  inline-style-parser@0.2.9: {}
-
   internal-slot@1.1.0:
     dependencies:
       es-errors: 1.3.0
@@ -9399,13 +8984,6 @@ snapshots:
   ipaddr.js@1.9.1: {}
 
   ipaddr.js@2.5.0: {}
-
-  is-alphabetical@2.0.1: {}
-
-  is-alphanumerical@2.0.1:
-    dependencies:
-      is-alphabetical: 2.0.1
-      is-decimal: 2.0.1
 
   is-array-buffer@3.0.5:
     dependencies:
@@ -9449,8 +9027,6 @@ snapshots:
       call-bound: 1.0.4
       has-tostringtag: 1.0.2
 
-  is-decimal@2.0.1: {}
-
   is-docker@2.2.1: {}
 
   is-docker@3.0.0: {}
@@ -9476,8 +9052,6 @@ snapshots:
   is-glob@4.0.3:
     dependencies:
       is-extglob: 2.1.1
-
-  is-hexadecimal@2.0.1: {}
 
   is-in-ssh@1.0.0: {}
 
@@ -9763,21 +9337,11 @@ snapshots:
 
   longest-streak@3.1.0: {}
 
-  lowlight@3.3.0:
-    dependencies:
-      '@types/hast': 3.0.5
-      devlop: 1.1.0
-      highlight.js: 11.11.2
-
   lru-cache@11.5.3: {}
 
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
-
-  lucide-react@1.39.0(react@19.2.3):
-    dependencies:
-      react: 19.2.3
 
   lucide-react@1.48.0(react@19.2.3):
     dependencies:
@@ -9876,61 +9440,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx-expression@2.0.1(supports-color@10.2.2):
-    dependencies:
-      '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.5
-      '@types/mdast': 4.0.4
-      devlop: 1.1.0
-      mdast-util-from-markdown: 2.1.0(supports-color@10.2.2)
-      mdast-util-to-markdown: 2.2.1
-    transitivePeerDependencies:
-      - supports-color
-
-  mdast-util-mdx-jsx@3.2.0(supports-color@10.2.2):
-    dependencies:
-      '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.5
-      '@types/mdast': 4.0.4
-      '@types/unist': 3.0.3
-      ccount: 2.0.1
-      devlop: 1.1.0
-      mdast-util-from-markdown: 2.1.0(supports-color@10.2.2)
-      mdast-util-to-markdown: 2.2.1
-      parse-entities: 4.0.2
-      stringify-entities: 4.0.4
-      unist-util-stringify-position: 4.0.0
-      vfile-message: 4.0.3
-    transitivePeerDependencies:
-      - supports-color
-
-  mdast-util-mdxjs-esm@2.0.1(supports-color@10.2.2):
-    dependencies:
-      '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.5
-      '@types/mdast': 4.0.4
-      devlop: 1.1.0
-      mdast-util-from-markdown: 2.1.0(supports-color@10.2.2)
-      mdast-util-to-markdown: 2.2.1
-    transitivePeerDependencies:
-      - supports-color
-
   mdast-util-phrasing@4.1.0:
     dependencies:
       '@types/mdast': 4.0.4
       unist-util-is: 6.0.1
-
-  mdast-util-to-hast@13.2.1:
-    dependencies:
-      '@types/hast': 3.0.5
-      '@types/mdast': 4.0.4
-      '@ungap/structured-clone': 1.4.0
-      devlop: 1.1.0
-      micromark-util-sanitize-uri: 2.0.1
-      trim-lines: 3.0.1
-      unist-util-position: 5.0.0
-      unist-util-visit: 5.2.0
-      vfile: 6.0.3
 
   mdast-util-to-markdown@2.2.1:
     dependencies:
@@ -10326,16 +9839,6 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  parse-entities@4.0.2:
-    dependencies:
-      '@types/unist': 2.0.11
-      character-entities-legacy: 3.0.0
-      character-reference-invalid: 2.0.1
-      decode-named-character-reference: 1.3.0
-      is-alphanumerical: 2.0.1
-      is-decimal: 2.0.1
-      is-hexadecimal: 2.0.1
-
   parse-json@5.2.0:
     dependencies:
       '@babel/code-frame': 7.29.7
@@ -10503,8 +10006,6 @@ snapshots:
       kleur: 3.0.3
       sisteransi: 1.0.5
 
-  property-information@7.2.0: {}
-
   proxy-addr@2.0.8:
     dependencies:
       forwarded: 0.2.0
@@ -10556,14 +10057,6 @@ snapshots:
       react: 19.2.3
       scheduler: 0.27.0
 
-  react-draggable-folders@0.0.3(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      '@hello-pangea/dnd': 18.0.1(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-    transitivePeerDependencies:
-      - '@types/react'
-
   react-hot-toast@2.6.1(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       csstype: 3.2.3
@@ -10577,24 +10070,6 @@ snapshots:
   react-icons@5.7.0(react@19.2.3):
     dependencies:
       react: 19.2.3
-
-  react-markdown@10.1.0(@types/react@19.2.18)(react@19.2.3)(supports-color@10.2.2):
-    dependencies:
-      '@types/hast': 3.0.5
-      '@types/mdast': 4.0.4
-      '@types/react': 19.2.18
-      devlop: 1.1.0
-      hast-util-to-jsx-runtime: 2.3.7(supports-color@10.2.2)
-      html-url-attributes: 3.0.1
-      mdast-util-to-hast: 13.2.1
-      react: 19.2.3
-      remark-parse: 11.0.0(supports-color@10.2.2)
-      remark-rehype: 11.1.2
-      unified: 11.0.5
-      unist-util-visit: 5.2.0
-      vfile: 6.0.3
-    transitivePeerDependencies:
-      - supports-color
 
   react-redux@9.3.1(@types/react@19.2.18)(react@19.2.3)(redux@5.0.1):
     dependencies:
@@ -10662,31 +10137,6 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  rehype-autolink-headings@7.1.0:
-    dependencies:
-      '@types/hast': 3.0.5
-      '@ungap/structured-clone': 1.4.0
-      hast-util-heading-rank: 3.0.0
-      hast-util-is-element: 3.0.0
-      unified: 11.0.5
-      unist-util-visit: 5.2.0
-
-  rehype-highlight@7.0.2:
-    dependencies:
-      '@types/hast': 3.0.5
-      hast-util-to-text: 4.0.3
-      lowlight: 3.3.0
-      unist-util-visit: 5.2.0
-      vfile: 6.0.3
-
-  rehype-slug@6.0.0:
-    dependencies:
-      '@types/hast': 3.0.5
-      github-slugger: 2.0.0
-      hast-util-heading-rank: 3.0.0
-      hast-util-to-string: 3.0.1
-      unist-util-visit: 5.2.0
-
   remark-gfm@4.0.1(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
@@ -10708,14 +10158,6 @@ snapshots:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
-
-  remark-rehype@11.1.2:
-    dependencies:
-      '@types/hast': 3.0.5
-      '@types/mdast': 4.0.4
-      mdast-util-to-hast: 13.2.1
-      unified: 11.0.5
-      vfile: 6.0.3
 
   remark-stringify@11.0.0:
     dependencies:
@@ -11024,8 +10466,6 @@ snapshots:
 
   source-map@0.8.0: {}
 
-  space-separated-tokens@2.0.2: {}
-
   split2@4.2.0: {}
 
   statuses@2.0.2: {}
@@ -11085,11 +10525,6 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.2
 
-  stringify-entities@4.0.4:
-    dependencies:
-      character-entities-html4: 2.1.0
-      character-entities-legacy: 3.0.0
-
   stringify-object@3.3.0:
     dependencies:
       get-own-enumerable-property-symbols: 3.0.2
@@ -11122,10 +10557,6 @@ snapshots:
 
   style-mod@4.1.4: {}
 
-  style-to-object@2.0.2:
-    dependencies:
-      inline-style-parser: 0.2.9
-
   supports-color@10.2.2: {}
 
   supports-preserve-symlinks-flag@1.0.0: {}
@@ -11133,8 +10564,6 @@ snapshots:
   systeminformation@5.33.19: {}
 
   tagged-tag@1.0.0: {}
-
-  tailwind-merge@3.6.0: {}
 
   tailwind-merge@3.7.0: {}
 
@@ -11182,8 +10611,6 @@ snapshots:
   toidentifier@1.0.1: {}
 
   tree-kill@1.2.2: {}
-
-  trim-lines@3.0.1: {}
 
   trough@2.2.0: {}
 
@@ -11324,10 +10751,6 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  unist-util-position@5.0.0:
-    dependencies:
-      '@types/unist': 3.0.3
-
   unist-util-stringify-position@4.0.0:
     dependencies:
       '@types/unist': 3.0.3
@@ -11372,11 +10795,6 @@ snapshots:
   validate-npm-package-name@7.0.2: {}
 
   vary@1.1.2: {}
-
-  vfile-matter@5.0.1:
-    dependencies:
-      vfile: 6.0.3
-      yaml: 2.9.1
 
   vfile-message@4.0.3:
     dependencies:
@@ -11629,7 +11047,8 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.9.1: {}
+  yaml@2.9.1:
+    optional: true
 
   yargs-parser@22.0.0: {}
 

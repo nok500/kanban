@@ -5,7 +5,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuTrigger,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { Bot, MessagesSquare, Sparkles, Terminal } from "lucide-react"
 import { useCardChatOpener } from "@/lib/chat/card-chat-opener"
 

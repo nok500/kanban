@@ -3,7 +3,7 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import {
   newId,
   setFolderCollapsed,
@@ -11,8 +11,8 @@ import {
   useCollapsedFolders,
   useSaveSidebarTree,
   useSidebarTree,
-} from "@doska/core"
-import { DraggableFolders, useFolderTree } from "react-draggable-folders"
+} from "@kanban/core"
+import { DraggableFolders, useFolderTree } from "@kanban/folder-tree"
 import { useState } from "react"
 import { DROP_ANIMATION_MS, useDashboardNav } from "@/lib/hooks"
 import { BoardItem } from "./board/board-item"

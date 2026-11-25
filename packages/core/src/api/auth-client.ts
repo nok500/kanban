@@ -35,7 +35,7 @@ let cached: { baseURL: string; client: ReturnType<typeof create> } | null = null
 
 /**
  * The client is rebuilt whenever the server URL changes: its `baseURL` is fixed
- * at construction, and on desktop the user picks the server at sign-in time.
+ * at construction.
  */
 export function authClient(): ReturnType<typeof create> {
   const baseURL = apiUrl("")

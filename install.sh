@@ -7,7 +7,7 @@
 # (see backup.sh), and it refuses to write a fresh .env on top of one — new
 # secrets wouldn't match the old data.
 #
-#   curl -fsSL https://raw.githubusercontent.com/nok500/kanban-job-board/main/install.sh -o install.sh && sh install.sh
+#   curl -fsSL https://raw.githubusercontent.com/nok500/kanban/main/install.sh -o install.sh && sh install.sh
 #
 # Unattended: every question can be answered up front by exporting the variable
 # it writes, and --yes stops it asking anything.
@@ -16,11 +16,12 @@
 #     sh install.sh --yes
 set -eu
 
-REPO="nok500/kanban-job-board"
-# Where the compose file and backup helper come from. Empty means "work it out
-# from the release being installed" (see source_ref);
-RAW="${DOSKA_RAW:-}"
-COMPOSE_FILE="docker-compose.selfhost.yml"
+REPO="nok500/kanban"
+# Where the compose file and backup helper come from: a git ref of the repo
+# (KANBAN_REF, default main), or a full base URL in KANBAN_RAW.
+REF="${KANBAN_REF:-main}"
+RAW="${KANBAN_RAW:-https://raw.githubusercontent.com/${REPO}/${REF}}"
+COMPOSE_FILE="docker-compose.yml"
 BACKUP_FILE="backup.sh"
 ENV_FILE=".env"
 
@@ -126,33 +127,6 @@ ask_yn() {
   case "$_ans" in [Yy]*) return 0 ;; *) return 1 ;; esac
 }
 
-# Which release the images will come from: an explicit DOCKER_IMAGE_TAG wins,
-# otherwise whatever a previous run's .env pins. Empty means the default channel.
-pinned_tag() {
-  if [ -n "${DOCKER_IMAGE_TAG:-}" ]; then printf '%s' "$DOCKER_IMAGE_TAG"; return; fi
-  [ -f "$ENV_FILE" ] || return 0
-  sed -n 's/^DOCKER_IMAGE_TAG=[[:space:]]*\([^[:space:]#]*\).*/\1/p' "$ENV_FILE" | head -1
-}
-
-# Every tag_name from a releases API path, newest first
-release_tags() {
-  _body=$(curl -fsSL "https://api.github.com/repos/${REPO}$1" 2>/dev/null) || return $?
-  printf '%s\n' "$_body" \
-    | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'
-}
-
-# Echoes the git ref to fetch release files from; returns curl's status when the
-# API is what failed.
-source_ref() {
-  case "$1" in
-    ''|latest) _tags=$(release_tags "/releases/latest") || return $? ;;
-    beta)      _tags=$(release_tags "/releases?per_page=30") || return $?
-               _tags=$(printf '%s\n' "$_tags" | grep '[-]') || _tags="" ;;
-    *)         printf 'v%s' "${1#v}"; return 0 ;;
-  esac
-  printf '%s\n' "$_tags" | head -1
-}
-
 gen_secret() {
   if command -v openssl > /dev/null 2>&1; then
     openssl rand -hex 32
@@ -197,10 +171,10 @@ with_timeout() {
   wait "$_pid" && return 0 || return $?
 }
 
-# The bundled Postgres persists to <project>_doska-pgdata. Its presence means
+# The bundled Postgres persists to <project>_kanban-pgdata. Its presence means
 # this install has existing data to protect.
 bundled_volume_exists() {
-  docker volume ls -q 2>/dev/null | grep -qx "$(project_name)_doska-pgdata"
+  docker volume ls -q 2>/dev/null | grep -qx "$(project_name)_kanban-pgdata"
 }
 
 # Assumes no existing data when the daemon won't answer. That errs towards the
@@ -279,7 +253,7 @@ OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, OIDC_NAME.
 EOF
 }
 
-YES=${DOSKA_YES:-}
+YES=${KANBAN_YES:-}
 START=1
 for _arg in "$@"; do
   case "$_arg" in
@@ -308,43 +282,18 @@ ok "docker, $COMPOSE and curl found"
 # --- 2. fetch compose file and backup helper --------------------------------
 step "Fetching files" "Downloads the compose file that defines the stack, plus the backup helper."
 
-TAG=""
-REF=""
-FETCH=1
-if [ -z "$RAW" ]; then
-  TAG=$(pinned_tag)
-  RC=0
-  REF=$(source_ref "$TAG") || RC=$?
-  if [ -z "$REF" ]; then
-    # curl -f reports every HTTP error as 22
-    if [ "$RC" = 22 ]; then
-      WHY="GitHub's release API refused the request${TAG:+ for DOCKER_IMAGE_TAG=$TAG} — rate limited, or no such release"
-    else
-      WHY="couldn't reach GitHub's release API${TAG:+ to resolve DOCKER_IMAGE_TAG=$TAG}"
-    fi
-    # Only the release lookup failed, so an existing compose file is still the
-    # last known-good one — better than refusing to run at all.
-    [ -f "$COMPOSE_FILE" ] || die "$WHY. Check your connection, or pin an exact version like DOCKER_IMAGE_TAG=0.18.0."
-    warn "$WHY — keeping the $COMPOSE_FILE already in this directory."
-    FETCH=""
+info "Using the stack definition from $RAW"
+
+fetch_file "$COMPOSE_FILE" ||
+  die "failed to download $COMPOSE_FILE from $RAW. Running with an outdated $COMPOSE_FILE might break the server. Check your connection, then re-run."
+
+# A stale helper is what would guard the database before every redeploy, so it
+# is refreshed too. Losing it only matters when there's nothing on disk.
+if ! fetch_file "$BACKUP_FILE"; then
+  if [ -f "$BACKUP_FILE" ]; then
+    warn "couldn't refresh $BACKUP_FILE — keeping the copy already here."
   else
-    RAW="https://raw.githubusercontent.com/${REPO}/${REF}"
-    info "Using the $REF stack definition"
-  fi
-fi
-
-if [ -n "$FETCH" ]; then
-  fetch_file "$COMPOSE_FILE" ||
-    die "failed to download $COMPOSE_FILE from ${REF:-$RAW}. Running with an outdated $COMPOSE_FILE might break the server. Check your connection${TAG:+, and that DOCKER_IMAGE_TAG=$TAG is a real release}, then re-run."
-
-  # A stale helper is what would guard the database before every redeploy, so it
-  # is refreshed too. Losing it only matters when there's nothing on disk.
-  if ! fetch_file "$BACKUP_FILE"; then
-    if [ -f "$BACKUP_FILE" ]; then
-      warn "couldn't refresh $BACKUP_FILE — keeping the copy already here."
-    else
-      warn "couldn't download $BACKUP_FILE — pre-redeploy backups will be skipped."
-    fi
+    warn "couldn't download $BACKUP_FILE — pre-redeploy backups will be skipped."
   fi
 fi
 
@@ -447,7 +396,7 @@ else
     info "Register Kanban Job Board there as a web app with this redirect URI:"
     info "  $BASE_URL/api/auth/oauth2/callback/oidc"
     info "and allow the openid, profile and email scopes."
-    info "Docs: https://github.com/nok500/kanban-job-board#readme/user-guides/sso"
+    info "Docs: https://github.com/nok500/kanban#readme/user-guides/sso"
     OIDC_ISSUER=$(ask OIDC_ISSUER "  Issuer URL" "")
     OIDC_CLIENT_ID=$(ask OIDC_CLIENT_ID "  Client id" "")
     OIDC_SECRET=$(ask_secret OIDC_CLIENT_SECRET "  Client secret")
@@ -485,8 +434,8 @@ else
       [ -n "$OIDC_NAME" ] && printf 'OIDC_NAME=%s\n' "$(env_escape "$OIDC_NAME")"
     fi
     printf '\n# Optional — uncomment and set, then re-run this script to apply:\n'
-    [ -z "$DBURL" ] && printf '# DATABASE_URL=postgres://user:pass@host:5432/doska  # use managed Postgres instead of bundled\n'
-    printf '# DOCKER_IMAGE_TAG=0.4.0  # pin a release instead of latest\n'
+    [ -z "$DBURL" ] && printf '# DATABASE_URL=postgres://user:pass@host:5432/kanban  # use managed Postgres instead of bundled\n'
+    printf '# DOCKER_IMAGE_TAG=latest  # image tag to pull\n'
     [ -z "$S3_BUCKET" ] && printf '# S3_BUCKET=  S3_REGION=  AWS_ACCESS_KEY_ID=  AWS_SECRET_ACCESS_KEY=  # move attachments off the local volume into S3\n'
     [ -z "$OIDC_ISSUER" ] && printf '# OIDC_ISSUER=  OIDC_CLIENT_ID=  OIDC_CLIENT_SECRET=  # single sign-on through your identity provider\n'
     [ -n "$OIDC_ISSUER" ] && printf '# OIDC_AUTO_CREATE=off  # only accounts already connected to the provider can sign in through it\n'

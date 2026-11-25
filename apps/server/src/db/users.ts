@@ -1,4 +1,4 @@
-import type { ActiveUser } from "@doska/contract"
+import type { ActiveUser } from "@kanban/contract"
 import { asc, sql } from "drizzle-orm"
 import { db } from "./client"
 import { user } from "./schema"

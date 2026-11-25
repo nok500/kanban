@@ -4,10 +4,10 @@ import {
   type Column,
   type Dashboard,
   cardDisplayId,
-} from "@doska/contract"
+} from "@kanban/contract"
 import { z } from "zod"
 import type { Board } from "../board"
-import { addDays, todayIso, UPCOMING_DAYS } from "@doska/utils"
+import { addDays, todayIso, UPCOMING_DAYS } from "@kanban/utils"
 import { PRIORITY_IDS } from "./cards"
 import { reply } from "./reply"
 import { shapeCard } from "./shape"

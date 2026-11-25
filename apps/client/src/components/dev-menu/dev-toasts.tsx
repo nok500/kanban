@@ -7,10 +7,8 @@ import { CardMoveToast } from "../toasts/card-move/card-move-toast"
 import { ErrorToast } from "../toasts/error/error-toast"
 import { OfflineToastContent } from "../toasts/offline/offline-toast-content"
 import { UpdateToastContent } from "../toasts/update/update-toast-content"
-import { VaultUnlinkedToast } from "../toasts/vault-unlinked/vault-unlinked-toast"
 import { WhatsNewToastContent } from "../toasts/whats-new/whats-new-toast-content"
 
-const install = async () => {}
 
 function show(
   id: string,
@@ -27,42 +25,12 @@ function show(
 
 export const DEV_TOASTS = [
   {
-    label: "Update (desktop)",
-    show: () =>
-      show("dev-update-desktop", (visible, dismiss) => (
-        <UpdateToastContent
-          visible={visible}
-          installing={false}
-          state={{
-            status: "available",
-            kind: "desktop",
-            version: "9.9.9",
-            install,
-          }}
-          onInstall={dismiss}
-        />
-      )),
-  },
-  {
-    label: "Update (web)",
+    label: "Update",
     show: () =>
       show("dev-update-web", (visible, dismiss) => (
         <UpdateToastContent
           visible={visible}
           installing={false}
-          state={{ status: "available", kind: "web", install }}
-          onInstall={dismiss}
-        />
-      )),
-  },
-  {
-    label: "Server version mismatch",
-    show: () =>
-      show("dev-update-mismatch", (visible, dismiss) => (
-        <UpdateToastContent
-          visible={visible}
-          installing={false}
-          state={{ status: "mismatch", version: "9.9.9", install }}
           onInstall={dismiss}
         />
       )),
@@ -130,13 +98,6 @@ export const DEV_TOASTS = [
           visible={visible}
           reason="Clear the filter to add cards."
         />
-      )),
-  },
-  {
-    label: "Vault unlinked",
-    show: () =>
-      show("dev-vault-unlinked", (visible) => (
-        <VaultUnlinkedToast visible={visible} path="~/Notes/doska" />
       )),
   },
 ]

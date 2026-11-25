@@ -1,5 +1,5 @@
-import { Tooltip, TooltipContent, TooltipTrigger, cn } from "@doska/ui-kit"
-import { useBoardMembers } from "@doska/core"
+import { Tooltip, TooltipContent, TooltipTrigger, cn } from "@kanban/ui-kit"
+import { useBoardMembers } from "@kanban/core"
 import { useDeck } from "@/providers/deck/deck-context"
 import { useAuth } from "@/lib/hooks"
 import { UserAvatar } from "@/components/accounts/user-avatar"

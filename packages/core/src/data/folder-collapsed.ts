@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react"
 import { runtime } from "../runtime"
 
-const COLLAPSED_FOLDERS_KEY = "doska:collapsed-folders"
+const COLLAPSED_FOLDERS_KEY = "kanban:collapsed-folders"
 
 const NONE: string[] = []
 

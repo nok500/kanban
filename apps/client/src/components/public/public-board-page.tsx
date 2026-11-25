@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Loader2 } from "lucide-react"
 import { useRoute } from "wouter"
-import { usePublicBoard, PublicBoardNotFound } from "@doska/core"
+import { usePublicBoard, PublicBoardNotFound } from "@kanban/core"
 import { routes } from "@/lib/routes"
 import { PublicBoard } from "./public-board"
 import { PublicCardPanel } from "./public-card-panel"

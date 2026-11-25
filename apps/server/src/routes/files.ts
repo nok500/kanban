@@ -3,7 +3,7 @@ import {
   storageFromEnv,
   type FetchedFile,
   type PutResult,
-} from "@doska/file-storage/server"
+} from "@kanban/file-storage/server"
 import type { FastifyInstance } from "fastify"
 
 /**

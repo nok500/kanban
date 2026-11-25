@@ -1,5 +1,5 @@
-import type { EntryPart, Member } from "@doska/core"
-import { ModalClose } from "@doska/ui-kit"
+import type { EntryPart, Member } from "@kanban/core"
+import { ModalClose } from "@kanban/ui-kit"
 import { ArrowRight } from "lucide-react"
 import { Link } from "wouter"
 import { routes } from "@/lib/routes"

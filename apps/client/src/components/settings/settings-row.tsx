@@ -1,4 +1,4 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { ChevronRight, ExternalLink } from "lucide-react"
 import type { ReactNode } from "react"
 

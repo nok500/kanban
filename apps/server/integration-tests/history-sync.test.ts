@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "@doska/contract"
+import type { HistoryEntry } from "@kanban/contract"
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { auth } from "../src/auth"
 import { getDB } from "../src/db/get-db"

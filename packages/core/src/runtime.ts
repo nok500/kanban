@@ -5,7 +5,7 @@ import type {
   Http,
   KeyValue,
   Net,
-} from "@doska/ports"
+} from "@kanban/ports"
 
 /**
  * Everything this package needs from the platform underneath it, installed once

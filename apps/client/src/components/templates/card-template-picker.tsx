@@ -5,10 +5,10 @@ import {
   MenuItem,
   MenuSeparator,
   MenuTrigger,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { SquareText } from "lucide-react"
 import { useLocation } from "wouter"
-import { useTemplateCards, type Card } from "@doska/core"
+import { useTemplateCards, type Card } from "@kanban/core"
 import { routes } from "@/lib/routes"
 
 interface IProps {

@@ -1,4 +1,4 @@
-import type { Foreground } from "@doska/ports"
+import type { Foreground } from "@kanban/ports"
 
 export const webForeground: Foreground = {
   active: () => document.visibilityState === "visible",

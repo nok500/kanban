@@ -1,5 +1,5 @@
 import { useLocation, useRoute } from "wouter"
-import { boardDigest, groupBoardCards, type Board } from "@doska/core"
+import { boardDigest, groupBoardCards, type Board } from "@kanban/core"
 import { routes } from "@/lib/routes"
 import { DeckRows } from "./deck-rows"
 

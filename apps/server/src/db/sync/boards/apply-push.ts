@@ -1,4 +1,4 @@
-import type { Change } from "@doska/contract"
+import type { Change } from "@kanban/contract"
 import { eq } from "drizzle-orm"
 import { assertBoardAccess } from "../../access"
 import { dashboards } from "../../schema"

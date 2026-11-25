@@ -7,7 +7,7 @@ import {
   useLastBoard,
   useDashboards,
   type Dashboard,
-} from "@doska/core"
+} from "@kanban/core"
 import { useDashboardNav } from "@/lib/hooks/use-dashboard-nav"
 
 /**

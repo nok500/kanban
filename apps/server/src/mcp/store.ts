@@ -1,13 +1,13 @@
-import type { BoardStore } from "@doska/mcp"
+import type { BoardStore } from "@kanban/mcp"
 import type {
   Change,
   Dashboard,
   DashboardChange,
   Member,
   SidebarLayout,
-} from "@doska/contract"
+} from "@kanban/contract"
 import { ORPCError } from "@orpc/server"
-import { HybridClock } from "@doska/sync"
+import { HybridClock } from "@kanban/sync"
 import { assertBoardAccess } from "../db/access"
 import { boardSync, boardsListSync, listRoster } from "../db/sync"
 

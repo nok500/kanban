@@ -1,4 +1,4 @@
-import { CARD_FIELD_GROUP } from "@doska/contract"
+import { CARD_FIELD_GROUP } from "@kanban/contract"
 import type { Card } from "../../types"
 import { db } from "../db/db"
 import { recordEdit } from "../history/record-edit"

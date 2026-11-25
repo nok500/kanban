@@ -1,6 +1,6 @@
 import type { Completion, CompletionSource } from "@codemirror/autocomplete"
-import { matchPrefixTrigger, type PrefixOption } from "@doska/markdown"
-import { rankBy } from "@doska/core"
+import { matchPrefixTrigger, type PrefixOption } from "@kanban/markdown"
+import { rankBy } from "@kanban/core"
 import { insertAt } from "./insert-at"
 
 /**

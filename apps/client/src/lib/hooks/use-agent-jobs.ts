@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { apiUrl, appFetch } from "@doska/core"
+import { apiUrl, appFetch } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
 
 export interface AgentJobInfo {

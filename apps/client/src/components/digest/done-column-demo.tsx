@@ -1,4 +1,4 @@
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 import { Check, CircleCheck } from "lucide-react"
 import { useEffect, useState } from "react"
 

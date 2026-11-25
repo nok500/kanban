@@ -1,5 +1,5 @@
-import { Checkbox, cn } from "@doska/ui-kit"
-import type { DigestCard, CardPatch } from "@doska/core"
+import { Checkbox, cn } from "@kanban/ui-kit"
+import type { DigestCard, CardPatch } from "@kanban/core"
 import { Card } from "../card/card"
 import { ColumnSwatch } from "../column/column-swatch"
 

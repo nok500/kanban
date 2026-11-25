@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke-tests a running self-host stack (docker-compose.selfhost.yml). Args pick
+# Smoke-tests a running self-host stack (docker-compose.yml). Args pick
 # which checks run; no args runs all of them.
 #
 #   BASE              origin to probe, matching what install.sh writes as
@@ -10,7 +10,7 @@
 #   AUTH_LOGIN/AUTH_PASSWORD  the seeded account the auth check signs in as
 #
 #   ./.github/scripts/selfhost-smoke.sh
-#   BASE=http://127.0.0.1 HOST_HEADER=doska.example.com ./.github/scripts/selfhost-smoke.sh api discovery
+#   BASE=http://127.0.0.1 HOST_HEADER=kanban.example.com ./.github/scripts/selfhost-smoke.sh api discovery
 set -euo pipefail
 
 BASE=${BASE:-http://localhost:8080}
@@ -33,7 +33,7 @@ preflight() {
   case $code in
     7 | 28)
       printf '  ✗ nothing answering at %s — start the stack first:\n' "$BASE" >&2
-      printf '      docker compose -f docker-compose.selfhost.yml up -d --wait\n' >&2
+      printf '      docker compose -f docker-compose.yml up -d --wait\n' >&2
       exit 1
       ;;
   esac

@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalTitle } from "@doska/ui-kit"
+import { Modal, ModalContent, ModalTitle } from "@kanban/ui-kit"
 import { SyncSetup } from "./sync-setup"
 
 interface IProps {

@@ -1,4 +1,4 @@
-import { Card as CardBase } from "@doska/ui-kit"
+import { Card as CardBase } from "@kanban/ui-kit"
 import type { DraggableProvidedDraggableProps } from "@hello-pangea/dnd"
 
 const WIDTH = 220

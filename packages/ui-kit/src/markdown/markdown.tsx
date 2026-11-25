@@ -3,7 +3,7 @@ import {
   parseMarkdown,
   renderMarkdown,
   useMarkdownRenderers,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import { createWebAdapter } from "./adapter"
 import { MarkdownRoot } from "./markdown-root"
 

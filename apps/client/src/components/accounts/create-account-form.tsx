@@ -1,7 +1,7 @@
-import { Button, Input } from "@doska/ui-kit"
+import { Button, Input } from "@kanban/ui-kit"
 import { UserPlus } from "lucide-react"
 import { useState } from "react"
-import { useCreateAccount } from "@doska/core"
+import { useCreateAccount } from "@kanban/core"
 
 /** Adds an account: a login and its first password, nothing else. */
 export function CreateAccountForm() {

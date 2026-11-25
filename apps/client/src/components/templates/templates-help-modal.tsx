@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
 import {
   CopyPlus,
   Folder,

@@ -1,4 +1,4 @@
-import { toTagName } from "@doska/markdown"
+import { toTagName } from "@kanban/markdown"
 import { CornerDownLeft } from "lucide-react"
 import { useState } from "react"
 

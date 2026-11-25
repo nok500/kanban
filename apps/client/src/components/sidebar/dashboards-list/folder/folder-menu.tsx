@@ -1,4 +1,4 @@
-import { Button, Menu, MenuTrigger, cn } from "@doska/ui-kit"
+import { Button, Menu, MenuTrigger, cn } from "@kanban/ui-kit"
 import { MoreVertical } from "lucide-react"
 import { type FolderActions, FolderMenuItems } from "./folder-menu-items"
 

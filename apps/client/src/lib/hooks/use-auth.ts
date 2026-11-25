@@ -1,4 +1,4 @@
-import { type Session, useSession } from "@doska/core"
+import { type Session, useSession } from "@kanban/core"
 
 export function useAuth(): Omit<Session, "authed"> & {
   authed: boolean | null

@@ -1,4 +1,4 @@
-import { startBackgroundSync as start } from "@doska/sync"
+import { startBackgroundSync as start } from "@kanban/sync"
 import { runtime } from "../../runtime"
 import { isOfflineAcknowledged } from "./connection"
 import { sync } from "./sync-engine"

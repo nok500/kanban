@@ -1,5 +1,5 @@
 import { Flag } from "lucide-react"
-import { PRIORITIES } from "@doska/tokens"
+import { PRIORITIES } from "@kanban/tokens"
 import { cn } from "./lib/cn"
 
 const CHIP_BY_PRIORITY: Record<string, string> = {

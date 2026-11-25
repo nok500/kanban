@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useLocation, useRoute } from "wouter"
-import { toggleTag } from "@doska/core"
-import { useIsMobile } from "@doska/ui-kit"
+import { toggleTag } from "@kanban/core"
+import { useIsMobile } from "@kanban/ui-kit"
 import { routes } from "@/lib/routes"
 import { getCardView } from "@/lib/card-view"
 

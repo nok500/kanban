@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { KeyValue } from "@doska/ports"
+import type { KeyValue } from "@kanban/ports"
 import { DirtyStore } from "../src/dirty"
 import type { PushInput, PushResult, SyncDriver } from "../src/driver"
 import { SyncEngine, type SyncFailure } from "../src/engine"

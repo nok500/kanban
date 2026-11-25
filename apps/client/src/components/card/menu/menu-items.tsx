@@ -1,6 +1,6 @@
-import { MenuContent, MenuItem, MenuSeparator } from "@doska/ui-kit"
+import { MenuContent, MenuItem, MenuSeparator } from "@kanban/ui-kit"
 import { History, Pencil } from "lucide-react"
-import { fallbackCard, useCard, useUpdateCard } from "@doska/core"
+import { fallbackCard, useCard, useUpdateCard } from "@kanban/core"
 import { CopyIdItem } from "./copy-id-item"
 import { DeadlineSub } from "./deadline-sub"
 import { DeleteItem } from "./delete-item"

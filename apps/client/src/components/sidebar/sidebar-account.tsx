@@ -1,10 +1,10 @@
-import { useAccount } from "@doska/core"
+import { useAccount } from "@kanban/core"
 import {
   cn,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { LogIn } from "lucide-react"
 import { useState } from "react"
 import { useLoginPrompt } from "@/providers/login-prompt/login-prompt-context"

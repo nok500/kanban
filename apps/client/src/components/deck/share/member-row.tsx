@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { Button } from "@doska/ui-kit"
-import { type Member } from "@doska/core"
+import { Button } from "@kanban/ui-kit"
+import { type Member } from "@kanban/core"
 import { AccountTag } from "../../accounts/account-tag"
 import { UserAvatar } from "../../accounts/user-avatar"
 

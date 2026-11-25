@@ -1,5 +1,5 @@
-import { cn } from "@doska/ui-kit"
-import type { SlashCommand } from "@doska/markdown"
+import { cn } from "@kanban/ui-kit"
+import type { SlashCommand } from "@kanban/markdown"
 
 interface IProps {
   commands: SlashCommand[]

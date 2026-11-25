@@ -8,7 +8,7 @@ import {
   sync,
   useDashboards,
   useDigest,
-} from "@doska/core"
+} from "@kanban/core"
 import { routes } from "@/lib/routes"
 import { useDeck } from "@/providers/deck/deck-context"
 import { Digest } from "./digest"

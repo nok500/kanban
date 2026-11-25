@@ -11,12 +11,12 @@
 // The interface subpaths, not the package roots: those also export the web
 // adapters, and importing one drags `lib.dom` into every neutral package's
 // program.
-export type { ClientDB, KeyRange, Query } from "@doska/client-db/client-db"
+export type { ClientDB, KeyRange, Query } from "@kanban/client-db/client-db"
 export type {
   FileInput,
   FileStorage as Files,
   StoredFile,
-} from "@doska/file-storage"
+} from "@kanban/file-storage"
 
 export type { KeyValue } from "./key-value"
 export type { Http } from "./http"

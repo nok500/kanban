@@ -6,7 +6,7 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd"
 import { generateKeyBetween } from "fractional-indexing"
-import { type Column, byPosition } from "@doska/core"
+import { type Column, byPosition } from "@kanban/core"
 import { createColumnBlock } from "./create-col-block"
 
 interface IProps {

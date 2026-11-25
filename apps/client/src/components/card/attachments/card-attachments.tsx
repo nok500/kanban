@@ -6,9 +6,8 @@ import {
   activeStorage,
   attachmentUnavailable,
   useConnection,
-} from "@doska/core"
-import { downloadBlob, revealInDownloads } from "@/lib/download"
-import { isDesktop } from "@/lib/platform"
+} from "@kanban/core"
+import { downloadBlob } from "@/lib/download"
 import { useAttachmentUrls } from "@/lib/hooks/use-attachment-url"
 import { AttachmentList } from "./attachment-list"
 import { AttachmentViewer } from "./attachment-viewer"
@@ -51,14 +50,6 @@ export function CardAttachments({ cardId, isReadonly, className }: IProps) {
     setError("")
     try {
       const storage = activeStorage()
-      if (isDesktop()) {
-        const blob = await storage.get(cardId, att.key)
-        await revealInDownloads(
-          att.name,
-          new Uint8Array(await blob.arrayBuffer())
-        )
-        return
-      }
       if (isRenderableImage(att.mime)) {
         setViewing(att)
         return

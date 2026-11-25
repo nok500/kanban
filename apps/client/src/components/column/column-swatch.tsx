@@ -1,4 +1,4 @@
-import { COLUMN_COLORS, cn } from "@doska/ui-kit"
+import { COLUMN_COLORS, cn } from "@kanban/ui-kit"
 
 interface IProps {
   /** A column's stored color id; "" is the "no color" dot. */

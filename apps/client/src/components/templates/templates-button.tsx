@@ -1,4 +1,4 @@
-import { SidebarMenuButton, SidebarMenuItem } from "@doska/ui-kit"
+import { SidebarMenuButton, SidebarMenuItem } from "@kanban/ui-kit"
 import { useLocation } from "wouter"
 import { routes } from "@/lib/routes"
 

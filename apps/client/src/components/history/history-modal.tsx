@@ -1,5 +1,5 @@
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
-import { useHistory, type HistoryEntry } from "@doska/core"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
+import { useHistory, type HistoryEntry } from "@kanban/core"
 import { HistoryList } from "./history-list"
 
 const TITLES: Record<HistoryEntry["entityType"], string> = {

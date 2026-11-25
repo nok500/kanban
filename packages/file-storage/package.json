@@ -1,5 +1,5 @@
 {
-  "name": "@doska/file-storage",
+  "name": "@kanban/file-storage",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "@aws-sdk/client-s3": "^3.1142.0"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/node": "^22",
     "vitest": "^5.0.5"
   },

@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import type { PrefixOption } from "@doska/markdown/core"
+import type { PrefixOption } from "@kanban/markdown/core"
 import { useBoard } from "./queries"
 
 /**

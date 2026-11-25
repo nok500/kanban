@@ -1,5 +1,4 @@
-import { hasSignedIn, useAuthRequired, useSession } from "@doska/core"
-import { isDesktop } from "@/lib/platform"
+import { hasSignedIn, useAuthRequired, useSession } from "@kanban/core"
 import { SignInPage } from "./sign-in-page"
 
 /** On the web, a server with ALWAYS_AUTH shows a signed-out visitor only the
@@ -7,8 +6,6 @@ import { SignInPage } from "./sign-in-page"
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const authRequired = useAuthRequired()
   const session = useSession()
-
-  if (isDesktop()) return children
 
   // A device that signed in before skips the wait
   const loading = authRequired.isLoading || session.isLoading

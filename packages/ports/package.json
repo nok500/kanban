@@ -1,5 +1,5 @@
 {
-  "name": "@doska/ports",
+  "name": "@kanban/ports",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -7,11 +7,11 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@doska/client-db": "workspace:*",
-    "@doska/file-storage": "workspace:*"
+    "@kanban/client-db": "workspace:*",
+    "@kanban/file-storage": "workspace:*"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/node": "^22",
     "typescript": "~6"
   },

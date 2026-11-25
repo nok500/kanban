@@ -2,8 +2,8 @@ import type { FileInput, FileStorage, StoredFile } from "../file-storage"
 
 /**
  * Platform hooks the adapter needs, injected so the package stays free of the
- * app's `runtime` module: `fetch` is the app's `appFetch` (native HTTP on
- * desktop, so session cookies ride along), `apiUrl` turns a path into an
+ * app's `runtime` module: `fetch` is the app's `appFetch` (so the session
+ * rides along), `apiUrl` turns a path into an
  * absolute URL against the configured server.
  */
 export interface S3Deps {

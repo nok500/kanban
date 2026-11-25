@@ -1,5 +1,5 @@
 import type { APIRequestContext } from "@playwright/test"
-import type { Change, DashboardChange } from "@doska/contract"
+import type { Change, DashboardChange } from "@kanban/contract"
 
 /* -------------------------------------------------------------------------- */
 /*  Second-client RPC layer. These talk to the real backend straight over     */

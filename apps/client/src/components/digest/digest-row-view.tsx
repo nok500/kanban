@@ -5,7 +5,7 @@ import {
   useMoveCardToColumn,
   useSaveCard,
   type CardPatch,
-} from "@doska/core"
+} from "@kanban/core"
 import { useDashboardNav } from "@/lib/hooks"
 import { REORDER_TRANSITION } from "@/lib/motion"
 import { DeckProvider, useDeck } from "@/providers/deck/deck-context"

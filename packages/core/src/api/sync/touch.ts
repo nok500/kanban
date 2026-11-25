@@ -3,7 +3,7 @@ import {
   COLUMN_GROUPS,
   type CardGroup,
   type ColumnGroup,
-} from "@doska/contract"
+} from "@kanban/contract"
 import type { Card, Column } from "../../types"
 import { stamp } from "./hlc"
 

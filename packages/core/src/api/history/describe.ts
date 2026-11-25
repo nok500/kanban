@@ -1,5 +1,5 @@
-import { PRIORITIES } from "@doska/tokens"
-import { formatDeadlineShort } from "@doska/utils"
+import { PRIORITIES } from "@kanban/tokens"
+import { formatDeadlineShort } from "@kanban/utils"
 import type { HistoryEntry } from "../../types"
 
 export type EntryPart =

@@ -1,5 +1,5 @@
 {
-  "name": "@doska/client-db",
+  "name": "@kanban/client-db",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "fake-indexeddb": "^6.2.5",
     "vitest": "^5.0.5"
   }

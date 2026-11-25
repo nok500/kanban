@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { apiUrl, appFetch } from "@doska/core"
+import { apiUrl, appFetch } from "@kanban/core"
 import { readChatStream } from "./read-chat-stream"
 
 /** A passage of the card a message is about, from a per-paragraph button. */

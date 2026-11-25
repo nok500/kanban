@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 
 const MIN_SCALE = 1
 const MAX_SCALE = 8

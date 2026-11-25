@@ -4,7 +4,7 @@ import {
   type Change,
   type Column,
   type Dashboard,
-} from "@doska/contract"
+} from "@kanban/contract"
 import { z } from "zod"
 import {
   type Board,

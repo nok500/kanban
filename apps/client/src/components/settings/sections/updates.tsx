@@ -1,4 +1,4 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { useState } from "react"
 import { runUpdateCheck, useUpdateState } from "@/lib/update-store"
 import { useAppVersion } from "@/lib/version"
@@ -14,8 +14,7 @@ const CheckState = {
 type CheckState = (typeof CheckState)[keyof typeof CheckState]
 
 /**
- * Manual update check for both platforms: a Tauri updater bundle on desktop,
- * a waiting service worker in the PWA.
+ * Manual update check: looks for a waiting service worker in the PWA.
  */
 export function UpdatesSection() {
   const version = useAppVersion()
@@ -50,11 +49,6 @@ export function UpdatesSection() {
             You're up to date.
           </span>
         )}
-        {update.status === "mismatch" && (
-          <span className="text-xs text-muted-foreground">
-            Your server runs v{update.version}. Use the matching app version.
-          </span>
-        )}
         {update.status !== "none" && (
           <Button
             type="button"
@@ -65,16 +59,12 @@ export function UpdatesSection() {
               void update.install().catch(() => setCheck(CheckState.checked))
             }}
           >
-            {update.status === "available" && update.kind === "web"
-              ? "Reload to update"
-              : `Install v${update.version}`}
+            Reload to update
           </Button>
         )}
         {check === CheckState.installing && (
           <span className="text-xs text-muted-foreground">
-            {update.status === "available" && update.kind === "web"
-              ? "Reloading…"
-              : "Installing…"}
+            Reloading…
           </span>
         )}
       </div>

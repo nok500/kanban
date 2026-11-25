@@ -2,8 +2,8 @@ import { test, expect } from "@playwright/test"
 
 /**
  * The settings modal's only section: the version it's running and the manual
- * update check. On the web build there is never a Tauri bundle to install, so
- * the check settles on "up to date".
+ * update check. With no newer service worker waiting, the check settles on
+ * "up to date".
  */
 test.describe("settings updates", () => {
   test("shows the running version and reports up to date", async ({ page }) => {

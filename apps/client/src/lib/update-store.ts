@@ -1,12 +1,13 @@
 import { useSyncExternalStore } from "react"
-import { subscribeServerUrl } from "@doska/core"
-import { isDesktop } from "./platform"
 import { checkServiceWorkerUpdate, registerServiceWorker } from "./pwa"
-import { checkForUpdates, type UpdateState } from "./updates"
 
-// Shared result of the startup update check, so multiple parts of the UI (the
-// install banner, the sidebar version label) react to the same state without
-// each running its own check.
+// Shared result of the update check, so multiple parts of the UI (the toast,
+// the settings section) react to the same state without each running its own.
+
+/** A newer build is waiting in the service worker, or there is none. */
+export type UpdateState =
+  | { status: "none" }
+  | { status: "available"; install: () => Promise<void> }
 
 const CHECK_INTERVAL_MS = 15 * 60 * 1000
 
@@ -14,42 +15,24 @@ let state: UpdateState = { status: "none" }
 let started = false
 const listeners = new Set<() => void>()
 
-function emit() {
+function set(next: UpdateState) {
+  state = next
   for (const listener of listeners) listener()
 }
 
-function set(next: UpdateState) {
-  state = next
-  emit()
-}
-
-/**
- * Runs the update check on startup, every 15 minutes after, and whenever the
- * sync server changes, publishing the result. Exactly one of the two sources
- * can fire: the Tauri updater on desktop, the service worker on web.
- */
+/** Registers the service worker on first use and re-checks every 15 minutes. */
 export function startUpdateCheck(): void {
   if (started) return
   started = true
-  void checkForUpdates().then(set)
-  registerServiceWorker((install) =>
-    set({ status: "available", kind: "web", install })
-  )
+  registerServiceWorker((install) => set({ status: "available", install }))
   setInterval(() => void runUpdateCheck(), CHECK_INTERVAL_MS)
-  subscribeServerUrl(() => void runUpdateCheck())
 }
 
 /**
- * Re-runs the platform's update check on demand and publishes the result, so
- * the settings action and the startup check share one state.
+ * Asks the browser to re-fetch the service worker. A waiting worker announces
+ * itself through the registerServiceWorker callback, which publishes the state.
  */
 export async function runUpdateCheck(): Promise<void> {
-  if (isDesktop()) {
-    set(await checkForUpdates())
-    return
-  }
-  // A waiting worker announces itself through the registerServiceWorker
-  // callback above, which publishes the state — nothing to set here.
   await checkServiceWorkerUpdate()
 }
 

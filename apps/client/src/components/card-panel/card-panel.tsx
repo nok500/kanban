@@ -1,4 +1,4 @@
-import { useIsMobile } from "@doska/ui-kit"
+import { useIsMobile } from "@kanban/ui-kit"
 import { useCallback, useEffect, useState } from "react"
 import { useLocation, useRoute } from "wouter"
 import { useHistoryState } from "wouter/use-browser-location"
@@ -8,13 +8,8 @@ import { useRevealCard } from "@/providers/card-reveal/card-reveal-context"
 import { useCardDeleteToast } from "@/components/toasts/card-delete/use-card-delete-toast"
 import { CardPane } from "./card-pane"
 import { CardPanelShell } from "./card-panel-shell"
-import { useCardSave, useDeleteCard, useCard } from "@doska/core"
-import { isDesktop } from "@/lib/platform"
+import { useCardSave, useDeleteCard, useCard } from "@kanban/core"
 import { getCardView } from "@/lib/card-view"
-import {
-  openCardWindow,
-  type DropPoint,
-} from "@/components/card-window/open-card-window"
 
 interface IProps {
   /** Where to navigate when the panel closes (its deck root). */
@@ -51,20 +46,11 @@ export function CardPanel({ closeHref }: IProps) {
     if (isOpen && content?.deletedAt) close()
   }, [isOpen, content?.deletedAt, close])
 
-  const popOut = isDesktop()
-    ? (at?: DropPoint) => {
-        if (!card) return
-        close()
-        void openCardWindow(card, at)
-      }
-    : undefined
-
   return (
     <CardPanelShell
       isOpen={isOpen}
       onClose={close}
       onClosed={() => setLastCard(null)}
-      onTearOff={popOut}
     >
       {card && content && (
         <CardPane
@@ -88,7 +74,6 @@ export function CardPanel({ closeHref }: IProps) {
             if (isMobile || getCardView() === "modal") close()
             reveal(card)
           }}
-          onPopOut={popOut && (() => popOut())}
         />
       )}
     </CardPanelShell>

@@ -1,4 +1,4 @@
-import { Calendar } from "@doska/ui-kit"
+import { Calendar } from "@kanban/ui-kit"
 
 export default function DeadlineCalendar({
   value,

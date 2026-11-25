@@ -1,4 +1,4 @@
-import { useCard, activeStorage } from "@doska/core"
+import { useCard, activeStorage } from "@kanban/core"
 import { downloadBlob } from "@/lib/download"
 import { useAttachmentUrlByKey } from "@/lib/hooks/use-attachment-url"
 import { AttachmentImage } from "./attachment-image"

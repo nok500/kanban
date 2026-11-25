@@ -1,4 +1,4 @@
-import type { Foreground, Net } from "@doska/ports"
+import type { Foreground, Net } from "@kanban/ports"
 
 /**
  * Starts a periodic background sync, polling only while the app is in front of

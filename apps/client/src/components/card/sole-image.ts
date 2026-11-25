@@ -1,5 +1,5 @@
-import type { SoleImage } from "@doska/markdown"
-import type { Attachment } from "@doska/core"
+import type { SoleImage } from "@kanban/markdown"
+import type { Attachment } from "@kanban/core"
 import { isRenderableImage } from "./attachments/renderable-image"
 
 export function cardSoleImage(

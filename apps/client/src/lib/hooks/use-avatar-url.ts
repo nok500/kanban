@@ -1,15 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
-import { activeStorage } from "@doska/core"
-import { isDesktop } from "@/lib/platform"
+import { activeStorage } from "@kanban/core"
 
 const isUrl = (image: string) => /^(https?:\/\/|data:)/.test(image)
 
 function resolve(key: string): Promise<string> {
-  return isDesktop()
-    ? activeStorage()
-        .get("avatar", key)
-        .then((blob) => URL.createObjectURL(blob))
-    : activeStorage().url("avatar", key)
+  return activeStorage().url("avatar", key)
 }
 
 export function useAvatarUrl(image: string | null): string | null {

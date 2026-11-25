@@ -1,6 +1,6 @@
 import { useLocation } from "wouter"
-import { columnHue, MdWikilink } from "@doska/ui-kit"
-import { findCardByRef, type Card, type Column } from "@doska/core"
+import { columnHue, MdWikilink } from "@kanban/ui-kit"
+import { findCardByRef, type Card, type Column } from "@kanban/core"
 import { routes } from "@/lib/routes"
 
 interface IProps {

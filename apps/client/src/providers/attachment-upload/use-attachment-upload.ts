@@ -7,7 +7,7 @@ import {
   useUpdateCard,
   activeStorage,
   isSyncConfigured,
-} from "@doska/core"
+} from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
 import { ErrorToast } from "@/components/toasts/error/error-toast"
 

@@ -1,6 +1,6 @@
 import { useMemo, type ReactNode } from "react"
-import { MarkdownRenderersProvider } from "@doska/markdown"
-import { publicAttachmentUrl, type Card, type Column } from "@doska/core"
+import { MarkdownRenderersProvider } from "@kanban/markdown"
+import { publicAttachmentUrl, type Card, type Column } from "@kanban/core"
 import { AttachmentImage } from "../card/attachments/attachment-image"
 import { PublicCardRefLink } from "./public-card-ref-link"
 

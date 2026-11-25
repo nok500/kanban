@@ -2,7 +2,6 @@
 // sync is opt-in.
 
 import { runtime } from "../runtime"
-import { appFetch } from "./fetch"
 
 const SERVER_URL_KEY = "deck:server-url"
 
@@ -47,17 +46,5 @@ export function apiUrlDomain(): string {
     return new URL(base).host
   } catch {
     return base
-  }
-}
-
-// Pins desktop updates to the server's release line; null if unreachable.
-export async function getServerVersion(): Promise<string | null> {
-  try {
-    const res = await appFetch(apiUrl("/api/version"))
-    if (!res.ok) return null
-    const body = (await res.json()) as { version?: unknown }
-    return typeof body.version === "string" ? body.version : null
-  } catch {
-    return null
   }
 }

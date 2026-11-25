@@ -1,5 +1,5 @@
-import type { Card } from "@doska/contract"
-import { mergeBody } from "@doska/merge"
+import type { Card } from "@kanban/contract"
+import { mergeBody } from "@kanban/merge"
 import type { cards } from "../../schema"
 
 export type CardRow = typeof cards.$inferSelect

@@ -16,7 +16,7 @@ permissions:
 
 env:
   DOCKER_IMAGE_TAG: ci
-  COMPOSE: docker compose -f docker-compose.selfhost.yml -f .github/ci/selfhost.override.yml
+  COMPOSE: docker compose -f docker-compose.yml -f .github/ci/selfhost.override.yml
 
 jobs:
   build:
@@ -148,7 +148,7 @@ jobs:
           done
           [ -n "${PREV:-}" ] || { echo "no release tag found"; exit 1; }
           echo "upgrading from $PREV"
-          git show "$PREV:docker-compose.selfhost.yml" > .selfhost-prev-compose.yml
+          git show "$PREV:docker-compose.yml" > .selfhost-prev-compose.yml
 
       - name: Start the last released version
         env:
@@ -212,7 +212,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Chromium
-        run: pnpm --filter @doska/e2e exec playwright install --with-deps chromium
+        run: pnpm --filter @kanban/e2e exec playwright install --with-deps chromium
 
       - name: Write .env
         run: ./.github/ci/write-env.sh http://127.0.0.1:8080
@@ -268,7 +268,7 @@ jobs:
           $COMPOSE up -d --wait db
           dump=$(ls -t backups/*.sql.gz | head -1)
           gunzip -c "$dump" | \
-            $COMPOSE exec -T db psql -U doska -d doska -v ON_ERROR_STOP=1 --quiet
+            $COMPOSE exec -T db psql -U kanban -d kanban -v ON_ERROR_STOP=1 --quiet
 
       - name: Start the rest of the stack
         run: $COMPOSE up -d --wait

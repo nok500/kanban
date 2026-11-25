@@ -1,5 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
-import type { Dashboard, SidebarItem } from "@doska/contract"
+import type { Dashboard, SidebarItem } from "@kanban/contract"
 import type { Board } from "../board"
 import { reply } from "./reply"
 

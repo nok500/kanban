@@ -7,7 +7,7 @@ import { seenModals } from "./e2e/helpers/seen-modals"
 const here = path.dirname(fileURLToPath(import.meta.url))
 const CLIENT_DIR = path.resolve(here, "../../apps/client")
 const SERVER_DIR = path.resolve(here, "../../apps/server")
-const FILES_TMP = path.join(os.tmpdir(), "doska-e2e-files")
+const FILES_TMP = path.join(os.tmpdir(), "kanban-e2e-files")
 
 /**
  * The sync e2e tests need a real backend, so the harness boots two servers:
@@ -67,8 +67,7 @@ export default defineConfig({
         ALWAYS_AUTH: "false",
         // The bundle is served from :4173 and the API answers on :3100, so every
         // authenticated auth call is cross-origin here. A real deploy serves both
-        // from one origin (and desktop's `tauri://` origins are trusted in the
-        // auth config); only this harness needs the split spelled out.
+        // from one origin; only this harness needs the split spelled out.
         AUTH_TRUSTED_ORIGINS: "http://localhost:4173",
         // Attachments are stored on disk at a path that only exists inside the
         // container image, so point them at a temp dir and the specs can upload

@@ -1,5 +1,5 @@
-import { CardContent, MdTag, cn, columnHue } from "@doska/ui-kit"
-import { tagColor, useBoardMembers, useTagColors } from "@doska/core"
+import { CardContent, MdTag, cn, columnHue } from "@kanban/ui-kit"
+import { tagColor, useBoardMembers, useTagColors } from "@kanban/core"
 import { AtSign } from "lucide-react"
 import { useDeck } from "@/providers/deck/deck-context"
 import { useAuth } from "@/lib/hooks"

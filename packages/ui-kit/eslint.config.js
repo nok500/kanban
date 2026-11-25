@@ -1,3 +1,3 @@
-import react from "@doska/configs/eslint/react"
+import react from "@kanban/configs/eslint/react"
 
 export default react

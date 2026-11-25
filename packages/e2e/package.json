@@ -1,5 +1,5 @@
 {
-  "name": "@doska/e2e",
+  "name": "@kanban/e2e",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
-    "@doska/contract": "workspace:*",
+    "@kanban/configs": "workspace:*",
+    "@kanban/contract": "workspace:*",
     "@playwright/test": "1.63.0",
     "@types/node": "^22",
     "typescript": "~6"

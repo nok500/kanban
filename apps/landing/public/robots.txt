@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://github.com/nok500/kanban-job-board/sitemap.xml
-Sitemap: https://github.com/nok500/kanban-job-board#readme/sitemap.xml

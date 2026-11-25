@@ -1,5 +1,5 @@
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
-import { useActivity } from "@doska/core"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
+import { useActivity } from "@kanban/core"
 import { HistoryList } from "./history-list"
 
 interface IProps {

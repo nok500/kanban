@@ -1,5 +1,3 @@
-import { isDesktop } from "./platform"
-
 let registration: ServiceWorkerRegistration | undefined
 
 /**
@@ -9,13 +7,12 @@ let registration: ServiceWorkerRegistration | undefined
  * Calls `onUpdate` when a new build has been fetched and is waiting to take
  * over. Installing it activates the waiting worker and reloads the page.
  *
- * No-ops inside the Tauri webview (which ships its own bundle and updater) and
- * in dev, where the precache would just serve stale modules.
+ * No-ops in dev, where the precache would just serve stale modules.
  */
 export function registerServiceWorker(
   onUpdate: (install: () => Promise<void>) => void
 ): void {
-  if (isDesktop() || !import.meta.env.PROD) return
+  if (!import.meta.env.PROD) return
   if (!("serviceWorker" in navigator)) return
 
   void import("virtual:pwa-register").then(({ registerSW }) => {

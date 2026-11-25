@@ -1,5 +1,5 @@
-import type { SyncState } from "@doska/sync"
-import { Button, cn } from "@doska/ui-kit"
+import type { SyncState } from "@kanban/sync"
+import { Button, cn } from "@kanban/ui-kit"
 import {
   Check,
   CloudOff,
@@ -14,7 +14,7 @@ import {
   useConnection,
   useOfflineAcknowledged,
   type Connection,
-} from "@doska/core"
+} from "@kanban/core"
 import { useAuth, useSyncStatus } from "@/lib/hooks"
 
 /** Resolves the live sync state into the icon, label, and tint to render. */

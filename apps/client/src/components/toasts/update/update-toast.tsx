@@ -19,7 +19,6 @@ export function UpdateToast() {
     toast.custom(
       (toastInstance) => (
         <UpdateToastContent
-          state={state}
           installing={installing}
           visible={toastInstance.visible}
           onInstall={() => {

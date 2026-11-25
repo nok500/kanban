@@ -1,4 +1,4 @@
-import { S3FileStorage, type FileStorage } from "@doska/file-storage"
+import { S3FileStorage, type FileStorage } from "@kanban/file-storage"
 import { appFetch } from "../fetch"
 import { apiUrl } from "../server"
 

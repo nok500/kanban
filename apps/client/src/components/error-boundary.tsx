@@ -1,10 +1,9 @@
-import { Button, buttonVariants, cn } from "@doska/ui-kit"
+import { Button, buttonVariants, cn } from "@kanban/ui-kit"
 import { Component, type ErrorInfo, type ReactNode } from "react"
 import { Check, Copy } from "lucide-react"
-import { errorLog, type ReportedError } from "@doska/core"
-import { isDesktop } from "@/lib/platform"
+import { errorLog, type ReportedError } from "@kanban/core"
 
-const ISSUE_URL = "https://github.com/nok500/kanban-job-board/issues/new"
+const ISSUE_URL = "https://github.com/nok500/kanban/issues/new"
 
 /** GitHub drops the prefill past roughly 8k of URL, so the stack gets a budget. */
 const STACK_BUDGET = 4000
@@ -39,10 +38,6 @@ export class ErrorBoundary extends Component<IProps, IState> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("Unhandled render error", error, info.componentStack)
-    if (!isDesktop()) return
-    void import("@tauri-apps/api/app").then(async ({ getVersion }) =>
-      this.setState({ version: await getVersion() })
-    )
   }
 
   componentWillUnmount() {
@@ -52,7 +47,6 @@ export class ErrorBoundary extends Component<IProps, IState> {
   private environment(): string {
     return [
       `Version: ${this.state.version}`,
-      `Platform: ${isDesktop() ? "desktop" : "web"}`,
       `User agent: ${navigator.userAgent}`,
     ].join("\n")
   }

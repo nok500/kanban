@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "@doska/core"
+import type { HistoryEntry } from "@kanban/core"
 import { HistoryRow } from "./history-row"
 
 interface IProps {

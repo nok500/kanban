@@ -1,4 +1,4 @@
-import { CardContent, ModalDescription } from "@doska/ui-kit"
+import { CardContent, ModalDescription } from "@kanban/ui-kit"
 import {
   tagColor,
   useDeleteTag,
@@ -7,7 +7,7 @@ import {
   useSetTagColor,
   useTagColors,
   useTagOptions,
-} from "@doska/core"
+} from "@kanban/core"
 import { useState } from "react"
 import { ConfirmDialog } from "../confirm-dialog"
 import { TagRow } from "./tag-row"

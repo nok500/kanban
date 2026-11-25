@@ -1,9 +1,9 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { CircleHelp } from "lucide-react"
 import { useState } from "react"
 import { CardHelpModal } from "./card-help-modal"
 
-export const CARD_SHORTCUTS_SEEN_KEY = "doska:card-shortcuts-seen"
+export const CARD_SHORTCUTS_SEEN_KEY = "kanban:card-shortcuts-seen"
 
 function readSeen(): boolean {
   try {

@@ -5,7 +5,7 @@ import type {
   HistoryEntry,
   MemberRole,
   SidebarItem,
-} from "@doska/contract"
+} from "@kanban/contract"
 import {
   bigint,
   boolean,
@@ -40,7 +40,7 @@ export const counters = pgTable("counters", {
 })
 
 /**
- * The three entity tables mirror `@doska/contract` (= the client's `types.ts`),
+ * The three entity tables mirror `@kanban/contract` (= the client's `types.ts`),
  * each augmented with sync metadata:
  *
  *  - `updatedAt`: client clock, the last-writer-wins tiebreaker. On cards and

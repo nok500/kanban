@@ -1,4 +1,4 @@
-# @doska/mcp
+# @kanban/mcp
 
 The board as MCP tools, so an agent can read and edit it: create cards from a
 discussion, tick off task lists, move things between columns, tidy up a board.
@@ -13,7 +13,7 @@ made them in the app.
 The server serves these at `/mcp`, behind OAuth. From Claude Code:
 
 ```sh
-claude mcp add --transport http doska https://your-server/mcp
+claude mcp add --transport http kanban https://your-server/mcp
 ```
 
 The first call opens a browser to sign in; the client registers itself and holds

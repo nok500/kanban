@@ -1,4 +1,4 @@
-import { Button, Input, cn } from "@doska/ui-kit"
+import { Button, Input, cn } from "@kanban/ui-kit"
 import {
   CircleCheck,
   CircleX,

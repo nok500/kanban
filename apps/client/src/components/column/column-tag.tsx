@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react"
-import { TINT_TEXT, cn, columnHue } from "@doska/ui-kit"
+import { TINT_TEXT, cn, columnHue } from "@kanban/ui-kit"
 
 interface IProps {
   title: string

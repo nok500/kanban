@@ -32,7 +32,7 @@ export function createBoardServer(
   onToolError?: (tool: string, error: unknown) => void
 ): McpServer {
   const server = new McpServer(
-    { name: "doska", version },
+    { name: "kanban", version },
     // The board's concepts and Markdown dialect, which no tool schema can carry
     // on its own. Clients put these in front of the first call.
     { instructions: INSTRUCTIONS }

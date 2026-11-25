@@ -1,4 +1,4 @@
-import base from "@doska/configs/prettier"
+import base from "@kanban/configs/prettier"
 
 /**
  * Client formatting = shared base + Tailwind class sorting. The Tailwind plugin

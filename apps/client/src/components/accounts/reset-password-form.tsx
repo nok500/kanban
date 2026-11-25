@@ -1,6 +1,6 @@
-import { Button, Input } from "@doska/ui-kit"
+import { Button, Input } from "@kanban/ui-kit"
 import { useState } from "react"
-import { useSetAccountPassword } from "@doska/core"
+import { useSetAccountPassword } from "@kanban/core"
 
 interface IProps {
   id: string

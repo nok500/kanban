@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react"
-import type { SyncFailure } from "@doska/sync"
+import type { SyncFailure } from "@kanban/sync"
 import { runtime } from "../../runtime"
 import { isSyncConfigured, subscribeSyncConfig } from "../server"
 import { sync } from "./sync-engine"

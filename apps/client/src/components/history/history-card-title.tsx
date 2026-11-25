@@ -1,6 +1,6 @@
 import { Link } from "wouter"
-import { useCard, useCardDeckId } from "@doska/core"
-import { ModalClose } from "@doska/ui-kit"
+import { useCard, useCardDeckId } from "@kanban/core"
+import { ModalClose } from "@kanban/ui-kit"
 import { routes } from "@/lib/routes"
 
 interface IProps {

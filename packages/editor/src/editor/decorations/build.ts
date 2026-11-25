@@ -1,4 +1,4 @@
-import { CUT_RE } from "@doska/markdown"
+import { CUT_RE } from "@kanban/markdown"
 import { syntaxTree } from "@codemirror/language"
 import { RangeSetBuilder } from "@codemirror/state"
 import { Decoration, EditorView, type DecorationSet } from "@codemirror/view"

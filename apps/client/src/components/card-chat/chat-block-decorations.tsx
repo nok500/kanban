@@ -1,11 +1,11 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { MessageSquareText } from "lucide-react"
 import { useMemo, type ReactNode } from "react"
 import {
   MarkdownRenderersProvider,
   useMarkdownRenderers,
   type DecorateBlock,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import { useCardChatOpener } from "@/lib/chat/card-chat-opener"
 import { focusOf, isChatBlock } from "@/lib/chat/chat-blocks"
 

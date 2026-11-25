@@ -1,7 +1,7 @@
-import { MenuItem } from "@doska/ui-kit"
+import { MenuItem } from "@kanban/ui-kit"
 import { Trash2 } from "lucide-react"
 import { useParams } from "wouter"
-import { useDeleteCard, useCard } from "@doska/core"
+import { useDeleteCard, useCard } from "@kanban/core"
 import { useCardDeleteToast } from "@/components/toasts/card-delete/use-card-delete-toast"
 import { routes } from "@/lib/routes"
 

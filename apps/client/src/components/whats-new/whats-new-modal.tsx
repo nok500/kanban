@@ -1,4 +1,4 @@
-import { SlidesModal } from "@doska/ui-kit"
+import { SlidesModal } from "@kanban/ui-kit"
 import tags from "./slides/tags.md?raw"
 import smallerThings from "./slides/smaller-things.md?raw"
 import feedback from "./slides/feedback.md?raw"

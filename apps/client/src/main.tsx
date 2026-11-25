@@ -7,14 +7,10 @@ import { Toaster } from "react-hot-toast"
 import { LoginPromptProvider } from "@/providers/login-prompt/login-prompt-provider"
 import { AuthGate } from "@/components/login/auth-gate"
 import { ThemeProvider } from "@/providers/theme/theme-provider"
-import { isDesktop, isLinuxDesktop } from "@/lib/platform"
-import { bootstrapClient, queryClient } from "@doska/core"
+import { bootstrapClient, queryClient } from "@kanban/core"
 import { trackAppHeight } from "@/lib/app-height"
 import { blockEdgeSwipeNavigation } from "@/lib/edge-swipe"
 import { initErrorReporting } from "@/lib/error-reporting"
-import { initExternalLinks } from "@/lib/external-links"
-import { initFullscreen } from "@/lib/fullscreen"
-import { initZoom } from "@/lib/zoom"
 import { requestPersistentStorage } from "@/lib/persist"
 import { routes } from "@/lib/routes"
 import { Router } from "./router.tsx"
@@ -27,10 +23,6 @@ import { OnboardingModal } from "@/components/onboarding/onboarding-modal"
 import { ManageTagsModal } from "@/components/manage-tags/manage-tags-modal"
 import { persistOnboardingSkip } from "@/components/onboarding/use-should-onboard"
 import { UndoToaster } from "@/components/toasts/card-delete/undo-toaster"
-import { WindowDragRegion } from "@/components/window-drag-region"
-import { WindowControlsFlag } from "@/components/window-controls-flag"
-import { WindowSyncListener } from "@/components/card-window/window-sync-listener"
-import { LocalMcpListener } from "@/components/local-mcp/local-mcp-listener"
 import { DevMenu } from "@/components/dev-menu/dev-menu"
 import "./index.css"
 
@@ -39,8 +31,6 @@ const root = createRoot(document.getElementById("root")!)
 const isPublicLink = routes.public.matches(window.location.pathname)
 
 trackAppHeight()
-
-if (isLinuxDesktop()) document.documentElement.classList.add("no-blur")
 
 initErrorReporting()
 
@@ -77,13 +67,7 @@ if (isPublicLink) {
 
   blockEdgeSwipeNavigation()
 
-  initZoom()
-
-  initFullscreen()
-
-  initExternalLinks()
-
-  if (!isDesktop()) void requestPersistentStorage()
+  void requestPersistentStorage()
 
   root.render(
     <StrictMode>
@@ -106,10 +90,6 @@ if (isPublicLink) {
                 <WhatsNewToast />
                 <OnboardingModal />
                 <ManageTagsModal />
-                <WindowDragRegion />
-                <WindowControlsFlag />
-                <WindowSyncListener />
-                <LocalMcpListener />
                 {import.meta.env.DEV && <DevMenu />}
               </LoginPromptProvider>
             </AuthGate>

@@ -6,7 +6,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuTrigger,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import {
   ArrowRightLeft,
   History,
@@ -19,7 +19,7 @@ import { HistoryModal } from "../../history/history-modal"
 import { ReorderColumnsModal } from "../reorder-columns/reorder-columns-modal"
 import { BoardTemplateItems } from "./board-template-items"
 import { SortSub } from "./sort-sub"
-import type { Column } from "@doska/core"
+import type { Column } from "@kanban/core"
 import { useManageTags } from "../../manage-tags/use-manage-tags"
 
 interface IProps {

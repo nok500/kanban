@@ -1,4 +1,4 @@
-import { Button, cn } from "@doska/ui-kit"
+import { Button, cn } from "@kanban/ui-kit"
 import { Plus } from "lucide-react"
 
 interface IProps {

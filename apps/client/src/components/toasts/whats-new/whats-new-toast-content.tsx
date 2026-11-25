@@ -1,4 +1,4 @@
-import { Button, Toast } from "@doska/ui-kit"
+import { Button, Toast } from "@kanban/ui-kit"
 import { Sparkles, X } from "lucide-react"
 
 interface IProps {

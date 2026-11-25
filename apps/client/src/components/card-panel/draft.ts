@@ -1,5 +1,5 @@
-import { mergeBody } from "@doska/merge"
-import type { Card } from "@doska/core"
+import { mergeBody } from "@kanban/merge"
+import type { Card } from "@kanban/core"
 
 /** Backs the textareas only: round-tripping each keystroke would lag the caret. */
 export type Draft = Partial<Pick<Card, "title" | "body">>

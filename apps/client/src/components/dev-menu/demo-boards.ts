@@ -6,7 +6,7 @@ import {
   queryClient,
   updateCard,
   type Card,
-} from "@doska/core"
+} from "@kanban/core"
 
 type DemoCard = Partial<Pick<Card, "body" | "deadline" | "priority" | "tags">>
 

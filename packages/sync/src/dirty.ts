@@ -1,4 +1,4 @@
-import type { KeyValue } from "@doska/ports"
+import type { KeyValue } from "@kanban/ports"
 
 /** Reads the persisted dirty refs, tolerating a missing or corrupt entry. */
 function load(kv: KeyValue, storageKey: string): Set<string> {

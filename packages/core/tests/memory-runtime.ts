@@ -1,4 +1,4 @@
-import type { KeyRange } from "@doska/ports"
+import type { KeyRange } from "@kanban/ports"
 import type { Runtime } from "../src/runtime"
 import { installRuntime } from "../src/runtime"
 import { sync } from "../src/api/sync"

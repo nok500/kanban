@@ -1,4 +1,4 @@
-import type { DashboardChange } from "@doska/contract"
+import type { DashboardChange } from "@kanban/contract"
 import { applyChanges } from "../core/apply-changes"
 import { applyOne } from "./apply-one"
 import { boardsListCounter } from "../constants"

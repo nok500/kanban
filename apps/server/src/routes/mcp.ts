@@ -1,4 +1,4 @@
-import { createBoardServer } from "@doska/mcp"
+import { createBoardServer } from "@kanban/mcp"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import type { FastifyInstance } from "fastify"
 import { DbStore } from "../mcp/store"

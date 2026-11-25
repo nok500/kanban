@@ -5,8 +5,8 @@ import {
   useActiveUsers,
   useTagColors,
   type Card,
-} from "@doska/core"
-import { columnHue } from "@doska/ui-kit"
+} from "@kanban/core"
+import { columnHue } from "@kanban/ui-kit"
 import { TriangleAlert } from "lucide-react"
 import { Fragment } from "react"
 import { useDeck } from "@/providers/deck/deck-context"

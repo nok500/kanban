@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { Search } from "lucide-react"
 import { SearchModal } from "../../search"
 import { useSearchShortcut } from "@/lib/hooks"

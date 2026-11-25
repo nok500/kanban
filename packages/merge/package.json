@@ -1,5 +1,5 @@
 {
-  "name": "@doska/merge",
+  "name": "@kanban/merge",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "diff": "^8.0.4"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/node": "^22",
     "tsx": "^4.23.15",
     "typescript": "~6",

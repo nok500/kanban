@@ -1,4 +1,4 @@
-import { TagChip } from "@doska/ui-kit"
+import { TagChip } from "@kanban/ui-kit"
 import { AtSign, Hash, X } from "lucide-react"
 
 interface IProps {

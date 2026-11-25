@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react"
-import { type Attachment, activeStorage, useConnection } from "@doska/core"
-import { isDesktop } from "@/lib/platform"
+import { type Attachment, activeStorage, useConnection } from "@kanban/core"
 
 const urlCache = new Map<string, string>()
 const cacheKey = (cardId: string, key: string) => `${cardId}:${key}`
 
 function resolve(cardId: string, key: string): Promise<string> {
-  return isDesktop()
-    ? activeStorage()
-        .get(cardId, key)
-        .then((blob) => URL.createObjectURL(blob))
-    : activeStorage().url(cardId, key)
+  return activeStorage().url(cardId, key)
 }
 
 /**

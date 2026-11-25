@@ -1,8 +1,7 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { useState } from "react"
-import { ssoLinkUrl, useLinkedProviders, useSsoProviders } from "@doska/core"
+import { ssoLinkUrl, useLinkedProviders, useSsoProviders } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
-import { isDesktop } from "@/lib/platform"
 import { SettingsSection } from "../section"
 
 /**
@@ -26,16 +25,6 @@ export function SignInSection() {
       setError(e instanceof Error ? e.message : "Could not start connecting")
     }
   }
-
-  if (isDesktop())
-    return (
-      <SettingsSection>
-        <p className="text-xs text-muted-foreground">
-          Connecting {providers.map((p) => p.name).join(", ")} sign-in is
-          available in the web app.
-        </p>
-      </SettingsSection>
-    )
 
   return (
     <SettingsSection>

@@ -1,14 +1,13 @@
-import { SidebarMenuButton, cn } from "@doska/ui-kit"
+import { SidebarMenuButton, cn } from "@kanban/ui-kit"
 import { Globe, Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import {
   type Dashboard,
   useDeleteDashboard,
   useDuplicateDashboard,
-} from "@doska/core"
+} from "@kanban/core"
 import { useCardDrop } from "@/providers/card-drop/card-drop-context"
 import { useDashboardNav } from "@/lib/hooks"
-import { unlinkDeletedBoard } from "@/lib/vault/use-vault"
 import { ConfirmDialog } from "../../../confirm-dialog"
 import { BoardContextMenu } from "./board-context-menu"
 import { BoardMenu } from "./board-menu"
@@ -77,10 +76,7 @@ export function BoardItem({
         title="Delete board?"
         description={`"${dashboard.title}" and all of its columns and cards move to the trash, where they stay restorable for 14 days.`}
         confirmLabel="Delete board"
-        onConfirm={() => {
-          unlinkDeletedBoard(dashboard.id)
-          deleteDashboard(dashboard.id)
-        }}
+        onConfirm={() => deleteDashboard(dashboard.id)}
       />
     </>
   )

@@ -1,6 +1,6 @@
-import { MenuContent, MenuItem, MenuSub, MenuSubTrigger } from "@doska/ui-kit"
+import { MenuContent, MenuItem, MenuSub, MenuSubTrigger } from "@kanban/ui-kit"
 import { AtSign, Check } from "lucide-react"
-import { useBoardMembers, type Card, type CardPatch } from "@doska/core"
+import { useBoardMembers, type Card, type CardPatch } from "@kanban/core"
 import { useDeck } from "@/providers/deck/deck-context"
 import { useAuth } from "@/lib/hooks"
 

@@ -1,4 +1,4 @@
-import { Toast } from "@doska/ui-kit"
+import { Toast } from "@kanban/ui-kit"
 import { Info } from "lucide-react"
 
 interface IProps {

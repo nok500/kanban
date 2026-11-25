@@ -1,5 +1,5 @@
-import type { Change } from "@doska/contract"
-import type { DirtyStore, PushInput, PushResult, SyncDriver } from "@doska/sync"
+import type { Change } from "@kanban/contract"
+import type { DirtyStore, PushInput, PushResult, SyncDriver } from "@kanban/sync"
 import { orpc } from "../orpc"
 import * as board from "./board-channel"
 import * as generic from "./channel-shared"

@@ -1,4 +1,4 @@
-import type { Member, MemberRole } from "@doska/contract"
+import type { Member, MemberRole } from "@kanban/contract"
 import { and, eq, isNull, or, sql } from "drizzle-orm"
 import { db } from "../client"
 import { boardMembers, dashboards, user } from "../schema"

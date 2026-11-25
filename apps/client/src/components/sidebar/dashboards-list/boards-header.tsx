@@ -1,4 +1,4 @@
-import { Button, SidebarGroupLabel } from "@doska/ui-kit"
+import { Button, SidebarGroupLabel } from "@kanban/ui-kit"
 import { Folder, Plus } from "lucide-react"
 import { useDashboardNav } from "@/lib/hooks"
 

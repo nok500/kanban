@@ -7,10 +7,10 @@ import {
   addDays,
   todayIso,
   useIsMobile,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { CalendarDays, Check } from "lucide-react"
 import { Suspense, lazy } from "react"
-import type { Card, CardPatch } from "@doska/core"
+import type { Card, CardPatch } from "@kanban/core"
 
 const DeadlineCalendar = lazy(() => import("./deadline-calendar"))
 

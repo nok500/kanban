@@ -3,19 +3,15 @@ packages:
   - "packages/*"
 
 minimumReleaseAgeStrict: true
-# My own package
-minimumReleaseAgeExclude:
-  - bakemd
-  - react-draggable-folders
 
 allowBuilds:
   esbuild: true
 
 # Dependabot advisory
 overrides:
-  # One React for the whole workspace, at the version Expo SDK 57 ships against.
-  # Two copies gave the mobile app two @tanstack/react-query instances, so the
-  # provider and the hooks in @doska/core saw different contexts.
+  # One React for the whole workspace: two copies would give two
+  # @tanstack/react-query instances, so the provider and the hooks in
+  # @kanban/core would see different contexts.
   react: 19.2.3
   react-dom: 19.2.3
   brace-expansion: ^5.0.12

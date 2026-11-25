@@ -4,7 +4,7 @@ import {
   renderMarkdown,
   type BlockInfo,
   type MarkdownAdapter,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import { focusOf, isChatBlock } from "./chat-blocks"
 
 /** An adapter that renders every node as a plain tagged object. */

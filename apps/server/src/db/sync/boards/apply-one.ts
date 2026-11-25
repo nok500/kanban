@@ -2,8 +2,8 @@ import {
   CARD_FIELD_GROUP,
   COLUMN_FIELD_GROUP,
   type Change,
-} from "@doska/contract"
-import { mergeRecord } from "@doska/merge"
+} from "@kanban/contract"
+import { mergeRecord } from "@kanban/merge"
 import { eq } from "drizzle-orm"
 import { cards, columns } from "../../schema"
 import { allocateCardNumber } from "../constants"
@@ -14,7 +14,7 @@ type ColumnRow = typeof columns.$inferSelect
 
 /**
  * Merges one board change into its table, group by group (see
- * `@doska/merge`), stamping `nextSeq`. Returns whether it wrote (i.e. consumed
+ * `@kanban/merge`), stamping `nextSeq`. Returns whether it wrote (i.e. consumed
  * a sequence number).
  */
 export async function applyOne(

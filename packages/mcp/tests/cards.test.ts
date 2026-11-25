@@ -1,5 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
-import type { Card, Change, Column, Member } from "@doska/contract"
+import type { Card, Change, Column, Member } from "@kanban/contract"
 import { describe, expect, it } from "vitest"
 import { createBoard } from "../src/board"
 import type { BoardStore } from "../src/store"

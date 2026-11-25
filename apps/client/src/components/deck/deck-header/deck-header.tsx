@@ -1,4 +1,4 @@
-import { Button, InvisibleInput } from "@doska/ui-kit"
+import { Button, InvisibleInput } from "@kanban/ui-kit"
 import { Plus } from "lucide-react"
 import { PageHeader } from "../../app/page-header"
 import { BoardActionsMenu } from "./board-actions-menu"
@@ -6,8 +6,7 @@ import { SearchButton } from "./search-button"
 import { RowViewButton } from "./row-view-button"
 import { ShareButton } from "./share-button"
 import { UserFilter } from "./user-filter"
-import type { Column, DashboardView } from "@doska/core"
-import { VaultButton } from "./vault-button"
+import type { Column, DashboardView } from "@kanban/core"
 
 interface IProps {
   boardId: string
@@ -63,7 +62,6 @@ export function DeckHeader({
         <SearchButton boardId={boardId} />
         <RowViewButton view={view} onChangeView={onChangeView} />
         <ShareButton boardId={boardId} title={title} />
-        <VaultButton />
         <BoardActionsMenu
           boardId={boardId}
           title={title}

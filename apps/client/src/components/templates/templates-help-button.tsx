@@ -1,4 +1,4 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { CircleHelp } from "lucide-react"
 
 export function TemplatesHelpButton({ onClick }: { onClick: () => void }) {

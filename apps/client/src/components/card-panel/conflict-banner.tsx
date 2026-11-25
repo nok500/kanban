@@ -1,8 +1,8 @@
-import { Button, cn } from "@doska/ui-kit"
-import { diffBody } from "@doska/merge"
+import { Button, cn } from "@kanban/ui-kit"
+import { diffBody } from "@kanban/merge"
 import { TriangleAlert } from "lucide-react"
 import { useState } from "react"
-import type { Card } from "@doska/core"
+import type { Card } from "@kanban/core"
 import { diffHunks } from "./diff-hunks"
 
 const LINE_BY_KIND = {

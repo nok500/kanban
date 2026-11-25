@@ -10,7 +10,7 @@ import {
   type DashboardChange,
   type Member,
   type SidebarLayout,
-} from "@doska/contract"
+} from "@kanban/contract"
 import { generateKeyBetween } from "fractional-indexing"
 import type { BoardStore } from "./store"
 

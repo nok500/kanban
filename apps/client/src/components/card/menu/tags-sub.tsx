@@ -7,7 +7,7 @@ import {
   TagChip,
   cn,
   columnHue,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { Check, Tag } from "lucide-react"
 import { useState } from "react"
 import {
@@ -17,7 +17,7 @@ import {
   useTagOptions,
   type Card,
   type CardPatch,
-} from "@doska/core"
+} from "@kanban/core"
 import { useDeck } from "@/providers/deck/deck-context"
 import { NewTagInput } from "./new-tag-input"
 

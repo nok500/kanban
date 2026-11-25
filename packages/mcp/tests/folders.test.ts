@@ -1,4 +1,4 @@
-import type { Dashboard } from "@doska/contract"
+import type { Dashboard } from "@kanban/contract"
 import { describe, expect, it } from "vitest"
 import { folderTree } from "../src/tools/folders"
 

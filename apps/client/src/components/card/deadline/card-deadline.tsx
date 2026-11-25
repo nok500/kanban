@@ -1,4 +1,4 @@
-import { DateInput, DeadlineChip, cn } from "@doska/ui-kit"
+import { DateInput, DeadlineChip, cn } from "@kanban/ui-kit"
 
 interface IProps {
   value: string | null

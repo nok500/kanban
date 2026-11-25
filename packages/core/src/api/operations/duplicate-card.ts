@@ -1,4 +1,4 @@
-import { CARD_GROUPS } from "@doska/contract"
+import { CARD_GROUPS } from "@kanban/contract"
 import { generateKeyBetween } from "fractional-indexing"
 import { db } from "../db/db"
 import { newId } from "./new-id"

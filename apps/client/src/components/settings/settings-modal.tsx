@@ -1,13 +1,11 @@
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
-import { BookOpen, Bot, BrainCircuit, Server, Users } from "lucide-react"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
+import { BookOpen, BrainCircuit, Server, Users } from "lucide-react"
 import { FaGithub } from "react-icons/fa"
-import { isSyncConfigured } from "@doska/core"
+import { isSyncConfigured } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
-import { isDesktop } from "@/lib/platform"
 import { SettingsSection } from "./section"
 import { SettingsRow } from "./settings-row"
 import { CardViewSection } from "./sections/card-view"
-import { QuickNoteSection } from "./sections/quick-note"
 import { UpdatesSection } from "./sections/updates"
 
 interface IProps {
@@ -15,7 +13,6 @@ interface IProps {
   onOpenChange: (open: boolean) => void
   onOpenAccounts: () => void
   onOpenChatEndpoints: () => void
-  onOpenLocalMcp: () => void
   onOpenServerMcp: () => void
 }
 
@@ -24,7 +21,6 @@ export function SettingsModal({
   onOpenChange,
   onOpenAccounts,
   onOpenChatEndpoints,
-  onOpenLocalMcp,
   onOpenServerMcp,
 }: IProps) {
   const { isAdmin, authed } = useAuth()
@@ -36,7 +32,6 @@ export function SettingsModal({
         <CardContent className="flex flex-col overflow-y-auto px-0">
           <UpdatesSection />
           <CardViewSection />
-          <QuickNoteSection />
           <SettingsSection>
             <div className="flex flex-col">
               {isAdmin && (
@@ -53,13 +48,6 @@ export function SettingsModal({
                   onClick={onOpenChatEndpoints}
                 />
               )}
-              {isDesktop() && (
-                <SettingsRow
-                  icon={<Bot className="size-4" />}
-                  label="Local MCP"
-                  onClick={onOpenLocalMcp}
-                />
-              )}
               {isSyncConfigured() && authed === true && (
                 <SettingsRow
                   icon={<Server className="size-4" />}
@@ -70,12 +58,12 @@ export function SettingsModal({
               <SettingsRow
                 icon={<BookOpen className="size-4" />}
                 label="Docs"
-                href="https://github.com/nok500/kanban-job-board#readme"
+                href="https://github.com/nok500/kanban#readme"
               />
               <SettingsRow
                 icon={<FaGithub className="size-4" />}
                 label="GitHub"
-                href="https://github.com/nok500/kanban-job-board"
+                href="https://github.com/nok500/kanban"
               />
             </div>
           </SettingsSection>

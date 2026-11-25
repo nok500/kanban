@@ -1,5 +1,5 @@
-import { Button } from "@doska/ui-kit"
-import { useSetColumnDone, useBoard } from "@doska/core"
+import { Button } from "@kanban/ui-kit"
+import { useSetColumnDone, useBoard } from "@kanban/core"
 import { ColumnSwatch } from "../column/column-swatch"
 
 interface IProps {

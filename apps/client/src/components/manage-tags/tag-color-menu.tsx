@@ -1,4 +1,4 @@
-import { Menu, MenuContent, MenuTrigger } from "@doska/ui-kit"
+import { Menu, MenuContent, MenuTrigger } from "@kanban/ui-kit"
 import { ColumnColorItems } from "../column/column-color-items"
 import { ColumnSwatch } from "../column/column-swatch"
 

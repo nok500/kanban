@@ -4,7 +4,7 @@ import type {
   DigestCard,
   DigestFilter,
   DigestGroup as Group,
-} from "@doska/core"
+} from "@kanban/core"
 import { CenteredState } from "./centered-state"
 import { DigestGroup } from "./digest-group"
 

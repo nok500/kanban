@@ -11,8 +11,8 @@ import { oidcProvider } from "./oidc"
  * model underneath all of them:
  *
  *  - the **browser** holds a session cookie, set on sign-in;
- *  - the **desktop app** holds the same session as a bearer token (`bearer`),
- *    because a native webview has no usable cookie jar against a remote origin;
+ *  - **scripts and API clients** can hold the same session as a bearer token
+ *    (`bearer`) instead of a cookie;
  *  - **MCP clients** (Claude Code, Claude Desktop, claude.ai) run OAuth 2.1 —
  *    dynamic registration, PKCE, consent — against the `mcp` plugin, and hold an
  *    access token bound to this server.
@@ -35,12 +35,7 @@ export const auth = betterAuth({
   // Local accounts carry a synthetic email (see seed.ts), so connecting a
   // provider identity to one must not insist the two emails match.
   account: { accountLinking: { allowDifferentEmails: true } },
-  trustedOrigins: [
-    "tauri://localhost",
-    "http://tauri.localhost",
-    "https://tauri.localhost",
-    ...env.authTrustedOrigins,
-  ],
+  trustedOrigins: env.authTrustedOrigins,
   database: drizzleAdapter(getDB(), { provider: "pg", schema }),
   emailAndPassword: { enabled: true, minPasswordLength: 1 },
   session: {

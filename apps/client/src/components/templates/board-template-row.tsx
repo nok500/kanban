@@ -1,10 +1,10 @@
-import { Button, Card as CardBase } from "@doska/ui-kit"
+import { Button, Card as CardBase } from "@kanban/ui-kit"
 import { LayoutDashboard, X } from "lucide-react"
 import {
   useDuplicateDashboard,
   useSetDashboardTemplate,
   type Dashboard,
-} from "@doska/core"
+} from "@kanban/core"
 import { useDashboardNav } from "@/lib/hooks/use-dashboard-nav"
 
 export function BoardTemplateRow({ board }: { board: Dashboard }) {

@@ -1,4 +1,4 @@
-import { type PublicBoard } from "@doska/contract"
+import { type PublicBoard } from "@kanban/contract"
 import { rawFetch } from "./fetch"
 import { apiUrl } from "./server"
 

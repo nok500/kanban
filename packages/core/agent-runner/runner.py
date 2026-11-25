@@ -5,10 +5,14 @@ cards against CV attachments from the board's `Docs` column.
 `agy` and `claude` get a prompt built here and update the card over Kanban MCP.
 `pi` has no MCP: the server sends its prompt (with the CVs' text) and applies
 its answer to the card when the job finishes.
+
+`pi` talks to an OpenAI-compatible server (llama.cpp and the like) from
+LOCAL_PROVIDERS: the first one that answers wins, and the runner writes the pi
+provider config for it into the job's own directory. Without LOCAL_PROVIDERS,
+pi runs on its own config (PI_PROVIDER / PI_MODEL, or pi's defaults).
 """
 
 import base64
-import socket
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -17,6 +21,8 @@ from pathlib import Path
 import subprocess
 import threading
 import time
+from urllib import request as urlrequest
+from urllib.error import URLError
 
 PORT = int(os.environ.get("AGENT_RUNNER_PORT", "4850"))
 AGENTS = ("agy", "claude", "pi")
@@ -24,6 +30,9 @@ AGENTS = ("agy", "claude", "pi")
 # provider's first model.
 PI_PROVIDER = os.environ.get("PI_PROVIDER", "").strip()
 PI_MODEL = os.environ.get("PI_MODEL", "").strip()
+# Name of the provider written into the generated pi config.
+LOCAL_PROVIDER_ID = "local"
+PROBE_TIMEOUT_S = float(os.environ.get("LOCAL_PROVIDERS_TIMEOUT", "3"))
 JOBS_ROOT = Path(os.environ.get("AGENT_JOBS_DIR", "/tmp/agent-jobs"))
 
 jobs: dict[str, dict] = {}
@@ -106,6 +115,96 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
 
 
+def parse_local_providers(raw: str) -> list[dict]:
+    """LOCAL_PROVIDERS as a JSON list (`["192.168.8.229:8080/v1", ...]`) or a
+    comma-separated string. An entry may carry an API key after `|`
+    (`host:8080/v1|secret`). Scheme defaults to http://; `/v1` is added when
+    the path is empty."""
+    raw = raw.strip()
+    if not raw:
+        return []
+    try:
+        entries = json.loads(raw)
+        if isinstance(entries, str):
+            entries = [entries]
+    except json.JSONDecodeError:
+        entries = raw.strip("[]").split(",")
+    providers = []
+    for entry in entries:
+        entry = str(entry).strip().strip("'\"")
+        if not entry:
+            continue
+        url, _, key = entry.partition("|")
+        url = url.strip().rstrip("/")
+        if "://" not in url:
+            url = f"http://{url}"
+        if url.count("/") == 2:
+            url += "/v1"
+        providers.append({"baseUrl": url, "apiKey": key.strip()})
+    return providers
+
+
+LOCAL_PROVIDERS = parse_local_providers(os.environ.get("LOCAL_PROVIDERS", ""))
+
+# Not chat models: never picked unless PI_MODEL names one.
+NON_CHAT = ("embed", "rerank", "whisper", "tts")
+
+
+def list_models(provider: dict) -> list[dict]:
+    req = urlrequest.Request(f"{provider['baseUrl']}/models")
+    if provider["apiKey"]:
+        req.add_header("Authorization", f"Bearer {provider['apiKey']}")
+    with urlrequest.urlopen(req, timeout=PROBE_TIMEOUT_S) as res:
+        return json.load(res).get("data") or []
+
+
+def pick_model(models: list[dict]) -> str | None:
+    """PI_MODEL when the server has it; else a model already loaded (a llama.cpp
+    router reports `status.value`), so a job never swaps the model out from
+    under a chat; else the first chat model."""
+    ids = [m.get("id") for m in models if m.get("id")]
+    if PI_MODEL:
+        return PI_MODEL if PI_MODEL in ids else None
+    chat = [m for m in models if m.get("id") and not any(n in m["id"].lower() for n in NON_CHAT)]
+    for m in chat:
+        status = m.get("status")
+        if isinstance(status, dict) and status.get("value") == "loaded":
+            return m["id"]
+    return chat[0]["id"] if chat else None
+
+
+def resolve_local_provider() -> tuple[dict, str] | None:
+    """The first LOCAL_PROVIDERS entry that answers and has a usable model."""
+    for provider in LOCAL_PROVIDERS:
+        try:
+            model = pick_model(list_models(provider))
+        except (URLError, OSError, ValueError) as exc:
+            log(f"local provider {provider['baseUrl']} unreachable: {exc}")
+            continue
+        if model:
+            return provider, model
+        log(f"local provider {provider['baseUrl']} has no usable model"
+            + (f" (PI_MODEL={PI_MODEL})" if PI_MODEL else ""))
+    return None
+
+
+def write_pi_config(agent_dir: Path, provider: dict, model: str) -> None:
+    """A pi config dir holding just this provider (PI_CODING_AGENT_DIR), so the
+    host's mounted ~/.pi is read by nothing and written by nothing."""
+    agent_dir.mkdir(parents=True, exist_ok=True)
+    config = {
+        "providers": {
+            LOCAL_PROVIDER_ID: {
+                "baseUrl": provider["baseUrl"],
+                "api": "openai-completions",
+                "apiKey": provider["apiKey"] or "none",
+                "models": [{"id": model, "name": model, "contextWindow": 128000}],
+            }
+        }
+    }
+    (agent_dir / "models.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+
 def resolve_pi_model(provider: str) -> str | None:
     """pi (>= 1.6) wants `--model` with `--provider`. Without PI_MODEL, take the
     provider's first model as pi lists it, so a model swap in pi's own config
@@ -129,7 +228,7 @@ def resolve_pi_model(provider: str) -> str | None:
     return None
 
 
-def pi_command(prompt: str, system: str | None) -> list[str]:
+def pi_command(prompt: str, system: str | None, local: tuple[dict, str] | None) -> list[str]:
     """`pi` in print mode with tools, sessions, skills, templates and context
     files off: the prompt already carries the JD and the CVs' text, and the
     answer is all the server reads."""
@@ -145,7 +244,9 @@ def pi_command(prompt: str, system: str | None) -> list[str]:
         "--no-prompt-templates",
         "--offline",
     ]
-    if PI_PROVIDER:
+    if local:
+        cmd += ["--provider", LOCAL_PROVIDER_ID, "--model", local[1]]
+    elif PI_PROVIDER:
         model = PI_MODEL or resolve_pi_model(PI_PROVIDER)
         cmd += ["--provider", PI_PROVIDER]
         if model:
@@ -166,8 +267,21 @@ def run_job(
     log_path: Path,
     system: str | None = None,
 ) -> None:
+    env = {**os.environ, "HOME": os.environ.get("HOME", "/root")}
     if agent == "pi":
-        cmd = pi_command(prompt, system)
+        local = None
+        if LOCAL_PROVIDERS:
+            local = resolve_local_provider()
+            if not local:
+                tried = ", ".join(p["baseUrl"] for p in LOCAL_PROVIDERS)
+                fail_job(job_id, stderr_path(log_path),
+                         f"no LOCAL_PROVIDERS endpoint answered with a usable model (tried {tried})")
+                return
+            agent_dir = job_dir / "pi-agent"
+            write_pi_config(agent_dir, *local)
+            env["PI_CODING_AGENT_DIR"] = str(agent_dir)
+            log(f"job={job_id} pi on {local[0]['baseUrl']} model={local[1]}")
+        cmd = pi_command(prompt, system, local)
     elif agent == "agy":
         cmd = [
             "agy",
@@ -200,7 +314,7 @@ def run_job(
             proc = subprocess.Popen(
                 cmd,
                 cwd=str(job_dir),
-                env={**os.environ, "HOME": os.environ.get("HOME", "/root")},
+                env=env,
                 stdin=subprocess.DEVNULL,
                 stdout=log_file,
                 stderr=err_file if err_path else subprocess.STDOUT,
@@ -229,6 +343,16 @@ def run_job(
             jobs[job_id]["status"] = "failed"
             jobs[job_id]["finishedAt"] = int(time.time() * 1000)
         log(f"job={job_id} error after {elapsed_ms}ms: {exc}")
+
+
+def fail_job(job_id: str, err_path: Path, message: str) -> None:
+    with err_path.open("a", encoding="utf-8") as err_file:
+        err_file.write(f"[runner error] {message}\n")
+    with jobs_lock:
+        jobs[job_id]["status"] = "failed"
+        jobs[job_id]["exitCode"] = 1
+        jobs[job_id]["finishedAt"] = int(time.time() * 1000)
+    log(f"job={job_id} failed: {message}")
 
 
 class RunnerHandler(BaseHTTPRequestHandler):
@@ -371,52 +495,10 @@ class RunnerHandler(BaseHTTPRequestHandler):
         return
 
 
-def _pipe(src: socket.socket, dst: socket.socket) -> None:
-    try:
-        while data := src.recv(65536):
-            dst.sendall(data)
-    except OSError:
-        pass
-    finally:
-        for s in (src, dst):
-            try:
-                s.shutdown(socket.SHUT_RDWR)
-            except OSError:
-                pass
-            s.close()
-
-
-def start_localhost_forward(spec: str) -> None:
-    """`8081:host.docker.internal:8081`: listen on the container's own
-    localhost:8081 and relay to the host. A CLI config written for the host
-    (pi's llama.cpp at http://localhost:8081) then works unchanged in here."""
-    local, target_host, target_port = spec.split(":")
-    listener = socket.create_server(("127.0.0.1", int(local)), reuse_port=False)
-
-    def accept_loop() -> None:
-        while True:
-            client, _ = listener.accept()
-            try:
-                upstream = socket.create_connection((target_host, int(target_port)), timeout=10)
-                upstream.settimeout(None)
-            except OSError as exc:
-                log(f"forward {spec}: cannot reach target: {exc}")
-                client.close()
-                continue
-            for a, b in ((client, upstream), (upstream, client)):
-                threading.Thread(target=_pipe, args=(a, b), daemon=True).start()
-
-    threading.Thread(target=accept_loop, daemon=True).start()
-    log(f"forwarding 127.0.0.1:{local} -> {target_host}:{target_port}")
-
-
 if __name__ == "__main__":
     JOBS_ROOT.mkdir(parents=True, exist_ok=True)
-    for spec in filter(None, (s.strip() for s in os.environ.get("LOCALHOST_FORWARDS", "").split(","))):
-        try:
-            start_localhost_forward(spec)
-        except (OSError, ValueError) as exc:
-            log(f"forward {spec!r} not started: {exc}")
+    if LOCAL_PROVIDERS:
+        log("pi local providers: " + ", ".join(p["baseUrl"] for p in LOCAL_PROVIDERS))
     server = ThreadingHTTPServer(("0.0.0.0", PORT), RunnerHandler)
     log(f"listening on http://0.0.0.0:{PORT} (jobsDir={JOBS_ROOT})")
     server.serve_forever()

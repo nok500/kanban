@@ -1,5 +1,5 @@
 {
-  "name": "@doska/editor",
+  "name": "@kanban/editor",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -18,9 +18,9 @@
     "@codemirror/language": "^6.12.4",
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.13",
-    "@doska/core": "workspace:*",
-    "@doska/markdown": "workspace:*",
-    "@doska/ui-kit": "workspace:*",
+    "@kanban/core": "workspace:*",
+    "@kanban/markdown": "workspace:*",
+    "@kanban/ui-kit": "workspace:*",
     "@lezer/highlight": "^1.2.5",
     "@lezer/markdown": "^1.7.2"
   },
@@ -29,7 +29,7 @@
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/react": "~19.2.18",
     "@types/react-dom": "~19.2.5",
     "eslint": "^10.11.0",

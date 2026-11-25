@@ -1,5 +1,5 @@
 {
-  "name": "@doska/markdown",
+  "name": "@kanban/markdown",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -21,7 +21,7 @@
     "react": "^19"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/mdast": "^4.0.4",
     "@types/react": "~19.2.18",
     "eslint": "^10.11.0",

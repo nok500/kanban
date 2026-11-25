@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { TemplatesView } from "@/components/templates/templates-view"
-import { sync } from "@doska/core"
+import { sync } from "@kanban/core"
 import { AppShell } from "./app-shell"
 
 const NO_DECK = { id: "", sort: [] }

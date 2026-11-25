@@ -1,6 +1,6 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { Columns3, Rows3 } from "lucide-react"
-import type { DashboardView } from "@doska/core"
+import type { DashboardView } from "@kanban/core"
 
 interface IProps {
   view: DashboardView

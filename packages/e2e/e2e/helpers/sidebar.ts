@@ -1,5 +1,5 @@
 import { expect, type APIRequestContext, type Page } from "@playwright/test"
-import type { SidebarItem, SidebarLayout } from "@doska/contract"
+import type { SidebarItem, SidebarLayout } from "@kanban/contract"
 import { dashboardSync, newerThan } from "./rpc"
 
 /* -------------------------------------------------------------------------- */

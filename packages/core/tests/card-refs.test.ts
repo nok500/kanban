@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest"
-import { toWikilink } from "@doska/markdown/core"
+import { toWikilink } from "@kanban/markdown/core"
 import { CARDS, COLUMNS } from "../src/api/constants"
 import {
   findCardByRef,

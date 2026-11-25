@@ -6,11 +6,11 @@
 # image whose wire format we do not control, and the columns used here are the
 # ones present since the first migration.
 #
-#   COMPOSE="docker compose -f docker-compose.selfhost.yml" ./selfhost-data.sh seed
+#   COMPOSE="docker compose -f docker-compose.yml" ./selfhost-data.sh seed
 #   ./selfhost-data.sh verify
 set -euo pipefail
 
-COMPOSE=${COMPOSE:-docker compose -f docker-compose.selfhost.yml}
+COMPOSE=${COMPOSE:-docker compose -f docker-compose.yml}
 BOARD_ID=board-selfhost-ci
 COLUMN_ID=col-selfhost-ci
 CARD_ID=card-selfhost-ci
@@ -20,7 +20,7 @@ CARD_TITLE="survives the upgrade"
 pass() { printf '  ✓ %s\n' "$1"; }
 fail() { printf '  ✗ %s\n' "$1" >&2; exit 1; }
 
-psql() { $COMPOSE exec -T db psql -U doska -d doska -v ON_ERROR_STOP=1 "$@"; }
+psql() { $COMPOSE exec -T db psql -U kanban -d kanban -v ON_ERROR_STOP=1 "$@"; }
 
 seed() {
   psql --quiet > /dev/null <<SQL

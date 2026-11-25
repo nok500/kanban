@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { apiUrl, appFetch } from "@doska/core"
+import { apiUrl, appFetch } from "@kanban/core"
 
 export interface ChatModelInfo {
   id: string

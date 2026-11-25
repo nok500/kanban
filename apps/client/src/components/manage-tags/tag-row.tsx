@@ -1,5 +1,5 @@
-import { Button } from "@doska/ui-kit"
-import { toTagName } from "@doska/markdown"
+import { Button } from "@kanban/ui-kit"
+import { toTagName } from "@kanban/markdown"
 import { Hash, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { TagColorMenu } from "./tag-color-menu"

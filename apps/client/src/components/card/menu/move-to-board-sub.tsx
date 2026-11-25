@@ -1,6 +1,6 @@
-import { MenuContent, MenuItem, MenuSub, MenuSubTrigger } from "@doska/ui-kit"
+import { MenuContent, MenuItem, MenuSub, MenuSubTrigger } from "@kanban/ui-kit"
 import { SquareKanban } from "lucide-react"
-import { useMoveCardToBoard, useDashboards } from "@doska/core"
+import { useMoveCardToBoard, useDashboards } from "@kanban/core"
 import { createElement } from "react"
 import { toast } from "react-hot-toast"
 import { CardMoveToast } from "@/components/toasts/card-move/card-move-toast"

@@ -1,6 +1,6 @@
-import { CardContent, cn } from "@doska/ui-kit"
+import { CardContent, cn } from "@kanban/ui-kit"
 import { Loader2, Paperclip, X } from "lucide-react"
-import type { Attachment } from "@doska/core"
+import type { Attachment } from "@kanban/core"
 
 interface IProps {
   attachments: Attachment[]

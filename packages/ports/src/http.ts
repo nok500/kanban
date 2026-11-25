@@ -1,8 +1,6 @@
 /**
- * Where the server is and how bytes reach it. Two platform differences hide
- * behind this: the transport (a webview's `fetch` can't always be used — the
- * desktop app routes through Tauri's Rust HTTP plugin to bypass CORS) and the
- * base URL (same-origin on web, a URL the user configures anywhere else).
+ * Where the server is and how bytes reach it: the transport and the base URL,
+ * injected so tests and other runtimes can swap them.
  */
 export interface Http {
   /**

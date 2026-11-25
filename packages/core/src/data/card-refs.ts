@@ -3,7 +3,7 @@ import {
   refNumber,
   type Card,
   type Column,
-} from "@doska/contract"
+} from "@kanban/contract"
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import * as api from "../api/operations"

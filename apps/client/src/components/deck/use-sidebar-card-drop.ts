@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { bounce } from "react-draggable-folders"
+import { bounce } from "@kanban/folder-tree"
 import {
   useCardDrop,
   type CardDropTarget,

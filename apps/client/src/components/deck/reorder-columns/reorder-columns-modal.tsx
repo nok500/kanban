@@ -4,8 +4,8 @@ import {
   ModalContent,
   ModalDescription,
   ModalHeader,
-} from "@doska/ui-kit"
-import type { Column } from "@doska/core"
+} from "@kanban/ui-kit"
+import type { Column } from "@kanban/core"
 import { ReorderColumnsDNDContainer } from "./reorder-cols-dnd"
 
 interface IProps {

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { cn, Markdown } from "@doska/ui-kit"
+import { cn, Markdown } from "@kanban/ui-kit"
 import { getCardView, setCardView, type CardView } from "@/lib/card-view"
 import cardView from "./slides/card-view.md?raw"
 

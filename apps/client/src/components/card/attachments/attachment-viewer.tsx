@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalTitle } from "@doska/ui-kit"
+import { Modal, ModalContent, ModalTitle } from "@kanban/ui-kit"
 import { Download, X } from "lucide-react"
 import { useState } from "react"
 import {
@@ -6,7 +6,7 @@ import {
   attachmentUnavailable,
   type AttachmentSource,
   useConnection,
-} from "@doska/core"
+} from "@kanban/core"
 import { AttachmentUnavailable } from "./attachment-unavailable"
 import { ZoomableImage } from "./zoomable-image"
 

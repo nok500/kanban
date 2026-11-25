@@ -6,7 +6,7 @@ import {
   MenuTrigger,
   useIsMobile,
   type MenuActions,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { MoreHorizontal } from "lucide-react"
 import { useRef, type ReactNode } from "react"
 import { CardMenuItems } from "./menu-items"

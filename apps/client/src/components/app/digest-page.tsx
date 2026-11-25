@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react"
 import { useRoute } from "wouter"
 import { DigestView } from "@/components/digest/digest-view"
-import { sync, useCardDeckId } from "@doska/core"
+import { sync, useCardDeckId } from "@kanban/core"
 import { useCardFilters } from "@/lib/hooks"
 import { routes } from "@/lib/routes"
 import { AppShell } from "./app-shell"

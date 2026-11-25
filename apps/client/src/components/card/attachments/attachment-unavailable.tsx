@@ -1,9 +1,9 @@
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 import {
   attachmentUnavailable,
   type AttachmentSource,
   useConnection,
-} from "@doska/core"
+} from "@kanban/core"
 
 interface IProps {
   className?: string

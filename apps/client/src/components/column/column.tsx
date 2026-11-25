@@ -1,6 +1,6 @@
 import { Droppable } from "@hello-pangea/dnd"
 import { useState, type ReactNode } from "react"
-import type { Card } from "@doska/core"
+import type { Card } from "@kanban/core"
 import { ConfirmDialog } from "../confirm-dialog"
 import { ColumnMenu } from "./column-menu"
 import { ColumnView } from "./column-view"

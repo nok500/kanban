@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
   cn,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import type { ReactNode } from "react"
 
 interface IProps {

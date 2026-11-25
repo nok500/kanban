@@ -1,5 +1,5 @@
 import { useTheme } from "@/providers/theme/theme-context"
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { THEME_ICON, themeLabel } from "@/lib/theme-display"
 
 export function ThemeToggle() {

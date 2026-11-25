@@ -1,6 +1,4 @@
-import { UNCLAIMED_BOARDS_WARNING, useUnclaimedLocalBoards } from "@doska/core"
-import { isDesktop } from "@/lib/platform"
-import { BrowserLogin } from "./browser-login"
+import { UNCLAIMED_BOARDS_WARNING, useUnclaimedLocalBoards } from "@kanban/core"
 import { PasswordLogin } from "./password-login"
 
 interface IProps {
@@ -17,11 +15,7 @@ export function SyncSetup({ onDone, onCancel }: IProps) {
         <p className="text-muted-foreground">{UNCLAIMED_BOARDS_WARNING}</p>
       )}
 
-      {isDesktop() ? (
-        <BrowserLogin onDone={onDone} onCancel={onCancel} />
-      ) : (
-        <PasswordLogin onDone={onDone} onCancel={onCancel} />
-      )}
+      <PasswordLogin onDone={onDone} onCancel={onCancel} />
     </div>
   )
 }

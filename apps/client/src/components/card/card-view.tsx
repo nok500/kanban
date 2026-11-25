@@ -6,7 +6,7 @@ import {
   CardTitle,
   MdImage,
   cn,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import type { DetailedHTMLProps, HTMLAttributes, ReactNode } from "react"
 import {
   cut,
@@ -14,8 +14,8 @@ import {
   taskProgress,
   useMarkers,
   type SoleImage,
-} from "@doska/markdown"
-import type { Card, Column } from "@doska/core"
+} from "@kanban/markdown"
+import type { Card, Column } from "@kanban/core"
 import { MarkdownCardPreview } from "../markdown"
 import { CardMeta } from "./card-meta"
 import { CardTags } from "./card-tags"

@@ -1,4 +1,4 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import type { EditorView } from "@codemirror/view"
@@ -6,7 +6,7 @@ import {
   DEFAULT_SLASH_COMMANDS,
   untriggeredInsert,
   type SlashCommand,
-} from "@doska/markdown"
+} from "@kanban/markdown"
 import { SlashCommandList } from "./slash-command-list"
 
 interface IProps {

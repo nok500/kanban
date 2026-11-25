@@ -1,7 +1,7 @@
 name: Publish Images
 
 # Builds and pushes the self-host Docker images (web UI + sync server) to GHCR so
-# people can run docker-compose.selfhost.yml without cloning or building.
+# people can run docker-compose.yml without cloning or building.
 #
 # Tags published per release (v* tag): the immutable version (e.g. 0.4.0) plus a
 # moving channel tag — `latest` for clean semver, `beta` for prerelease tags

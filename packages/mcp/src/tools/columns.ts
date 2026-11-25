@@ -4,8 +4,8 @@ import {
   type Change,
   type Column,
   type ColumnGroup,
-} from "@doska/contract"
-import { COLUMN_COLORS } from "@doska/tokens"
+} from "@kanban/contract"
+import { COLUMN_COLORS } from "@kanban/tokens"
 import { z } from "zod"
 import {
   type Board,

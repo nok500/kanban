@@ -1,4 +1,4 @@
-import { storageFromEnv } from "@doska/file-storage/server"
+import { storageFromEnv } from "@kanban/file-storage/server"
 import type { FastifyBaseLogger } from "fastify"
 import { purgeExpired } from "./db/sync/purge"
 

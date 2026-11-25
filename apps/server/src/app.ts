@@ -5,7 +5,6 @@ import { loggerOptions, setLogger } from "./logger"
 import { registerAgentRoutes } from "./routes/agents"
 import { registerAuthRoutes } from "./routes/auth"
 import { registerChatRoutes, type ChatEndpoint } from "./routes/chat"
-import { registerDesktopLoginRoutes } from "./routes/desktop-login"
 import { registerFileRoutes, type ServerStorage } from "./routes/files"
 import { registerMcpRoutes } from "./routes/mcp"
 import { registerPublicRoutes } from "./routes/public"
@@ -43,7 +42,6 @@ export function buildApp(opts: BuildOptions = {}): FastifyInstance {
 
   // Public: login, OAuth discovery, version, shared boards.
   registerAuthRoutes(app)
-  registerDesktopLoginRoutes(app)
   registerVersionRoutes(app)
   // Must stay out here. Inside either scope below it inherits that scope's
   // session check, and the one feature whose visitors have no session breaks.

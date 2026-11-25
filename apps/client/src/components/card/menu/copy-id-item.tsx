@@ -1,7 +1,7 @@
-import { MenuItem, MenuSeparator } from "@doska/ui-kit"
+import { MenuItem, MenuSeparator } from "@kanban/ui-kit"
 import { Hash } from "lucide-react"
-import { useCard } from "@doska/core"
-import { cardDisplayId } from "@doska/contract"
+import { useCard } from "@kanban/core"
+import { cardDisplayId } from "@kanban/contract"
 
 /** Copies the card's display id. Nothing to copy on a card that has never
  *  synced — its number is stamped there. */

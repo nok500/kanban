@@ -1,4 +1,4 @@
-import { storageFromEnv } from "@doska/file-storage/server"
+import { storageFromEnv } from "@kanban/file-storage/server"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { publicAttachmentExists, readPublicBoard } from "../db/public"
 import { env } from "../env"

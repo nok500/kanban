@@ -6,7 +6,7 @@ import {
   ModalHeader,
   Textarea,
   cn,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import {
   ArrowLeft,
   ArrowUp,

@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 // Stores the hidden ones, so a newly created board shows up by default.
-const HIDDEN_KEY = "doska:digest-hidden-boards"
+const HIDDEN_KEY = "kanban:digest-hidden-boards"
 
 function readHidden(): string[] {
   try {

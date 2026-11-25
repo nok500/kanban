@@ -1,6 +1,6 @@
-import { MenuItem } from "@doska/ui-kit"
+import { MenuItem } from "@kanban/ui-kit"
 import { Copy } from "lucide-react"
-import { useDuplicateCard } from "@doska/core"
+import { useDuplicateCard } from "@kanban/core"
 
 export function DuplicateItem({ cardId }: { cardId: string }) {
   const { mutate: duplicateCard } = useDuplicateCard()

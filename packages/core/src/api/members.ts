@@ -1,4 +1,4 @@
-import type { ActiveUser, Member, MemberRole } from "@doska/contract"
+import type { ActiveUser, Member, MemberRole } from "@kanban/contract"
 import { orpc } from "./sync/orpc"
 
 /** A board's roster plus what the account reading it is allowed to do. */

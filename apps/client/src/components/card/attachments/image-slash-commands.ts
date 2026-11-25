@@ -1,5 +1,5 @@
-import { toAttachmentSrc, type SlashCommand } from "@doska/markdown"
-import type { Attachment } from "@doska/core"
+import { toAttachmentSrc, type SlashCommand } from "@kanban/markdown"
+import type { Attachment } from "@kanban/core"
 import { isRenderableImage } from "./renderable-image"
 
 /** Slash commands inserting the card's renderable image attachments as Markdown refs. */

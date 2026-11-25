@@ -3,7 +3,7 @@ import {
   type SyncFailure,
   type SyncState,
   type SyncStatus,
-} from "@doska/sync"
+} from "@kanban/sync"
 import { ORPCError } from "@orpc/client"
 import type { StoreName } from "../constants"
 import { CARDS, COLUMNS, DASHBOARDS, HISTORY, SIDEBAR } from "../constants"

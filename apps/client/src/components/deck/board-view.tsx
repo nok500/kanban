@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react"
-import { cn } from "@doska/ui-kit"
+import { cn } from "@kanban/ui-kit"
 
 interface IProps {
   /** Omitted where the page around the board owns its top bar. */

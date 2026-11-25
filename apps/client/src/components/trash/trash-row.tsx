@@ -1,6 +1,6 @@
-import { Button, Card as CardBase } from "@doska/ui-kit"
+import { Button, Card as CardBase } from "@kanban/ui-kit"
 import { Columns3, LayoutDashboard, StickyNote } from "lucide-react"
-import { expiryLabel, type TrashEntry, type TrashKind } from "@doska/core"
+import { expiryLabel, type TrashEntry, type TrashKind } from "@kanban/core"
 
 const ICONS: Record<TrashKind, typeof StickyNote> = {
   cards: StickyNote,

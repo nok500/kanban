@@ -11,7 +11,7 @@ import {
   sortCards,
   type Card,
   type CardPatch,
-} from "@doska/core"
+} from "@kanban/core"
 import { useLandingSlot } from "@/lib/hooks"
 import { useDeck } from "@/providers/deck/deck-context"
 import { Column } from "../column/column"

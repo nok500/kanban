@@ -1,4 +1,4 @@
-import type { Card, Column } from "@doska/contract"
+import type { Card, Column } from "@kanban/contract"
 import type { FastifyBaseLogger } from "fastify"
 import { extractText, getDocumentProxy } from "unpdf"
 import { DbStore } from "../mcp/store"

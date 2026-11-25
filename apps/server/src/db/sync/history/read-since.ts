@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "@doska/contract"
+import type { HistoryEntry } from "@kanban/contract"
 import { and, asc, eq, gt, isNotNull, isNull, or } from "drizzle-orm"
 import { db } from "../../client"
 import { boardMembers, dashboards, history } from "../../schema"

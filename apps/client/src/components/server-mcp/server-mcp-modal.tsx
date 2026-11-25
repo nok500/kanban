@@ -1,6 +1,6 @@
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
-import { apiUrl } from "@doska/core"
-import { CopyField } from "@/components/local-mcp/copy-field"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
+import { apiUrl } from "@kanban/core"
+import { CopyField } from "./copy-field"
 
 interface IProps {
   open: boolean
@@ -26,7 +26,7 @@ export function ServerMcpModal({ open, onOpenChange }: IProps) {
             <span className="text-xs text-muted-foreground">Claude Code</span>
             <CopyField
               label="command"
-              value={`claude mcp add --transport http doska ${url}`}
+              value={`claude mcp add --transport http kanban ${url}`}
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -34,7 +34,7 @@ export function ServerMcpModal({ open, onOpenChange }: IProps) {
             <CopyField label="URL" value={url} />
           </div>
           <a
-            href="https://github.com/nok500/kanban-job-board#mcp"
+            href="https://github.com/nok500/kanban#mcp"
             target="_blank"
             rel="noreferrer"
             className="text-xs text-muted-foreground underline underline-offset-2"

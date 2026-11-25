@@ -4,8 +4,8 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-} from "@doska/ui-kit"
-import { useDeleteAccount, useOwnedBoards, type Account } from "@doska/core"
+} from "@kanban/ui-kit"
+import { useDeleteAccount, useOwnedBoards, type Account } from "@kanban/core"
 
 interface IProps {
   account: Account

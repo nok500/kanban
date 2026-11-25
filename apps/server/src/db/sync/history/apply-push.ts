@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "@doska/contract"
+import type { HistoryEntry } from "@kanban/contract"
 import { and, eq, lt } from "drizzle-orm"
 import { assertBoardAccess } from "../../access"
 import { history } from "../../schema"

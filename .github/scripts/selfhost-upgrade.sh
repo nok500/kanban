@@ -18,12 +18,12 @@ done
 [ -n "$PREV" ] || { echo "no release tag found, run 'git fetch --tags'" >&2; exit 1; }
 
 PREV_FILE=.selfhost-prev-compose.yml
-git show "$PREV:docker-compose.selfhost.yml" > "$PREV_FILE"
+git show "$PREV:docker-compose.yml" > "$PREV_FILE"
 
 # Same directory, so all three stages keep the same compose project and its volumes.
 OLD="docker compose -f $PREV_FILE"
 COMPAT="docker compose -f $PREV_FILE -f .github/ci/selfhost.override.yml"
-NEW="docker compose -f docker-compose.selfhost.yml -f .github/ci/selfhost.override.yml"
+NEW="docker compose -f docker-compose.yml -f .github/ci/selfhost.override.yml"
 
 ./.github/scripts/selfhost-require-images.sh
 

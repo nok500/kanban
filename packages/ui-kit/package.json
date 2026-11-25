@@ -1,5 +1,5 @@
 {
-  "name": "@doska/ui-kit",
+  "name": "@kanban/ui-kit",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@base-ui/react": "1.8.0",
-    "@doska/markdown": "workspace:*",
-    "@doska/tokens": "workspace:*",
-    "@doska/utils": "workspace:*",
+    "@kanban/markdown": "workspace:*",
+    "@kanban/tokens": "workspace:*",
+    "@kanban/utils": "workspace:*",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "date-fns": "^4.4.0",
@@ -29,7 +29,7 @@
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@doska/configs": "workspace:*",
+    "@kanban/configs": "workspace:*",
     "@types/react": "~19.2.18",
     "@types/react-dom": "~19.2.5",
     "eslint": "^10.11.0",

@@ -6,8 +6,8 @@ import {
   SidebarGroup,
   SidebarMenu,
   cn,
-} from "@doska/ui-kit"
-import { usePublishedBoards, useSharedBoards } from "@doska/core"
+} from "@kanban/ui-kit"
+import { usePublishedBoards, useSharedBoards } from "@kanban/core"
 import { useAuth } from "@/lib/hooks"
 import { AppSidebarHeader } from "./app-sidebar-header"
 import { DashboardsList } from "./dashboards-list/dashboards-list"
@@ -19,7 +19,6 @@ import { TrashButton } from "@/components/trash/trash-button"
 import { HistoryButton } from "@/components/history/history-button"
 import { UpcomingButton } from "@/components/digest/upcoming-button"
 import { TemplatesButton } from "@/components/templates/templates-button"
-import { isDesktop } from "@/lib/platform"
 
 export function AppSidebar() {
   const { authed } = useAuth()
@@ -30,7 +29,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="ml-1">
-      {!isDesktop() && <AppSidebarHeader />}
+      <AppSidebarHeader />
       <SidebarAgentsMonitor />
       <SidebarContent className="group/sidebar">
         <div

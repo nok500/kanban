@@ -1,14 +1,11 @@
-import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
+import { CardContent, Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
 import {
-  AppWindow,
   Ellipsis,
   type LucideIcon,
-  NotebookPen,
   Paperclip,
   Pencil,
 } from "lucide-react"
 import { Fragment, type ReactNode } from "react"
-import { isDesktop } from "@/lib/platform"
 import { Kbd } from "./kbd"
 
 const MOD = navigator.userAgent.includes("Mac") ? "⌘" : "Ctrl"
@@ -27,7 +24,6 @@ interface Tip {
   icon: LucideIcon
   title: string
   text: ReactNode
-  desktopOnly?: boolean
 }
 
 const SHORTCUTS: ShortcutSection[] = [
@@ -74,7 +70,7 @@ const TIPS: Tip[] = [
         Drop them on the card, paste them, or use the paperclip up top. Not
         working?{" "}
         <a
-          href="https://github.com/nok500/kanban-job-board#readme"
+          href="https://github.com/nok500/kanban#readme"
           target="_blank"
           rel="noreferrer"
           className="text-foreground underline underline-offset-2"
@@ -95,18 +91,6 @@ const TIPS: Tip[] = [
     title: "Card menu",
     text: "Deadline, priority, tags, assignees, column, history, reveal on board, delete.",
   },
-  {
-    icon: AppWindow,
-    title: "Own window",
-    text: "Drag the card's header out of the app, or pick it in the ⋯ menu.",
-    desktopOnly: true,
-  },
-  {
-    icon: NotebookPen,
-    title: "Quick note",
-    text: "Set a global shortcut in Settings to jot a card from anywhere.",
-    desktopOnly: true,
-  },
 ]
 
 interface IProps {
@@ -115,8 +99,6 @@ interface IProps {
 }
 
 export function CardHelpModal({ open, onOpenChange }: IProps) {
-  const desktop = isDesktop()
-
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className="md:max-w-md">
@@ -150,7 +132,7 @@ export function CardHelpModal({ open, onOpenChange }: IProps) {
           <section className="flex flex-col gap-3 p-4">
             <h3 className="text-base font-medium">Tips</h3>
             <ul className="flex flex-col gap-4">
-              {TIPS.filter((tip) => desktop || !tip.desktopOnly).map((tip) => (
+              {TIPS.map((tip) => (
                 <li key={tip.title} className="flex gap-3">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-md border bg-background">
                     <tip.icon className="size-4 text-muted-foreground" />

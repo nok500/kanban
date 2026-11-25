@@ -13,13 +13,11 @@ vi.mock("@tanstack/react-query", () => ({
   },
 }))
 
-vi.mock("@doska/core", () => ({
+vi.mock("@kanban/core", () => ({
   activeStorage: () => ({
     url: (_scope: string, key: string) => Promise.resolve(`/api/files/${key}`),
   }),
 }))
-
-vi.mock("@/lib/platform", () => ({ isDesktop: () => false }))
 
 describe("useAvatarUrl", () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import { ContextMenu, ContextMenuTrigger, useIsMobile } from "@doska/ui-kit"
+import { ContextMenu, ContextMenuTrigger, useIsMobile } from "@kanban/ui-kit"
 import type { ReactNode } from "react"
 import { type BoardActions, BoardMenuItems } from "./board-menu-items"
 

@@ -4,17 +4,13 @@ import { reconcileIdentity } from "../../api/identity"
 import { sync } from "../../api/sync"
 import { keys } from "../keys"
 
-/** A password, or the token a desktop browser sign-in ended with. */
-type Credentials = { login: string; password: string } | { token: string }
+type Credentials = { login: string; password: string }
 
 export function useLogin() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Credentials) => {
-      const session =
-        "token" in input
-          ? await authApi.loginWithToken(input.token)
-          : await authApi.login(input.login, input.password)
+      const session = await authApi.login(input.login, input.password)
       const wiped = await reconcileIdentity(session.userId)
       return { session, wiped }
     },

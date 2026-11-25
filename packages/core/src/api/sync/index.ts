@@ -1,6 +1,6 @@
 export { startBackgroundSync } from "./background-sync"
 export { sync } from "./sync-engine"
-export type { SyncState } from "@doska/sync"
+export type { SyncState } from "@kanban/sync"
 export {
   continueOffline,
   isOfflineAcknowledged,

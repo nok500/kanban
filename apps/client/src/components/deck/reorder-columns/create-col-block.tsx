@@ -1,5 +1,5 @@
-import type { Column } from "@doska/contract"
-import { cn } from "@doska/ui-kit"
+import type { Column } from "@kanban/contract"
+import { cn } from "@kanban/ui-kit"
 import type {
   DraggableProvided,
   DraggableStateSnapshot,

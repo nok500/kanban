@@ -1,5 +1,5 @@
-import type { DashboardChange } from "@doska/contract"
-import type { DirtyStore } from "@doska/sync"
+import type { DashboardChange } from "@kanban/contract"
+import type { DirtyStore } from "@kanban/sync"
 import type { Card, Column, Dashboard, SidebarLayout } from "../../../types"
 import { keys } from "../../../data/keys"
 import { queryClient } from "../../../query-client"

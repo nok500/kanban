@@ -1,6 +1,6 @@
-import { Button } from "@doska/ui-kit"
+import { Button } from "@kanban/ui-kit"
 import { useState } from "react"
-import { ssoSignInUrl, useSsoProviders } from "@doska/core"
+import { ssoSignInUrl, useSsoProviders } from "@kanban/core"
 
 interface IProps {
   /** Where the provider sends the browser back to, signed in. */

@@ -1,4 +1,4 @@
-import { storageFromEnv } from "@doska/file-storage/server"
+import { storageFromEnv } from "@kanban/file-storage/server"
 import { and, asc, eq, inArray, isNull, or, sql } from "drizzle-orm"
 import type { FastifyBaseLogger, FastifyInstance } from "fastify"
 import { getDB } from "../db/get-db"

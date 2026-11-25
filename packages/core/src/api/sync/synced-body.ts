@@ -4,7 +4,7 @@ import { META_STORE } from "../constants"
 /**
  * The body a card last had in sync with the server, the base the server merges
  * a local edit against. Kept out of the card record so no `{ ...card }` copy
- * (board cache, undo, vault, MCP) has to strip it.
+ * (board cache, undo, MCP) has to strip it.
  */
 const key = (cardId: string) => `synced-body:${cardId}`
 

@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto"
-import { contract, type DashboardChange } from "@doska/contract"
+import { contract, type DashboardChange } from "@kanban/contract"
 import { createORPCClient } from "@orpc/client"
 import { RPCLink } from "@orpc/client/fetch"
 import type { ContractRouterClient } from "@orpc/contract"

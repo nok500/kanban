@@ -5,14 +5,14 @@ import {
   MenuItem,
   MenuSeparator,
   useIsMobile,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import {
   hasTag,
   tagColor,
   useIsBoardOwner,
   useSetTagColor,
   useTagColors,
-} from "@doska/core"
+} from "@kanban/core"
 import { Filter, Tags } from "lucide-react"
 import type { ReactNode } from "react"
 import { useDeck } from "@/providers/deck/deck-context"

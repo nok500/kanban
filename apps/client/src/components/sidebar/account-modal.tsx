@@ -1,4 +1,4 @@
-import { useAccount, useLogout, useSetAvatar, apiUrlDomain } from "@doska/core"
+import { useAccount, useLogout, useSetAvatar, apiUrlDomain } from "@kanban/core"
 import {
   Button,
   CardContent,
@@ -6,7 +6,7 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { LogOut } from "lucide-react"
 import { AccountTag } from "@/components/accounts/account-tag"
 import { SettingsSection } from "@/components/settings/section"

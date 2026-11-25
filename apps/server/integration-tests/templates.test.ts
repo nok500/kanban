@@ -1,4 +1,4 @@
-import { CARD_GROUPS, type Card } from "@doska/contract"
+import { CARD_GROUPS, type Card } from "@kanban/contract"
 import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { env } from "../src/env"
 import { getDB } from "../src/db/get-db"

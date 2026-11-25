@@ -1,4 +1,4 @@
-import { COLUMN_GROUPS } from "@doska/contract"
+import { COLUMN_GROUPS } from "@kanban/contract"
 import type { Card, Column, Dashboard } from "../../types"
 import { CARDS, COLUMNS } from "../constants"
 import { db } from "../db/db"

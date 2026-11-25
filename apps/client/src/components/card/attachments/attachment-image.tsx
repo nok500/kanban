@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { cn, MdImage } from "@doska/ui-kit"
-import type { Attachment, AttachmentSource } from "@doska/core"
+import { cn, MdImage } from "@kanban/ui-kit"
+import type { Attachment, AttachmentSource } from "@kanban/core"
 import { AttachmentViewer } from "./attachment-viewer"
 import { AttachmentUnavailable } from "./attachment-unavailable"
 import { useImageFailure } from "./use-image-failure"

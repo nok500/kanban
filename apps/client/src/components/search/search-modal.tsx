@@ -1,5 +1,5 @@
-import { useBoard, searchCards, type SearchHit } from "@doska/core"
-import { Button, Modal, ModalContent, ModalTitle } from "@doska/ui-kit"
+import { useBoard, searchCards, type SearchHit } from "@kanban/core"
+import { Button, Modal, ModalContent, ModalTitle } from "@kanban/ui-kit"
 import { Search, X } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useLocation } from "wouter"

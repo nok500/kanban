@@ -1,4 +1,4 @@
-import { cn, useIsMobile } from "@doska/ui-kit"
+import { cn, useIsMobile } from "@kanban/ui-kit"
 import { SlashMenuFab } from "../slash-menu/slash-menu-fab"
 import type { EditorOptions } from "./extensions"
 import { useEditorView } from "./hooks/use-editor-view"

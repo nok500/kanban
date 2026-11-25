@@ -5,9 +5,9 @@ import {
   MenuItem,
   MenuTrigger,
   cn,
-} from "@doska/ui-kit"
+} from "@kanban/ui-kit"
 import { Check } from "lucide-react"
-import type { Dashboard } from "@doska/core"
+import type { Dashboard } from "@kanban/core"
 
 interface IProps {
   boards: Dashboard[]

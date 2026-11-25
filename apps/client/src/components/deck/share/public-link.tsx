@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, cn } from "@doska/ui-kit"
+import { Button, cn } from "@kanban/ui-kit"
 import { Check, Copy, Globe } from "lucide-react"
 import {
   useBoardMembers,
@@ -7,7 +7,7 @@ import {
   usePublishBoard,
   useUnpublishBoard,
   apiUrl,
-} from "@doska/core"
+} from "@kanban/core"
 import { routes } from "@/lib/routes"
 
 interface IProps {

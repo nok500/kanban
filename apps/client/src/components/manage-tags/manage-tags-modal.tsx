@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
+import { Modal, ModalContent, ModalHeader } from "@kanban/ui-kit"
 import { ManageTagsList } from "./manage-tags-list"
 import { useManageTags } from "./use-manage-tags"
 
