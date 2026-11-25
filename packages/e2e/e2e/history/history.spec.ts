@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { openUserMenuItem } from "../helpers/sidebar"
 import {
   addCard,
   boardTitle,
@@ -176,7 +177,7 @@ test.describe("history", () => {
     await retitleCard(page, "Untitled card", "Two")
     await openBoardInSidebar(page, "Untitled board")
 
-    await page.getByRole("button", { name: "History" }).click()
+    await openUserMenuItem(page, "History")
 
     await expect(historyDialog(page)).toContainText("History")
     await expect(historyRow(page, "You created card One")).toBeVisible()

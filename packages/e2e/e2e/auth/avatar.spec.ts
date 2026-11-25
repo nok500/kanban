@@ -1,5 +1,6 @@
 import { test, expect, type Locator } from "@playwright/test"
-import { createAccount, PNG, sidebarAccount, signIn } from "../helpers"
+import { openUserMenuItem } from "../helpers/sidebar"
+import { createAccount, PNG, signIn } from "../helpers"
 
 function avatarImage(scope: Locator) {
   return scope.locator('[data-slot="avatar-image"]')
@@ -18,7 +19,7 @@ test.describe("avatar", { tag: "@container" }, () => {
     await signIn(page, account)
 
     const sidebar = page.locator('[data-slot="sidebar"]')
-    await sidebarAccount(page, account.login).click()
+    await openUserMenuItem(page, "Account")
     const dialog = page.getByRole("dialog")
 
     await dialog
@@ -33,7 +34,7 @@ test.describe("avatar", { tag: "@container" }, () => {
     await page.reload()
     await expect(avatarImage(sidebar)).toBeVisible()
 
-    await sidebarAccount(page, account.login).click()
+    await openUserMenuItem(page, "Account")
     await dialog.getByRole("button", { name: "Remove avatar" }).click()
     await expect(avatarImage(dialog)).toHaveCount(0)
     await expect(

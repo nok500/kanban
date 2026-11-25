@@ -50,9 +50,8 @@ export function ChatEndpointsManager() {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xs text-muted-foreground">
-        llama.cpp servers (OpenAI-compatible API) that card chat can use. The
-        kanban server calls them, so use an address it can reach: a LAN IP, a
-        domain such as <code>https://llama.example.com</code>, or{" "}
+        The kanban server calls them, so use an address it can reach: a LAN IP,
+        a domain such as <code>https://llama.example.com</code>, or{" "}
         <code>host.docker.internal</code> for this machine.
       </p>
 

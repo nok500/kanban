@@ -12,7 +12,7 @@ interface IProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onOpenAccounts: () => void
-  onOpenChatEndpoints: () => void
+  onOpenLlm: () => void
   onOpenServerMcp: () => void
 }
 
@@ -20,7 +20,7 @@ export function SettingsModal({
   open,
   onOpenChange,
   onOpenAccounts,
-  onOpenChatEndpoints,
+  onOpenLlm,
   onOpenServerMcp,
 }: IProps) {
   const { isAdmin, authed } = useAuth()
@@ -41,11 +41,11 @@ export function SettingsModal({
                   onClick={onOpenAccounts}
                 />
               )}
-              {isAdmin && isSyncConfigured() && (
+              {isSyncConfigured() && authed === true && (
                 <SettingsRow
                   icon={<BrainCircuit className="size-4" />}
-                  label="LLM endpoints"
-                  onClick={onOpenChatEndpoints}
+                  label="LLM"
+                  onClick={onOpenLlm}
                 />
               )}
               {isSyncConfigured() && authed === true && (

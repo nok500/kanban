@@ -126,7 +126,7 @@ services:
       # comma-separated URLs; `URL|api-key` for a server with a key. These
       # are called from inside the container: LAN IPs work as they are, and
       # localhost is the container itself.
-      LOCAL_PROVIDERS: '${LOCAL_PROVIDERS:-{"pc1": "192.168.8.229:8080/v1", "pc2": "192.168.8.207:8080/v1"}}'
+      LOCAL_PROVIDERS: '${LOCAL_PROVIDERS:-{"voodoo-llama": "192.168.8.229:8080/v1", "verdun-llama": "192.168.8.207:8080/v1"}}'
       # Model to ask for. Empty: a model the server already has loaded, else its
       # first chat model.
       PI_MODEL: ${PI_MODEL:-}

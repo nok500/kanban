@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { openUserMenuItem } from "../helpers/sidebar"
 import { signIn, signOut } from "../helpers"
 
 /**
@@ -16,7 +17,7 @@ function uniqueLogin(prefix: string): string {
 
 /** Opens the accounts modal from settings, where only an owner is offered it. */
 async function openAccounts(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Settings" }).click()
+  await openUserMenuItem(page, "Settings")
   await page.getByRole("button", { name: "Accounts" }).click()
   await expect(page.getByRole("heading", { name: "Accounts" })).toBeVisible()
 }
@@ -62,7 +63,7 @@ test.describe("account management", () => {
     await signIn(page, account)
 
     // Settings opens for it, with no way into accounts in it at all.
-    await page.getByRole("button", { name: "Settings" }).click()
+    await openUserMenuItem(page, "Settings")
     await expect(page.getByRole("dialog")).toBeVisible()
     await expect(page.getByRole("button", { name: "Accounts" })).toHaveCount(0)
   })
@@ -111,9 +112,7 @@ test.describe("account management", () => {
     await signOut(page)
 
     await page.goto("/")
-    await page
-      .getByRole("button", { name: "Sign in to sync", exact: true })
-      .click()
+    await openUserMenuItem(page, "Sign in to sync")
     await page.getByPlaceholder("Login").fill(account.login)
     await page.getByPlaceholder("Password").fill(account.password)
     await page.getByRole("button", { name: "Sign in", exact: true }).click()
@@ -176,9 +175,7 @@ test.describe("account management", () => {
     await signOut(page)
 
     await page.goto("/")
-    await page
-      .getByRole("button", { name: "Sign in to sync", exact: true })
-      .click()
+    await openUserMenuItem(page, "Sign in to sync")
     await page.getByPlaceholder("Login").fill(login)
     await page.getByPlaceholder("Password").fill("first-pass")
     await page.getByRole("button", { name: "Sign in", exact: true }).click()

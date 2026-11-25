@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test"
+import { openUserMenuItem, expectSignedOut } from "../helpers/sidebar"
 import { TEST_CREDENTIALS, signIn, signOut } from "../helpers"
 
 /**
@@ -10,9 +11,7 @@ test.describe("authentication", { tag: "@container" }, () => {
     page,
   }) => {
     await page.goto("/")
-    await page
-      .getByRole("button", { name: "Sign in to sync", exact: true })
-      .click()
+    await openUserMenuItem(page, "Sign in to sync")
 
     await page.getByPlaceholder("Login").fill("e2e")
     await page.getByPlaceholder("Password").fill("wrong-password")
@@ -35,9 +34,7 @@ test.describe("authentication", { tag: "@container" }, () => {
     await signOut(page)
 
     // Back to signed-out: the sign-in control is offered again.
-    await expect(
-      page.getByRole("button", { name: "Sign in to sync", exact: true })
-    ).toBeVisible()
+    await expectSignedOut(page)
     await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0)
   })
 })

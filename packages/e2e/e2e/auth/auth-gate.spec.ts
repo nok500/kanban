@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { expectSignedOut } from "../helpers/sidebar"
 import { sidebarAccount, TEST_CREDENTIALS } from "../helpers"
 
 /** Stands in for the server's ALWAYS_AUTH setting. */
@@ -33,12 +34,7 @@ test.describe("auth gate", () => {
     await serverRequiresAuth(page, false)
     await page.goto("/")
 
-    await expect(
-      sidebar(page).getByRole("button", {
-        name: "Sign in to sync",
-        exact: true,
-      })
-    ).toBeVisible()
+    await expectSignedOut(page)
     await expect(
       page.getByRole("button", { name: "Create a board" })
     ).toBeVisible()

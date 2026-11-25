@@ -13,10 +13,7 @@ import { AppSidebarHeader } from "./app-sidebar-header"
 import { DashboardsList } from "./dashboards-list/dashboards-list"
 import { SidebarAccount } from "./sidebar-account"
 import { SidebarAgentsMonitor } from "./sidebar-agents-monitor"
-import { SidebarThemeButton } from "./sidebar-theme-button"
-import { SettingsButton } from "@/components/settings/settings-button"
 import { TrashButton } from "@/components/trash/trash-button"
-import { HistoryButton } from "@/components/history/history-button"
 import { UpcomingButton } from "@/components/digest/upcoming-button"
 import { TemplatesButton } from "@/components/templates/templates-button"
 
@@ -56,11 +53,6 @@ export function AppSidebar() {
           "before:bg-linear-to-t before:from-sidebar before:to-transparent"
         )}
       >
-        <SidebarMenu>
-          <SidebarThemeButton />
-          <HistoryButton />
-          <SettingsButton />
-        </SidebarMenu>
         <SidebarAccount />
       </SidebarFooter>
     </Sidebar>

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { expectSignedOut } from "../helpers/sidebar"
 import { seenModals } from "../helpers/seen-modals"
 
 function toast(page: Page) {
@@ -6,12 +7,6 @@ function toast(page: Page) {
 }
 
 /** Once the session check resolves, the toast has been decided either way. */
-function sidebarSignIn(page: Page) {
-  return page
-    .locator('[data-slot="sidebar"]')
-    .getByRole("button", { name: "Sign in to sync", exact: true })
-}
-
 /** Someone past onboarding who hasn't seen this version's slides yet. */
 test.describe("what's new", () => {
   test.use({
@@ -21,13 +16,15 @@ test.describe("what's new", () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto("/")
-    await expect(sidebarSignIn(page)).toBeVisible()
+    await expectSignedOut(page)
   })
 
   test("the toast opens the slides, and doesn't come back", async ({
     page,
   }) => {
-    await expect(page.getByRole("heading", { name: "Kanban Job Board" })).toHaveCount(0)
+    await expect(
+      page.getByRole("heading", { name: "Kanban Job Board" })
+    ).toHaveCount(0)
     await page.getByRole("button", { name: "What's new" }).click()
     await expect(toast(page)).toBeHidden()
 
@@ -43,7 +40,7 @@ test.describe("what's new", () => {
     await expect(modal).toBeHidden()
 
     await page.reload()
-    await expect(sidebarSignIn(page)).toBeVisible()
+    await expectSignedOut(page)
     await expect(toast(page)).toHaveCount(0)
   })
 
@@ -56,7 +53,7 @@ test.describe("what's new", () => {
     await expect(page.getByRole("dialog")).toHaveCount(0)
 
     await page.reload()
-    await expect(sidebarSignIn(page)).toBeVisible()
+    await expectSignedOut(page)
     await expect(toast(page)).toHaveCount(0)
   })
 })

@@ -233,3 +233,24 @@ export function remoteFolder(
     parentId,
   }
 }
+
+/** Opens the sidebar's user menu and picks `item` (Account, History, Settings...). */
+export async function openUserMenuItem(
+  page: Page,
+  item: string
+): Promise<void> {
+  await page.getByRole("button", { name: "User menu" }).click()
+  await page.getByRole("menuitem", { name: item }).click()
+}
+
+/**
+ * Waits for the signed-out state: the user menu offers "Sign in to sync" once
+ * the session check has resolved. Closes the menu again.
+ */
+export async function expectSignedOut(page: Page): Promise<void> {
+  await page.getByRole("button", { name: "User menu" }).click()
+  await expect(
+    page.getByRole("menuitem", { name: "Sign in to sync", exact: true })
+  ).toBeVisible()
+  await page.keyboard.press("Escape")
+}

@@ -14,6 +14,7 @@ pi runs on its own config (PI_PROVIDER / PI_MODEL, or pi's defaults).
 
 import base64
 import re
+import shutil
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -208,9 +209,10 @@ def pick_model(models: list[dict]) -> str | None:
     return chat[0]["id"] if chat else None
 
 
-def resolve_local_provider() -> tuple[dict, str] | None:
-    """The first LOCAL_PROVIDERS entry that answers and has a usable model."""
-    for provider in LOCAL_PROVIDERS:
+def resolve_local_provider(providers: list[dict] | None = None) -> tuple[dict, str] | None:
+    """The first provider (default: LOCAL_PROVIDERS) that answers and has a
+    usable model."""
+    for provider in LOCAL_PROVIDERS if providers is None else providers:
         try:
             model = pick_model(list_models(provider))
         except (URLError, OSError, ValueError) as exc:
@@ -301,6 +303,40 @@ def pi_command(
     return [*cmd, "--", prompt]
 
 
+def job_providers(config: dict) -> list[dict] | str:
+    """pi's servers for one job, from LOCAL_PROVIDERS: just the one an admin
+    picked in Settings → LLM (by name), or all of them to try in order."""
+    chosen = str(config.get("provider") or "").strip()
+    if not chosen:
+        return LOCAL_PROVIDERS
+    for provider in LOCAL_PROVIDERS:
+        if provider["name"] == chosen:
+            return [provider]
+    names = ", ".join(p["name"] for p in LOCAL_PROVIDERS) or "none"
+    return f"pi is set to {chosen!r}, which isn't in LOCAL_PROVIDERS (have: {names})"
+
+
+def auth_setup(agent: str, config: dict) -> tuple[dict, list[str], str]:
+    """Env and extra CLI args for the agent's auth mode, and the mode.
+
+    `installed`: the CLI's own login from its mounted config dir.
+    `apiKey`: claude gets ANTHROPIC_API_KEY; agy gets GEMINI_API_KEY with the
+    Gemini model provider (agy's only API-key route)."""
+    auth = config.get("auth") or {}
+    key = str(auth.get("apiKey") or "").strip()
+    if auth.get("mode") != "apiKey" or not key:
+        return {}, [], "installed"
+    if agent == "claude":
+        return {"ANTHROPIC_API_KEY": key}, [], "apiKey"
+    if agent == "agy":
+        return (
+            {"GEMINI_API_KEY": key},
+            ["--settings", json.dumps({"modelProvider": "gemini"})],
+            "apiKey",
+        )
+    return {}, [], "installed"
+
+
 def run_job(
     job_id: str,
     agent: str,
@@ -308,8 +344,12 @@ def run_job(
     prompt: str,
     log_path: Path,
     system: str | None = None,
+    config: dict | None = None,
 ) -> None:
+    config = config or {}
     env = {**os.environ, "HOME": os.environ.get("HOME", "/root")}
+    auth_env, auth_args, auth_mode = auth_setup(agent, config)
+    env.update(auth_env)
     with jobs_lock:
         card_id = jobs[job_id].get("cardId")
         board_id = jobs[job_id].get("boardId")
@@ -319,14 +359,20 @@ def run_job(
         if sessions.enabled()
         else None
     )
+    if record:
+        record["auth"] = auth_mode
     cwd = job_dir
     agy_before: set[str] = set()
     if agent == "pi":
         local = None
-        if LOCAL_PROVIDERS:
-            local = resolve_local_provider()
+        providers = job_providers(config)
+        if isinstance(providers, str):
+            fail_job(job_id, stderr_path(log_path), providers)
+            return
+        if providers:
+            local = resolve_local_provider(providers)
             if not local:
-                tried = ", ".join(f"{p['name']} ({p['baseUrl']})" for p in LOCAL_PROVIDERS)
+                tried = ", ".join(f"{p['name']} ({p['baseUrl']})" for p in providers)
                 fail_job(job_id, stderr_path(log_path),
                          f"no LOCAL_PROVIDERS endpoint answered with a usable model (tried {tried})")
                 return
@@ -347,6 +393,7 @@ def run_job(
         cmd = [
             "agy",
             "--dangerously-skip-permissions",
+            *auth_args,
             "--add-dir",
             str(job_dir),
             f"--print={prompt}",
@@ -356,6 +403,7 @@ def run_job(
             "claude",
             "--print",
             "--dangerously-skip-permissions",
+            *auth_args,
             *(["--session-id", record["id"]] if record else []),
             prompt,
             "--add-dir",
@@ -449,21 +497,31 @@ def save_job_session(
         log(f"session {record.get('id')} not saved: {exc}")
 
 
-def resume_command(record: dict, message: str) -> tuple[list[str], Path, dict] | str:
+def resume_command(
+    record: dict, message: str, config: dict | None = None
+) -> tuple[list[str], Path, dict] | str:
     """The CLI call that continues `record` with `message`, its working dir
     and env; or why it can't."""
+    config = config or {}
     agent, cli = record["agent"], record.get("cli") or {}
     env = {**os.environ, "HOME": os.environ.get("HOME", "/root")}
+    auth_env, auth_args, auth_mode = auth_setup(agent, config)
+    env.update(auth_env)
+    record["auth"] = auth_mode
     work = JOBS_ROOT / f"resume-{record['id']}"
     work.mkdir(parents=True, exist_ok=True)
     if agent == "pi":
         if not cli.get("file"):
             return "this pi session has no saved session file"
         local = None
-        if LOCAL_PROVIDERS:
-            local = resolve_local_provider()
+        providers = job_providers(config)
+        if isinstance(providers, str):
+            return providers
+        if providers:
+            local = resolve_local_provider(providers)
             if not local:
-                return "no LOCAL_PROVIDERS endpoint answered with a usable model"
+                names = ", ".join(p["name"] for p in providers)
+                return f"no LOCAL_PROVIDERS endpoint answered with a usable model (tried {names})"
             write_pi_config(work / "pi-agent", *local)
             env["PI_CODING_AGENT_DIR"] = str(work / "pi-agent")
             record["provider"] = {"name": local[0]["name"], "model": local[1]}
@@ -475,22 +533,22 @@ def resume_command(record: dict, message: str) -> tuple[list[str], Path, dict] |
         cwd = Path(cli["cwd"])
         cwd.mkdir(parents=True, exist_ok=True)
         return (
-            ["claude", "--print", "--dangerously-skip-permissions", "--resume", cli["sessionId"], message],
+            ["claude", "--print", "--dangerously-skip-permissions", *auth_args, "--resume", cli["sessionId"], message],
             cwd,
             env,
         )
     if not cli.get("conversationId"):
         return "this agy run's conversation could not be found"
     return (
-        ["agy", "--dangerously-skip-permissions", "--conversation", cli["conversationId"], f"--print={message}"],
+        ["agy", "--dangerously-skip-permissions", *auth_args, "--conversation", cli["conversationId"], f"--print={message}"],
         work,
         env,
     )
 
 
-def resume_session(record: dict, message: str) -> tuple[int, dict]:
+def resume_session(record: dict, message: str, config: dict | None = None) -> tuple[int, dict]:
     """Runs one follow-up message through the session's CLI, to completion."""
-    built = resume_command(record, message)
+    built = resume_command(record, message, config)
     if isinstance(built, str):
         return 409, {"error": built}
     cmd, cwd, env = built
@@ -542,6 +600,87 @@ def session_view(record: dict) -> dict:
     return view
 
 
+def probe_providers() -> list[dict]:
+    """Each LOCAL_PROVIDERS entry: does it answer, and which model pi would
+    ask it for. Probed in parallel so one slow host doesn't hold up the rest."""
+    results: list[dict] = [{} for _ in LOCAL_PROVIDERS]
+
+    def probe(i: int, provider: dict) -> None:
+        entry = {"name": provider["name"], "baseUrl": provider["baseUrl"], "online": False, "model": None}
+        try:
+            entry["model"] = pick_model(list_models(provider))
+            entry["online"] = True
+            if not entry["model"]:
+                entry["error"] = "no usable model" + (f" (PI_MODEL={PI_MODEL})" if PI_MODEL else "")
+        except (URLError, OSError, ValueError) as exc:
+            entry["error"] = str(getattr(exc, "reason", exc))[:200]
+        results[i] = entry
+
+    threads = [threading.Thread(target=probe, args=(i, p)) for i, p in enumerate(LOCAL_PROVIDERS)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(PROBE_TIMEOUT_S + 2)
+    return [r for r in results if r]
+
+
+AGENT_CHECKS = {
+    # agent: (binary, files its installed login needs)
+    "claude": ("claude", [".claude", ".claude.json"]),
+    "agy": ("agy", [".gemini/antigravity-cli"]),
+    "pi": ("pi", []),
+}
+_status_cache: dict = {"at": 0.0, "value": None}
+
+
+def agent_status() -> dict:
+    """Whether each CLI can run here: its binary (mounted by compose), its
+    version, the config its installed login needs, and API keys from env."""
+    # The CLI checks start each binary, so they're cached; providers are
+    # probed every time (whether a host is up changes by the minute).
+    if _status_cache["value"] and time.time() - _status_cache["at"] < 30:
+        return {**_status_cache["value"], "providers": probe_providers()}
+    home = Path(os.environ.get("HOME", "/root"))
+    agents = {}
+    for agent, (binary, files) in AGENT_CHECKS.items():
+        found = shutil.which(binary)
+        version, error = None, None
+        if found:
+            try:
+                out = subprocess.run(
+                    [binary, "--version"], capture_output=True, text=True,
+                    timeout=20, stdin=subprocess.DEVNULL,
+                )
+                text = (out.stdout or out.stderr).strip().splitlines()
+                if out.returncode == 0 and text:
+                    version = text[0][:80]
+                else:
+                    error = (text[-1] if text else f"exit code {out.returncode}")[:200]
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                error = str(exc)[:200]
+        else:
+            error = f"`{binary}` not found: check its volume in the compose file"
+        missing = [f"~/{f}" for f in files if not (home / f).exists()]
+        if agent == "pi" and not Path("/opt/pi/dist/bundle/cli.js").exists():
+            missing.append("/opt/pi (PI_PACKAGE mount)")
+        agents[agent] = {
+            "binary": found,
+            "version": version,
+            "error": error,
+            "missing": missing,
+            "ok": bool(found and version and not missing),
+        }
+    agents["claude"]["envApiKey"] = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    agents["agy"]["envApiKey"] = bool(os.environ.get("GEMINI_API_KEY"))
+    value = {
+        "agents": agents,
+        "providers": probe_providers(),
+        "sessions": sessions.enabled(),
+    }
+    _status_cache.update(at=time.time(), value=value)
+    return value
+
+
 def fail_job(job_id: str, err_path: Path, message: str) -> None:
     with err_path.open("a", encoding="utf-8") as err_file:
         err_file.write(f"[runner error] {message}\n")
@@ -580,6 +719,9 @@ class RunnerHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"error": "No session for this card"})
                 return
             self._send_json(200, {"session": session_view(record)})
+            return
+        if self.path == "/status":
+            self._send_json(200, agent_status())
             return
         if self.path == "/health":
             self._send_json(200, {"ok": True})
@@ -678,7 +820,7 @@ class RunnerHandler(BaseHTTPRequestHandler):
 
         thread = threading.Thread(
             target=run_job,
-            args=(job_id, agent, job_dir, prompt, log_path, system),
+            args=(job_id, agent, job_dir, prompt, log_path, system, payload.get("agentConfig") or {}),
             daemon=True,
         )
         thread.start()
@@ -712,7 +854,9 @@ class RunnerHandler(BaseHTTPRequestHandler):
             self._send_json(409, {"error": f"{record['agent']} is still answering"})
             return
         try:
-            code, body = resume_session(record, message)
+            configs = payload.get("agentConfigs") or {}
+            config = configs.get(record["agent"]) if isinstance(configs, dict) else None
+            code, body = resume_session(record, message, config or payload.get("agentConfig") or {})
         finally:
             sessions.release(record["id"])
         self._send_json(code, body)

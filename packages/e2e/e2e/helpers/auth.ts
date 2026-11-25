@@ -1,4 +1,5 @@
 import { expect, type APIRequestContext, type Page } from "@playwright/test"
+import { expectSignedOut, openUserMenuItem } from "./sidebar"
 
 /**
  * The single credential pair the e2e API server is booted with (see
@@ -21,21 +22,9 @@ export const TEST_CREDENTIALS = {
 const APP_ORIGIN = process.env.BASE_URL || "http://localhost:4173"
 
 /**
- * The sidebar's sign-in control: the whole account row, labelled so only once
- * the session check has resolved to signed-out. Scoped to the sidebar because
- * an open board shows a second control with the same accessible name (the
- * deck's sync indicator turns into one while signed out).
- */
-function sidebarSignIn(page: Page) {
-  return page
-    .locator('[data-slot="sidebar"]')
-    .getByRole("button", { name: "Sign in to sync", exact: true })
-}
-
-/**
  * The sidebar's account row, by the login it names. This is the signed-in
  * signal: it appears once the session check, or a sign-in, resolves to a
- * session. Clicking it opens the account modal.
+ * session. It opens the user menu; "Account" there opens the account modal.
  */
 export function sidebarAccount(page: Page, login = TEST_CREDENTIALS.login) {
   return page.locator('[data-slot="sidebar"]').getByText(login, { exact: true })
@@ -52,7 +41,7 @@ export async function signIn(
   credentials: { login: string; password: string } = TEST_CREDENTIALS
 ): Promise<void> {
   await page.goto("/")
-  await sidebarSignIn(page).click()
+  await openUserMenuItem(page, "Sign in to sync")
   await page.getByPlaceholder("Login").fill(credentials.login)
   await page.getByPlaceholder("Password").fill(credentials.password)
   await page.getByRole("button", { name: "Sign in", exact: true }).click()
@@ -72,9 +61,10 @@ export async function signOut(
   page: Page,
   login: string = TEST_CREDENTIALS.login
 ): Promise<void> {
-  await sidebarAccount(page, login).click()
+  await expect(sidebarAccount(page, login)).toBeVisible()
+  await openUserMenuItem(page, "Account")
   await page.getByRole("button", { name: "Sign out" }).click()
-  await expect(sidebarSignIn(page)).toBeVisible()
+  await expectSignedOut(page)
 }
 
 /**

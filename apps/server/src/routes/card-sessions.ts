@@ -7,6 +7,7 @@ import { getDB } from "../db/get-db"
 import { cards } from "../db/schema"
 import { env } from "../env"
 import { canAccessBoard } from "./agents"
+import { agentConfig } from "./llm-settings"
 import { readJsonBody } from "./read-json-body"
 
 /**
@@ -128,7 +129,14 @@ export function registerCardSessionRoutes(app: FastifyInstance): void {
         const res = await runnerRequest(
           "POST",
           `/sessions/card/${cardId}/messages`,
-          { message },
+          {
+            message,
+            agentConfigs: {
+              claude: await agentConfig("claude"),
+              agy: await agentConfig("agy"),
+              pi: await agentConfig("pi"),
+            },
+          },
           RESUME_TIMEOUT_MS
         )
         return reply.code(res.status).send(res.json)

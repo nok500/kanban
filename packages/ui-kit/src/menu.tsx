@@ -29,10 +29,12 @@ function MenuContent({
   children,
   sideOffset = 4,
   align = "end",
+  side,
   ...props
 }: MenuPrimitive.Popup.Props & {
   sideOffset?: number
   align?: MenuPrimitive.Positioner.Props["align"]
+  side?: MenuPrimitive.Positioner.Props["side"]
 }) {
   return (
     <MenuPrimitive.Portal>
@@ -42,6 +44,7 @@ function MenuContent({
         className="z-50"
         sideOffset={sideOffset}
         align={align}
+        side={side}
       >
         <MenuPrimitive.Popup
           data-slot="menu-content"

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { openUserMenuItem } from "../helpers/sidebar"
 import { createBoard, signIn, signOut } from "../helpers"
 
 /**
@@ -16,9 +17,7 @@ const WARNING = /will become part of the account you sign in with/
 /** Opens the sign-in dialog without submitting it. */
 async function openSignIn(page: Page): Promise<void> {
   await page.goto("/")
-  await page
-    .getByRole("button", { name: "Sign in to sync", exact: true })
-    .click()
+  await openUserMenuItem(page, "Sign in to sync")
   await expect(page.getByPlaceholder("Login")).toBeVisible()
 }
 
@@ -56,7 +55,7 @@ test.describe("switching accounts on one device", () => {
     const second = { login: uniqueLogin("switch"), password: "created-pass" }
 
     await signIn(page)
-    await page.getByRole("button", { name: "Settings" }).click()
+    await openUserMenuItem(page, "Settings")
     await page.getByRole("button", { name: "Accounts" }).click()
     await page.getByPlaceholder("Login").fill(second.login)
     await page.getByPlaceholder("Password").fill(second.password)

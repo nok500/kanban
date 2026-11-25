@@ -190,6 +190,20 @@ export const history = pgTable(
  * what the client sends, so it is unique. Server-wide, not per user: the server
  * makes the calls. `api_key` is sent as a bearer token and never returned.
  */
+/**
+ * How agent-runner runs each CLI agent: its installed login (`installed`) or
+ * an API key (`apiKey`: ANTHROPIC_API_KEY for claude, GEMINI_API_KEY for agy).
+ * `api_key` is sent to the runner per job and never returned to a browser.
+ */
+export const agentSettings = pgTable("agent_settings", {
+  agent: text("agent").primaryKey(),
+  mode: text("mode").notNull(),
+  apiKey: text("api_key"),
+  /** pi: the LOCAL_PROVIDERS entry (by name) to run on; null = first online. */
+  provider: text("provider"),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
+})
+
 export const chatEndpoints = pgTable("chat_endpoints", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),

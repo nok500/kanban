@@ -1,4 +1,10 @@
-import { test, expect, type APIRequestContext, type Page } from "@playwright/test"
+import {
+  test,
+  expect,
+  type APIRequestContext,
+  type Page,
+} from "@playwright/test"
+import { openUserMenuItem } from "../helpers/sidebar"
 import {
   addCard,
   authenticate,
@@ -34,7 +40,7 @@ async function createAccount(
   login: string,
   password: string
 ): Promise<void> {
-  await page.getByRole("button", { name: "Settings" }).click()
+  await openUserMenuItem(page, "Settings")
   await page.getByRole("button", { name: "Accounts" }).click()
   await page.getByPlaceholder("Login").fill(login)
   await page.getByPlaceholder("Password").fill(password)

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { openUserMenuItem } from "../helpers/sidebar"
 import {
   addCard,
   addCardTags,
@@ -30,7 +31,7 @@ async function boardWithTags(page: Page, cards: Record<string, string[]>) {
 }
 
 async function pickCardView(page: Page, view: "Panel" | "Modal") {
-  await page.getByRole("button", { name: "Settings" }).click()
+  await openUserMenuItem(page, "Settings")
   await page.getByRole("button", { name: view, exact: true }).click()
   await page.keyboard.press("Escape")
   await expect(page.getByRole("dialog")).toHaveCount(0)

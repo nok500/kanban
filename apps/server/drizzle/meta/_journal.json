@@ -176,6 +176,20 @@
       "when": 1795560253696,
       "tag": "0024_chat_endpoints",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795613324735,
+      "tag": "0025_agent_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1795614022566,
+      "tag": "0026_agent_provider",
+      "breakpoints": true
     }
   ]
 }

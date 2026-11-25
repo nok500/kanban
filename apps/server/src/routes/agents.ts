@@ -11,6 +11,7 @@ import {
   extractCvText,
   type CvDocument,
 } from "./agent-analysis"
+import { agentConfig } from "./llm-settings"
 import { readJsonBody } from "./read-json-body"
 
 export interface AgentProcessInfo {
@@ -424,6 +425,7 @@ async function dispatchAgentJob(opts: {
           contentBase64: cv.bytes.toString("base64"),
         })),
         ...(prompt ? { system: prompt.system, prompt: prompt.user } : {}),
+        agentConfig: await agentConfig(agent),
       }),
       signal: AbortSignal.timeout(5000),
     })

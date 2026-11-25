@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test"
+import { openUserMenuItem } from "../helpers/sidebar"
 
 /**
  * The settings modal's only section: the version it's running and the manual
@@ -8,7 +9,7 @@ import { test, expect } from "@playwright/test"
 test.describe("settings updates", () => {
   test("shows the running version and reports up to date", async ({ page }) => {
     await page.goto("/")
-    await page.getByRole("button", { name: "Settings" }).click()
+    await openUserMenuItem(page, "Settings")
 
     const modal = page.getByRole("dialog")
     await expect(modal.getByText(/^Kanban Job Board version:/)).toBeVisible()
