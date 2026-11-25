@@ -7,12 +7,13 @@ import {
   retitleCard,
   setDeadline,
 } from "../helpers"
+import { openUserMenuItem } from "../helpers/sidebar"
 
 test.describe("digest navigation", () => {
-  test("the sidebar's Upcoming entry opens the digest", async ({ page }) => {
+  test("the user menu's Upcoming entry opens the digest", async ({ page }) => {
     await createBoard(page)
 
-    await page.getByRole("button", { name: "Upcoming" }).click()
+    await openUserMenuItem(page, "Upcoming")
     await page.waitForURL(/\/digest/)
     await expect(page.getByRole("button", { name: "Hide done" })).toBeVisible()
   })

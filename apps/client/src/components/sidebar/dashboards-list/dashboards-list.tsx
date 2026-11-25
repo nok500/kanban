@@ -14,7 +14,7 @@ import {
 } from "@kanban/core"
 import { DraggableFolders, useFolderTree } from "@kanban/folder-tree"
 import { useState } from "react"
-import { DROP_ANIMATION_MS, useDashboardNav } from "@/lib/hooks"
+import { DROP_ANIMATION_MS } from "@/lib/hooks"
 import { BoardItem } from "./board/board-item"
 import { BoardsHeader } from "./boards-header"
 import { FolderItem } from "./folder/folder-item"
@@ -40,7 +40,6 @@ export function DashboardsList({
   const { data: nodes = NO_NODES } = useSidebarTree()
   const { mutate: saveTree } = useSaveSidebarTree()
   const [renamingId, setRenamingId] = useState<string | null>(null)
-  const { createAndOpenDashboard } = useDashboardNav()
   const collapsedIds = useCollapsedFolders()
   const shared = new Set(sharedIds)
   const published = new Set(publishedIds)
@@ -110,10 +109,6 @@ export function DashboardsList({
                   onCollapsedChange={(collapsed) =>
                     tree.setCollapsed(folder.id, collapsed)
                   }
-                  onNewBoard={() => {
-                    tree.setCollapsed(folder.id, false)
-                    createAndOpenDashboard(folder.id)
-                  }}
                   onNewSubfolder={
                     depth < DEPTH_LIMITS.folder
                       ? () => createFolder(folder.id)

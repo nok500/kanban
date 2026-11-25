@@ -1,13 +1,14 @@
 import { expect, type Page } from "@playwright/test"
+import { openUserMenuItem } from "./sidebar"
 
 /* -------------------------------------------------------------------------- */
 /*  Trash helpers. Entries are addressed by the title the user deleted, and    */
 /*  restoring goes through the same button they'd press.                       */
 /* -------------------------------------------------------------------------- */
 
-/** Opens the trash from the sidebar and waits for the view. */
+/** Opens the trash from the user menu and waits for the view. */
 export async function openTrash(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Trash", exact: true }).click()
+  await openUserMenuItem(page, "Trash")
   await expect(page.getByRole("heading", { name: "Trash" })).toBeVisible()
 }
 

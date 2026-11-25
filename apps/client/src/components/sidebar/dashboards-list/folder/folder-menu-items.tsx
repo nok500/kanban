@@ -1,9 +1,8 @@
 import { MenuContent, MenuItem } from "@kanban/ui-kit"
-import { FolderPlus, Pencil, Plus, Trash2 } from "lucide-react"
+import { FolderPlus, Pencil, Trash2 } from "lucide-react"
 
 export interface FolderActions {
   onRename: () => void
-  onNewBoard: () => void
   onNewSubfolder?: () => void
   onDelete: () => void
 }
@@ -15,7 +14,6 @@ interface IProps extends FolderActions {
 export function FolderMenuItems({
   align,
   onRename,
-  onNewBoard,
   onNewSubfolder,
   onDelete,
 }: IProps) {
@@ -24,10 +22,6 @@ export function FolderMenuItems({
       <MenuItem onClick={onRename}>
         <Pencil />
         Rename
-      </MenuItem>
-      <MenuItem onClick={onNewBoard}>
-        <Plus />
-        New board
       </MenuItem>
       {onNewSubfolder && (
         <MenuItem onClick={onNewSubfolder}>

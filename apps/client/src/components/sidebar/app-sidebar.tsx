@@ -13,8 +13,6 @@ import { AppSidebarHeader } from "./app-sidebar-header"
 import { DashboardsList } from "./dashboards-list/dashboards-list"
 import { SidebarAccount } from "./sidebar-account"
 import { SidebarAgentsMonitor } from "./sidebar-agents-monitor"
-import { TrashButton } from "@/components/trash/trash-button"
-import { UpcomingButton } from "@/components/digest/upcoming-button"
 import { TemplatesButton } from "@/components/templates/templates-button"
 
 export function AppSidebar() {
@@ -35,9 +33,7 @@ export function AppSidebar() {
         />
         <SidebarGroup>
           <SidebarMenu>
-            <UpcomingButton />
             <TemplatesButton />
-            <TrashButton />
           </SidebarMenu>
         </SidebarGroup>
         <DashboardsList

@@ -1,13 +1,14 @@
 import { Button, SidebarGroupLabel } from "@kanban/ui-kit"
 import { Folder, Plus } from "lucide-react"
-import { useDashboardNav } from "@/lib/hooks"
+import { useLocation } from "wouter"
+import { routes } from "@/lib/routes"
 
 interface IProps {
   onNewFolder: () => void
 }
 
 export function BoardsHeader({ onNewFolder }: IProps) {
-  const { createAndOpenDashboard } = useDashboardNav()
+  const [, navigate] = useLocation()
   return (
     <SidebarGroupLabel className="mb-1 gap-1 rounded-none pr-0">
       <span className="flex-1 text-sm">Boards</span>
@@ -20,12 +21,13 @@ export function BoardsHeader({ onNewFolder }: IProps) {
       >
         <Folder />
       </Button>
+      {/* New boards start from a layout, picked on the Templates page. */}
       <Button
         variant="ghost"
         size="icon-sm"
         aria-label="New board"
         className="text-muted-foreground"
-        onClick={() => createAndOpenDashboard()}
+        onClick={() => navigate(`~${routes.templates()}`)}
       >
         <Plus />
       </Button>

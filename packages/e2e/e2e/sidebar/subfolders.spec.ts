@@ -49,26 +49,15 @@ test.describe("sidebar subfolders", () => {
       .toEqual(["Work", "  Drafts", "    Old", "  Alpha", "Demo board"])
   })
 
-  test("a board made from a folder's menu lands inside it", async ({
+  test("the sidebar's + opens the Templates page to start a board", async ({
     page,
   }) => {
     await page.goto("/")
-    await createFolder(page, "Work")
-    await folder(page, "Work").click()
-
-    await openFolderMenu(page, "Work")
-    await page.getByRole("menuitem", { name: "New board" }).click()
-
-    await page.waitForURL(/\/d\/board-/)
-    await expect(folder(page, "Work")).toHaveAttribute("aria-expanded", "true")
-    await expect
-      .poll(() => sidebarTree(page))
-      .toEqual(["Work", "  Untitled board", "Demo board"])
-
-    await page.reload()
-    await expect
-      .poll(() => sidebarTree(page))
-      .toEqual(["Work", "  Untitled board", "Demo board"])
+    await page.getByRole("button", { name: "New board" }).click()
+    await page.waitForURL(/\/templates/)
+    await expect(
+      page.getByRole("list", { name: "Built-in templates" })
+    ).toBeVisible()
   })
 
   test("a new subfolder opens its collapsed parent", async ({ page }) => {
