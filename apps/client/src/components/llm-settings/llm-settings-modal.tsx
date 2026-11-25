@@ -26,8 +26,12 @@ interface IProps {
   onOpenChange: (open: boolean) => void
 }
 
+type KnownAgent = "claude" | "agy" | "pi"
+const isKnown = (agent: string): agent is KnownAgent =>
+  agent === "claude" || agent === "agy" || agent === "pi"
+
 const AGENT_INFO: Record<
-  AgentEntry["agent"],
+  KnownAgent,
   { title: string; installed: string; keyLabel?: string; keyHint?: string }
 > = {
   claude: {
@@ -101,14 +105,16 @@ function LlmSettings() {
                 run.
               </p>
             )}
-            {settings.data?.agents.map((entry) => (
-              <AgentRow
-                key={entry.agent}
-                entry={entry}
-                isAdmin={isAdmin}
-                providers={settings.data?.providers ?? []}
-              />
-            ))}
+            {settings.data?.agents
+              .filter((e) => isKnown(e.agent))
+              .map((entry) => (
+                <AgentRow
+                  key={entry.agent}
+                  entry={entry}
+                  isAdmin={isAdmin}
+                  providers={settings.data?.providers ?? []}
+                />
+              ))}
           </>
         )}
       </section>
@@ -169,7 +175,7 @@ function AgentRow({
   isAdmin: boolean
   providers: LocalProvider[]
 }) {
-  const info = AGENT_INFO[entry.agent]
+  const info = AGENT_INFO[entry.agent as KnownAgent]
   const keyed = entry.agent !== "pi"
   const save = useSaveAgentSetting()
   const [mode, setMode] = useState<AgentMode>(entry.mode ?? "installed")
@@ -177,10 +183,11 @@ function AgentRow({
   const dirty = mode !== (entry.mode ?? "installed") || key.trim() !== ""
 
   const submit = () => {
-    if (entry.agent === "pi") return
+    const agent = entry.agent
+    if (agent !== "claude" && agent !== "agy") return
     save.mutate(
       {
-        agent: entry.agent,
+        agent: agent as "claude" | "agy",
         mode,
         ...(key.trim() ? { apiKey: key.trim() } : {}),
       },

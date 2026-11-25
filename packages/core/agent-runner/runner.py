@@ -727,6 +727,8 @@ AGENT_CHECKS = {
     "claude": ("claude", [".claude", ".claude.json"]),
     "agy": ("agy", [".gemini/antigravity-cli"]),
     "pi": ("pi", []),
+    # Listed for the sidebar; offline until compose mounts its binary.
+    "opencode": ("opencode", []),
 }
 _status_cache: dict = {"at": 0.0, "value": None}
 

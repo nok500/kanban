@@ -1,300 +1,200 @@
-import { useCallback, useEffect, useState } from "react"
-import { apiUrl, appFetch } from "@kanban/core"
 import { SidebarGroup, cn } from "@kanban/ui-kit"
 import { FiRefreshCw } from "react-icons/fi"
 import { useAuth } from "@/lib/hooks"
 import { useAgentJobs, type AgentJobInfo } from "@/lib/hooks/use-agent-jobs"
+import {
+  useLlmSettings,
+  type AgentEntry,
+  type LlmSettings,
+} from "@/lib/hooks/use-llm-settings"
 
-interface AgentProcessInfo {
-  pid: number
-  state: string
-  status: string
-  cwd: string | null
-}
+const POLL_INTERVAL_MS = 30_000
+const ACTIVITY_ROWS = 6
 
-interface AgentCliState {
-  running: boolean
-  count: number
-  activeCount: number
-  processes: AgentProcessInfo[]
-}
-
-interface AgentHostStatus {
-  name: string
-  host: string
-  url: string
-  reachable: boolean
-  latencyMs: number | null
-  claude: AgentCliState
-  agy: AgentCliState
-  llama: AgentCliState
-  ollama: AgentCliState
-  error?: string
-}
-
-interface AgentsResponse {
-  checkedAt: number
-  hosts: AgentHostStatus[]
-}
-
-const POLL_INTERVAL_MS = 10_000
-
-/** Compact sidebar widget monitoring CLI agents and local LLM runners across hosts. */
+/**
+ * The sidebar's agent panel: the CLI agents agent-runner can run (on the
+ * machine the Kanban containers run on), then the latest jobs.
+ */
 export function SidebarAgentsMonitor() {
   const { authed } = useAuth()
-  const [data, setData] = useState<AgentsResponse | null>(null)
-  const { data: jobs = [], refetch: refetchJobs } = useAgentJobs()
-  const [loading, setLoading] = useState(false)
-
-  const refresh = useCallback(async () => {
-    setLoading(true)
-    try {
-      const [agentsRes] = await Promise.all([
-        appFetch(apiUrl("/api/agents")),
-        refetchJobs(),
-      ])
-      if (agentsRes.ok) {
-        const json = (await agentsRes.json()) as AgentsResponse
-        setData(json)
-      }
-    } catch {
-      // Ignore transient network errors; previous state stays visible.
-    } finally {
-      setLoading(false)
-    }
-  }, [refetchJobs])
-
-  useEffect(() => {
-    if (authed !== true) return
-    void refresh()
-    const timer = window.setInterval(() => void refresh(), POLL_INTERVAL_MS)
-    return () => window.clearInterval(timer)
-  }, [authed, refresh])
+  const settings = useLlmSettings(authed === true, POLL_INTERVAL_MS)
+  const jobs = useAgentJobs()
 
   if (authed !== true) return null
 
-  const hosts = data?.hosts ?? []
+  const refreshing = settings.isFetching || jobs.isFetching
+  const recent = [...(jobs.data ?? [])]
+    .sort((a, b) => b.startedAt - a.startedAt)
+    .slice(0, ACTIVITY_ROWS)
 
   return (
     <SidebarGroup className="px-2 py-1.5">
       <div className="relative rounded-lg border border-border/60 bg-background/25 px-3 py-2.5">
         <button
           type="button"
-          onClick={() => void refresh()}
-          title="Refresh agent status"
+          onClick={() => {
+            void settings.refetch()
+            void jobs.refetch()
+          }}
+          title="Refresh agents and activity"
           className="absolute top-2 right-2 rounded p-1 text-muted-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-foreground"
         >
-          <FiRefreshCw className={cn("size-3", loading && "animate-spin")} />
+          <FiRefreshCw className={cn("size-3", refreshing && "animate-spin")} />
         </button>
 
         <div className="flex flex-col gap-3">
-          {hosts.map((host) => (
-            <div key={`${host.name}-${host.host}`} className="flex flex-col gap-1">
-              <div
-                className="flex items-center gap-2 pr-5"
-                title={
-                  host.reachable
-                    ? `${host.name} (${host.host}) · ${host.latencyMs ?? 0}ms`
-                    : `${host.name} (${host.host}) offline${host.error ? `: ${host.error}` : ""}`
-                }
-              >
-                <span className="text-xs font-medium tracking-wide uppercase text-foreground/90">
-                  {host.name}
-                </span>
-                {!host.reachable && (
-                  <span className="text-[10px] text-muted-foreground/60">
-                    offline
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-1 pl-3">
-                <AgentRow
-                  label="antigravity"
-                  state={host.agy}
-                  reachable={host.reachable}
-                />
-                <AgentRow
-                  label="claude"
-                  state={host.claude}
-                  reachable={host.reachable}
-                />
-                <AgentRow
-                  label="ollama"
-                  state={host.ollama}
-                  reachable={host.reachable}
-                />
-                <AgentRow
-                  label="llama.cpp"
-                  state={host.llama}
-                  reachable={host.reachable}
-                />
-              </div>
-            </div>
-          ))}
-
-          <div className="flex flex-col gap-1 border-t border-border/40 pt-2">
-            <span className="text-xs font-medium tracking-wide uppercase text-foreground/90">
-              JOBS
-            </span>
-            {jobs.length === 0 ? (
-              <span className="pl-3 text-[11px] text-muted-foreground/60">
-                none
-              </span>
+          <Section title="Agents">
+            {settings.isLoading ? (
+              <Muted>checking…</Muted>
+            ) : !settings.data?.runnerReachable ? (
+              <Muted>agent-runner unreachable</Muted>
             ) : (
-              <div className="flex flex-col gap-1 pl-3">
-                {[...jobs]
-                  .sort((a, b) => b.startedAt - a.startedAt)
-                  .slice(0, 6)
-                  .map((job) => (
-                    <JobRow key={job.jobId} job={job} />
-                  ))}
-              </div>
+              settings.data.agents.map((entry) => (
+                <AgentRow
+                  key={entry.agent}
+                  entry={entry}
+                  settings={settings.data}
+                />
+              ))
             )}
-          </div>
+          </Section>
+
+          <Section title="Activity" divided>
+            {recent.length === 0 ? (
+              <Muted>no jobs yet</Muted>
+            ) : (
+              recent.map((job) => <JobRow key={job.jobId} job={job} />)
+            )}
+          </Section>
         </div>
       </div>
     </SidebarGroup>
   )
 }
 
+function Section({
+  title,
+  divided,
+  children,
+}: {
+  title: string
+  divided?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-1",
+        divided && "border-t border-border/40 pt-2"
+      )}
+    >
+      <span className="pr-5 text-xs font-medium tracking-wide text-foreground/90 uppercase">
+        {title}
+      </span>
+      <div className="flex flex-col gap-1 pl-3">{children}</div>
+    </div>
+  )
+}
+
+function Muted({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="text-[11px] text-muted-foreground/60">{children}</span>
+  )
+}
+
+/** Ready to run: the CLI works, and for pi a provider of its answers. */
+function agentState(
+  entry: AgentEntry,
+  settings: LlmSettings
+): { online: boolean; detail: string } {
+  const s = entry.status
+  if (!s?.ok) {
+    return {
+      online: false,
+      detail:
+        s?.error ??
+        (s?.missing.length ? `missing ${s.missing.join(", ")}` : "not found"),
+    }
+  }
+  if (entry.agent === "pi") {
+    const pinned = entry.provider
+    const provider = pinned
+      ? settings.providers.find((p) => p.name === pinned)
+      : settings.providers.find((p) => p.online && p.model)
+    if (!provider?.online || !provider.model) {
+      return {
+        online: false,
+        detail: `${s.version} · ${pinned ? `${pinned} offline` : "no provider online"}`,
+      }
+    }
+    return { online: true, detail: `${s.version} · on ${provider.name}` }
+  }
+  const auth = entry.mode === "apiKey" ? " · API key" : ""
+  return { online: true, detail: `${s.version}${auth}` }
+}
+
+function AgentRow({
+  entry,
+  settings,
+}: {
+  entry: AgentEntry
+  settings: LlmSettings
+}) {
+  const { online, detail } = agentState(entry, settings)
+  return (
+    <div
+      title={`${entry.agent}: ${online ? "online" : "offline"}\n${detail}`}
+      className="flex items-center gap-2 text-xs leading-tight"
+    >
+      <span
+        aria-label={online ? "online" : "offline"}
+        className={cn(
+          "size-2 shrink-0 rounded-full",
+          online
+            ? "bg-emerald-600 dark:bg-emerald-500"
+            : "border border-muted-foreground/50 bg-transparent"
+        )}
+      />
+      <span
+        className={cn(
+          "truncate",
+          online ? "text-foreground/85" : "text-muted-foreground/60"
+        )}
+      >
+        {entry.agent}
+      </span>
+    </div>
+  )
+}
+
 function JobRow({ job }: { job: AgentJobInfo }) {
-  const isRunning = job.status === "running"
-  const isFailed = job.status === "failed"
   const title = [
     `job #${job.jobId} (${job.agent})`,
     job.title || "(untitled)",
     `status: ${job.status}${job.exitCode != null ? ` (exit ${job.exitCode})` : ""}`,
-    `cvs: ${job.cvCount}${job.pid != null ? ` · pid: ${job.pid}` : ""}`,
-    job.logPath,
   ].join("\n")
 
   return (
     <div
       title={title}
-      className="flex items-center justify-between gap-2 text-xs leading-tight"
+      className="grid grid-cols-[2.25rem_1fr_auto] items-baseline gap-1.5 text-xs leading-tight"
     >
-      <div className="flex min-w-0 items-baseline gap-1.5">
-        <span className="shrink-0 font-mono text-[11px] text-foreground/85">
-          #{job.jobId}
-        </span>
-        <span className="truncate text-[10px] text-muted-foreground">
-          {job.agent}
-          {job.title ? ` · ${job.title}` : ""}
-        </span>
-      </div>
+      <span className="font-mono text-[11px] text-foreground/85">
+        #{job.jobId}
+      </span>
+      <span className="truncate text-muted-foreground">{job.agent}</span>
       <span
         className={cn(
-          "shrink-0 text-[10px] font-medium",
-          isRunning
+          "text-[10px] font-medium",
+          job.status === "running"
             ? "text-emerald-600 dark:text-emerald-400"
-            : isFailed
+            : job.status === "failed"
               ? "text-destructive"
               : "text-muted-foreground"
         )}
       >
         {job.status}
       </span>
-    </div>
-  )
-}
-
-function isProcessActive(proc: AgentProcessInfo): boolean {
-  return !["T", "t", "Z", "X"].includes(proc.state)
-}
-
-function formatProcTitle(proc: AgentProcessInfo): string {
-  const details = `PID ${proc.pid} · ${proc.status} (${proc.state})`
-  return proc.cwd ? `${proc.cwd}\n${details}` : details
-}
-
-function AgentRow({
-  label,
-  state,
-  reachable,
-}: {
-  label: string
-  state: AgentCliState
-  reachable: boolean
-}) {
-  if (reachable && state.processes.length > 1) {
-    return (
-      <div className="flex flex-col gap-1">
-        {state.processes.map((proc) => {
-          const active = isProcessActive(proc)
-          const stopped = proc.state === "T" || proc.state === "t"
-          const dotTitle = formatProcTitle(proc)
-          return (
-            <div
-              key={`${label}-${proc.pid}`}
-              title={dotTitle}
-              className="flex items-center justify-between gap-2 text-xs leading-tight"
-            >
-              <div className="flex min-w-0 items-baseline gap-1.5">
-                <span className="truncate text-foreground/85">{label}</span>
-                <span className="truncate text-[10px] text-muted-foreground">
-                  {proc.status}
-                </span>
-              </div>
-              <span
-                title={dotTitle}
-                className={cn(
-                  "size-3 shrink-0 rounded-full border transition-colors",
-                  active
-                    ? "border-emerald-300/80 bg-emerald-600 dark:border-emerald-300/70 dark:bg-emerald-500"
-                    : stopped
-                      ? "border-amber-300/80 bg-amber-500/80"
-                      : "border-muted-foreground/60 bg-transparent"
-                )}
-              />
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
-
-  const allStopped = reachable && !state.running && state.count > 0
-  const title = !reachable
-    ? `${label}: host offline`
-    : state.processes.length > 0
-      ? state.processes.map(formatProcTitle).join("\n\n")
-      : `${label}: idle`
-
-  return (
-    <div
-      title={title}
-      className="flex items-center justify-between gap-2 text-xs leading-tight"
-    >
-      <div className="flex min-w-0 items-baseline gap-1.5">
-        <span
-          className={cn(
-            "truncate",
-            reachable ? "text-foreground/85" : "text-muted-foreground/50"
-          )}
-        >
-          {label}
-        </span>
-        {reachable && state.count > 1 && (
-          <span className="truncate text-[10px] text-muted-foreground">
-            ×{state.count}
-          </span>
-        )}
-      </div>
-
-      <span
-        title={title}
-        className={cn(
-          "size-3 shrink-0 rounded-full border transition-colors",
-          !reachable
-            ? "border-muted-foreground/25 bg-transparent"
-            : state.running
-              ? "border-emerald-300/80 bg-emerald-600 dark:border-emerald-300/70 dark:bg-emerald-500"
-              : allStopped
-                ? "border-amber-300/80 bg-amber-500/80"
-                : "border-muted-foreground/60 bg-transparent"
-        )}
-      />
     </div>
   )
 }

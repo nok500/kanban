@@ -146,6 +146,8 @@ services:
       - ${CLAUDE_BIN:-${HOME}/.claude}:/home/jvnl/.claude
       - ${CLAUDE_JSON:-${HOME}/.claude.json}:/home/jvnl/.claude.json
       # pi: the host's install (read-only) and its config (~/.pi: providers, auth).
+      # opencode: shown in the sidebar for now; jobs don't use it yet.
+      - ${OPENCODE_BIN:-${HOME}/.opencode/bin/opencode}:/usr/local/bin/opencode:ro
       - ${PI_PACKAGE:-/usr/local/lib/node_modules/@earendil-works/pi-coding-agent}:/opt/pi:ro
       - ${PI_CONFIG:-${HOME}/.pi}:/home/jvnl/.pi
       # Saved agent sessions and card chats (pi/, claude/, agy/, llama/), shared

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { apiUrl, appFetch } from "@kanban/core"
 
-export type LlmAgent = "claude" | "agy" | "pi"
+export type LlmAgent = "claude" | "agy" | "pi" | (string & {})
 export type AgentMode = "installed" | "apiKey"
 
 /** What agent-runner found for one CLI (see runner.py `agent_status`). */
@@ -45,10 +45,11 @@ export interface LlmSettings {
 
 const KEY = ["llm", "settings"] as const
 
-export function useLlmSettings(enabled: boolean) {
+export function useLlmSettings(enabled: boolean, refetchInterval?: number) {
   return useQuery({
     queryKey: KEY,
     enabled,
+    refetchInterval,
     queryFn: async (): Promise<LlmSettings> => {
       const res = await appFetch(apiUrl("/api/llm"))
       if (!res.ok) throw new Error(`HTTP ${res.status}`)

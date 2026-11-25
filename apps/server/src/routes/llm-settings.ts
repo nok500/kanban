@@ -68,7 +68,11 @@ export function registerLlmSettingsRoutes(app: FastifyInstance): void {
       runnerStatus(),
       listAgentSettings(),
     ])
-    const agents = (["claude", "agy", "pi"] as const).map((agent) => {
+    // claude, agy and pi first, then whatever else the runner checks (opencode).
+    const names = [
+      ...new Set(["claude", "agy", "pi", ...Object.keys(status?.agents ?? {})]),
+    ]
+    const agents = names.map((agent) => {
       const setting = settings.find((s) => s.agent === agent)
       return {
         agent,
