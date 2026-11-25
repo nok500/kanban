@@ -14,6 +14,8 @@ export interface AgentRunnerStatus {
   missing: string[]
   /** An API key already set in the runner's own environment. */
   envApiKey?: boolean
+  /** Jobs and card chat follow-ups it is running for Kanban right now. */
+  running?: number
 }
 
 export interface AgentEntry {

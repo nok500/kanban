@@ -49,6 +49,8 @@ RESUME_TIMEOUT_S = int(os.environ.get("AGENT_RESUME_TIMEOUT", "1200"))
 
 jobs: dict[str, dict] = {}
 jobs_lock = threading.Lock()
+# Card-chat follow-ups in flight, per agent (they run outside `jobs`).
+resuming: dict[str, int] = {}
 job_counter = 0
 
 
@@ -733,13 +735,34 @@ AGENT_CHECKS = {
 _status_cache: dict = {"at": 0.0, "value": None}
 
 
+def running_counts() -> dict[str, int]:
+    """What each agent is doing for Kanban right now: running jobs plus card
+    chat follow-ups. Processes the runner didn't start don't count."""
+    counts: dict[str, int] = {}
+    with jobs_lock:
+        for job in jobs.values():
+            if job.get("status") == "running":
+                counts[job["agent"]] = counts.get(job["agent"], 0) + 1
+        for agent, n in resuming.items():
+            if n:
+                counts[agent] = counts.get(agent, 0) + n
+    return counts
+
+
+def with_activity(value: dict) -> dict:
+    """The status with live parts filled in: providers probed and `running`."""
+    counts = running_counts()
+    agents = {name: {**info, "running": counts.get(name, 0)} for name, info in value["agents"].items()}
+    return {**value, "agents": agents, "providers": probe_providers()}
+
+
 def agent_status() -> dict:
     """Whether each CLI can run here: its binary (mounted by compose), its
     version, the config its installed login needs, and API keys from env."""
     # The CLI checks start each binary, so they're cached; providers are
     # probed every time (whether a host is up changes by the minute).
     if _status_cache["value"] and time.time() - _status_cache["at"] < 30:
-        return {**_status_cache["value"], "providers": probe_providers()}
+        return with_activity(_status_cache["value"])
     home = Path(os.environ.get("HOME", "/root"))
     agents = {}
     for agent, (binary, files) in AGENT_CHECKS.items():
@@ -774,11 +797,11 @@ def agent_status() -> dict:
     agents["agy"]["envApiKey"] = bool(os.environ.get("GEMINI_API_KEY"))
     value = {
         "agents": agents,
-        "providers": probe_providers(),
+        "providers": [],  # probed live, in with_activity
         "sessions": sessions.enabled(),
     }
     _status_cache.update(at=time.time(), value=value)
-    return value
+    return with_activity(value)
 
 
 def fail_job(job_id: str, err_path: Path, message: str) -> None:
@@ -953,12 +976,17 @@ class RunnerHandler(BaseHTTPRequestHandler):
         if not sessions.claim(record["id"]):
             self._send_json(409, {"error": f"{record['agent']} is still answering"})
             return
+        agent = record["agent"]
+        with jobs_lock:
+            resuming[agent] = resuming.get(agent, 0) + 1
         try:
             configs = payload.get("agentConfigs") or {}
             config = configs.get(record["agent"]) if isinstance(configs, dict) else None
             code, body = resume_session(record, message, config or payload.get("agentConfig") or {})
         finally:
             sessions.release(record["id"])
+            with jobs_lock:
+                resuming[agent] -= 1
         self._send_json(code, body)
 
     def _send_json(self, code: int, payload: dict) -> None:

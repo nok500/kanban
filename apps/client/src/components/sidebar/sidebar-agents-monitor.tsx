@@ -9,6 +9,8 @@ import {
 } from "@/lib/hooks/use-llm-settings"
 
 const POLL_INTERVAL_MS = 30_000
+/** While anything runs, so the green dot follows the job closely. */
+const BUSY_POLL_INTERVAL_MS = 3_000
 const ACTIVITY_ROWS = 6
 
 /**
@@ -17,8 +19,12 @@ const ACTIVITY_ROWS = 6
  */
 export function SidebarAgentsMonitor() {
   const { authed } = useAuth()
-  const settings = useLlmSettings(authed === true, POLL_INTERVAL_MS)
   const jobs = useAgentJobs()
+  const jobRunning = jobs.data?.some((j) => j.status === "running") ?? false
+  const settings = useLlmSettings(
+    authed === true,
+    jobRunning ? BUSY_POLL_INTERVAL_MS : POLL_INTERVAL_MS
+  )
 
   if (authed !== true) return null
 
@@ -102,15 +108,25 @@ function Muted({ children }: { children: React.ReactNode }) {
   )
 }
 
-/** Ready to run: the CLI works, and for pi a provider of its answers. */
+type AgentState = "running" | "ready" | "unavailable"
+
+/**
+ * `running`: a job or card chat follow-up for this agent is running in
+ * agent-runner now. `ready`: idle, and it can run (the CLI starts, its login is
+ * mounted; for pi, a provider answers). `unavailable`: it can't.
+ */
 function agentState(
   entry: AgentEntry,
   settings: LlmSettings
-): { online: boolean; detail: string } {
+): { state: AgentState; detail: string } {
   const s = entry.status
+  const running = s?.running ?? 0
+  const busy = running
+    ? `running ${running} ${running === 1 ? "job" : "jobs"} · `
+    : ""
   if (!s?.ok) {
     return {
-      online: false,
+      state: running ? "running" : "unavailable",
       detail:
         s?.error ??
         (s?.missing.length ? `missing ${s.missing.join(", ")}` : "not found"),
@@ -123,14 +139,26 @@ function agentState(
       : settings.providers.find((p) => p.online && p.model)
     if (!provider?.online || !provider.model) {
       return {
-        online: false,
-        detail: `${s.version} · ${pinned ? `${pinned} offline` : "no provider online"}`,
+        state: running ? "running" : "unavailable",
+        detail: `${busy}${s.version} · ${pinned ? `${pinned} offline` : "no provider online"}`,
       }
     }
-    return { online: true, detail: `${s.version} · on ${provider.name}` }
+    return {
+      state: running ? "running" : "ready",
+      detail: `${busy}${s.version} · on ${provider.name}`,
+    }
   }
   const auth = entry.mode === "apiKey" ? " · API key" : ""
-  return { online: true, detail: `${s.version}${auth}` }
+  return {
+    state: running ? "running" : "ready",
+    detail: `${busy}${s.version}${auth}`,
+  }
+}
+
+const STATE_LABEL: Record<AgentState, string> = {
+  running: "running",
+  ready: "ready, idle",
+  unavailable: "unavailable",
 }
 
 function AgentRow({
@@ -140,25 +168,28 @@ function AgentRow({
   entry: AgentEntry
   settings: LlmSettings
 }) {
-  const { online, detail } = agentState(entry, settings)
+  const { state, detail } = agentState(entry, settings)
   return (
     <div
-      title={`${entry.agent}: ${online ? "online" : "offline"}\n${detail}`}
+      title={`${entry.agent}: ${STATE_LABEL[state]}\n${detail}`}
       className="flex items-center gap-2 text-xs leading-tight"
     >
       <span
-        aria-label={online ? "online" : "offline"}
+        aria-label={STATE_LABEL[state]}
         className={cn(
           "size-2 shrink-0 rounded-full",
-          online
-            ? "bg-emerald-600 dark:bg-emerald-500"
-            : "border border-muted-foreground/50 bg-transparent"
+          state === "running" &&
+            "animate-pulse bg-emerald-600 dark:bg-emerald-500",
+          state === "ready" && "border border-muted-foreground/60",
+          state === "unavailable" && "bg-destructive/70"
         )}
       />
       <span
         className={cn(
           "truncate",
-          online ? "text-foreground/85" : "text-muted-foreground/60"
+          state === "unavailable"
+            ? "text-muted-foreground/60"
+            : "text-foreground/85"
         )}
       >
         {entry.agent}
