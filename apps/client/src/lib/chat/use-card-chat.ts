@@ -32,11 +32,27 @@ export interface CardContext {
 }
 
 /**
- * One conversation per card, in memory for as long as the page is open:
- * however the chat is opened (the header, or a paragraph's button), and
- * however often, it picks up where it left off; a reload starts fresh.
+ * One conversation per card: however the chat is opened (the header, or a
+ * paragraph's button), and however often, it picks up where it left off. The
+ * map caches it for the page; the server keeps it across reloads and devices
+ * (`/api/cards/:id/chat`).
  */
 const conversations = new Map<string, ChatTurn[]>()
+/** Cards whose saved conversation was already fetched this page load. */
+const loaded = new Set<string>()
+
+const chatUrl = (cardId: string) =>
+  apiUrl(`/api/cards/${encodeURIComponent(cardId)}/chat`)
+
+/** Saves the card's conversation; a failure only costs persistence. */
+function persist(cardId: string): void {
+  const turns = conversations.get(cardId) ?? []
+  void appFetch(chatUrl(cardId), {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ turns }),
+  }).catch(() => undefined)
+}
 
 let nextId = 0
 const turnId = () => `t${Date.now().toString(36)}-${nextId++}`
@@ -92,6 +108,21 @@ export function useCardChat(cardId: string, card: CardContext) {
 
   // Leaving (closing the modal, switching cards) stops the reply in flight.
   useEffect(() => () => abortRef.current?.abort(), [key])
+
+  // The saved conversation, once per card per page load. Anything typed
+  // before it arrives wins: it is newer.
+  useEffect(() => {
+    if (loaded.has(key)) return
+    loaded.add(key)
+    void appFetch(chatUrl(key))
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { turns?: ChatTurn[] } | null) => {
+        if (!data?.turns?.length || conversations.get(key)?.length) return
+        conversations.set(key, data.turns)
+        setTurnsState(data.turns)
+      })
+      .catch(() => loaded.delete(key))
+  }, [key])
 
   const patchTurn = useCallback(
     (id: string, patch: (turn: ChatTurn) => Partial<ChatTurn>) => {
@@ -152,9 +183,10 @@ export function useCardChat(cardId: string, card: CardContext) {
       } finally {
         if (abortRef.current === controller) abortRef.current = null
         setStreaming(false)
+        persist(key)
       }
     },
-    [patchTurn, setTurns]
+    [key, patchTurn, setTurns]
   )
 
   const send = useCallback(
@@ -189,7 +221,8 @@ export function useCardChat(cardId: string, card: CardContext) {
   const clear = useCallback(() => {
     abortRef.current?.abort()
     setTurns(() => [])
-  }, [setTurns])
+    persist(key)
+  }, [key, setTurns])
 
   return { turns, streaming, send, retry, stop, clear }
 }

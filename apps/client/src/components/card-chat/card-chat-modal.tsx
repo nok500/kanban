@@ -20,12 +20,18 @@ import {
 } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
+  messageContent,
   useCardChat,
   type CardContext,
   type ChatFocus,
   type ChatTarget,
   type ChatTurn,
 } from "@/lib/chat/use-card-chat"
+import {
+  useAgentSession,
+  type AgentSession,
+  type AgentSessionTurn,
+} from "@/lib/chat/use-agent-session"
 import {
   useChatEndpoints,
   type ChatEndpointStatus,
@@ -96,6 +102,8 @@ function pickTarget(
 }
 
 const encodeTarget = (t: ChatTarget) => `${t.endpoint}\u0000${t.model}`
+/** The picker's value for "continue the card's agent session". */
+const AGENT_VALUE = "\u0001agent"
 const decodeTarget = (value: string): ChatTarget => {
   const [endpoint, model] = value.split("\u0000")
   return { endpoint, model }
@@ -157,6 +165,18 @@ function ChatPane({
     cardId,
     card
   )
+  const agent = useAgentSession(cardId)
+  const session = agent.session
+  // A processed card opens on its agent's session; picking a llama model
+  // switches this pane to the llama chat.
+  const [pickedLlama, setPickedLlama] = useState(false)
+  const agentMode = Boolean(session) && !pickedLlama
+  const agentBusy = agent.pending !== null
+  const agentTurns = useMemo(
+    () => (session ? sessionTurns(session, agent.pending) : []),
+    [session, agent.pending]
+  )
+  const shownTurns: ShownTurn[] = agentMode ? agentTurns : turns
   const [draft, setDraft] = useState("")
   // The passage the next message is about; it rides along with that message.
   // The pane mounts on every open, so this resets to whatever opened it.
@@ -169,29 +189,52 @@ function ChatPane({
   useEffect(() => {
     const el = scrollRef.current
     if (el && pinnedRef.current) el.scrollTop = el.scrollHeight
-  }, [turns])
+  }, [shownTurns])
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
   const choose = (value: string) => {
+    if (value === AGENT_VALUE) {
+      setPickedLlama(false)
+      return
+    }
     const next = decodeTarget(value)
+    setPickedLlama(true)
     setChosen(next)
     localStorage.setItem(TARGET_KEY, JSON.stringify(next))
   }
 
+  const canSendAgent = agentMode && Boolean(session?.resumable) && !agentBusy
+  const canSend = agentMode ? canSendAgent : Boolean(target) && !streaming
+
   const submit = () => {
-    if (!target || !draft.trim() || streaming) return
+    if (!draft.trim() || !canSend) return
     pinnedRef.current = true
-    send(draft, target, focus)
+    if (agentMode) {
+      agent.send(
+        messageContent({
+          id: "draft",
+          role: "user",
+          content: draft.trim(),
+          ...(focus ? { focus } : {}),
+        })
+      )
+    } else if (target) {
+      send(draft, target, focus)
+    }
     setDraft("")
     setFocus(null)
   }
 
   const last = turns[turns.length - 1]
   const canRetry =
-    !streaming && target && last?.role === "assistant" && Boolean(last.error)
+    !agentMode &&
+    !streaming &&
+    target &&
+    last?.role === "assistant" &&
+    Boolean(last.error)
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -229,14 +272,17 @@ function ChatPane({
               endpoints={endpoints}
               loading={endpointsQuery.isLoading}
               failed={endpointsQuery.isError}
-              value={target}
+              value={
+                agentMode ? AGENT_VALUE : target ? encodeTarget(target) : null
+              }
+              session={session}
               onChange={choose}
-              disabled={streaming}
+              disabled={streaming || agentBusy}
               isAdmin={isAdmin}
               onManage={() => setManaging(true)}
             />
             <div className="ml-auto flex items-center gap-1">
-              {activeEndpoint?.uiUrl && (
+              {!agentMode && activeEndpoint?.uiUrl && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -253,18 +299,20 @@ function ChatPane({
                   llama UI
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  clear()
-                  inputRef.current?.focus()
-                }}
-                disabled={turns.length === 0}
-              >
-                <SquarePen />
-                New chat
-              </Button>
+              {!agentMode && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    clear()
+                    inputRef.current?.focus()
+                  }}
+                  disabled={turns.length === 0}
+                >
+                  <SquarePen />
+                  New chat
+                </Button>
+              )}
               {isAdmin && (
                 <Button
                   variant="ghost"
@@ -287,7 +335,8 @@ function ChatPane({
             }}
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4"
           >
-            {turns.length === 0 ? (
+            {agentMode && session && <SessionBanner session={session} />}
+            {shownTurns.length === 0 ? (
               <EmptyState
                 focused={Boolean(focus)}
                 onPick={(text) => {
@@ -296,13 +345,28 @@ function ChatPane({
                 }}
               />
             ) : (
-              turns.map((turn, i) => (
-                <Turn
-                  key={turn.id}
-                  turn={turn}
-                  pending={streaming && i === turns.length - 1}
-                />
-              ))
+              shownTurns.map((turn, i) =>
+                turn.jobPrompt ? (
+                  <JobPrompt key={turn.id} turn={turn} />
+                ) : (
+                  <Turn
+                    key={turn.id}
+                    turn={turn}
+                    pending={
+                      i === shownTurns.length - 1 &&
+                      (agentMode ? agentBusy : streaming)
+                    }
+                    waitingLabel={
+                      agentMode && session
+                        ? `${session.agent} is working… (a follow-up can take a few minutes)`
+                        : undefined
+                    }
+                  />
+                )
+              )
+            )}
+            {agentMode && agent.error && (
+              <p className="text-xs text-destructive">Error: {agent.error}</p>
             )}
             {canRetry && (
               <div>
@@ -358,16 +422,20 @@ function ChatPane({
                 }
               }}
               placeholder={
-                !target
-                  ? "No model available"
-                  : focus
-                    ? "Ask about this point… (Enter to send, Shift+Enter for a new line)"
-                    : "Ask about this card… (Enter to send, Shift+Enter for a new line)"
+                agentMode && session
+                  ? session.resumable
+                    ? `Continue the ${session.agent} session… (Enter to send)`
+                    : `This ${session.agent} session can't be continued; pick a llama model above`
+                  : !target
+                    ? "No model available"
+                    : focus
+                      ? "Ask about this point… (Enter to send, Shift+Enter for a new line)"
+                      : "Ask about this card… (Enter to send, Shift+Enter for a new line)"
               }
               rows={2}
               className="max-h-48 min-h-10 flex-1 resize-none"
             />
-            {streaming ? (
+            {streaming && !agentMode ? (
               <Button
                 type="button"
                 size="icon"
@@ -382,9 +450,13 @@ function ChatPane({
                 type="submit"
                 size="icon"
                 aria-label="Send"
-                disabled={!target || !draft.trim()}
+                disabled={!canSend || !draft.trim()}
               >
-                <ArrowUp />
+                {agentBusy && agentMode ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  <ArrowUp />
+                )}
               </Button>
             )}
           </form>
@@ -399,6 +471,7 @@ function ModelSelect({
   loading,
   failed,
   value,
+  session,
   onChange,
   disabled,
   isAdmin,
@@ -407,13 +480,14 @@ function ModelSelect({
   endpoints: ChatEndpointStatus[]
   loading: boolean
   failed: boolean
-  value: ChatTarget | null
+  value: string | null
+  session: AgentSession | null
   onChange: (value: string) => void
   disabled: boolean
   isAdmin: boolean
   onManage: () => void
 }) {
-  if (loading) {
+  if (loading && !session) {
     return (
       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <LoaderCircle className="size-3.5 animate-spin" />
@@ -421,7 +495,7 @@ function ModelSelect({
       </span>
     )
   }
-  if (failed || !value) {
+  if (!session && (failed || !value)) {
     const down = endpoints.filter((e) => !e.reachable)
     return (
       <span className="flex min-w-0 items-center gap-2 text-xs text-destructive">
@@ -446,10 +520,16 @@ function ModelSelect({
     <select
       aria-label="Model"
       className="h-7 max-w-[70%] min-w-0 truncate rounded-md border bg-transparent px-2 text-xs"
-      value={encodeTarget(value)}
+      value={value ?? ""}
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
     >
+      {session && (
+        <optgroup label="This card's agent">
+          <option value={AGENT_VALUE}>Continue {session.agent} session</option>
+        </optgroup>
+      )}
+      {!value && <option value="">Pick a model</option>}
       {endpoints.map((e) => (
         <optgroup
           key={e.name}
@@ -569,7 +649,15 @@ function EmptyState({
   )
 }
 
-function Turn({ turn, pending }: { turn: ChatTurn; pending: boolean }) {
+function Turn({
+  turn,
+  pending,
+  waitingLabel,
+}: {
+  turn: ChatTurn
+  pending: boolean
+  waitingLabel?: string
+}) {
   if (turn.role === "user") {
     return (
       <div className="ml-auto flex max-w-[85%] flex-col gap-1.5 rounded-xl bg-muted px-3 py-2">
@@ -585,16 +673,21 @@ function Turn({ turn, pending }: { turn: ChatTurn; pending: boolean }) {
       {turn.reasoning && (
         <details className="rounded-md border px-3 py-1.5 text-xs text-muted-foreground">
           <summary className="cursor-pointer select-none">
-            {pending && !turn.content ? "Thinking…" : "Reasoning"}
+            {pending && !turn.content
+              ? "Thinking…"
+              : `Reasoning (${turn.reasoning.length.toLocaleString()} characters)`}
           </summary>
-          <div className="mt-1 whitespace-pre-wrap">{turn.reasoning}</div>
+          <div className="mt-1 max-h-80 overflow-y-auto whitespace-pre-wrap">
+            {turn.reasoning}
+          </div>
         </details>
       )}
       {turn.content && <Markdown className="preview">{turn.content}</Markdown>}
       {pending && empty && (
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <LoaderCircle className="size-3.5 animate-spin" />
-          Waiting for the model… (an unloaded model loads first)
+          {waitingLabel ??
+            "Waiting for the model… (an unloaded model loads first)"}
         </span>
       )}
       {turn.error && (
@@ -610,5 +703,60 @@ function Turn({ turn, pending }: { turn: ChatTurn; pending: boolean }) {
         </p>
       )}
     </div>
+  )
+}
+
+type ShownTurn = ChatTurn & { jobPrompt?: boolean }
+
+/** The session's turns as the chat shows them, plus the message on its way. */
+function sessionTurns(
+  session: AgentSession,
+  pending: string | null
+): ShownTurn[] {
+  const shown: ShownTurn[] = session.turns.map(
+    (t: AgentSessionTurn, i): ShownTurn => ({
+      id: `${session.id}-${i}`,
+      role: t.role,
+      content: t.content,
+      ...(t.error ? { error: t.error } : {}),
+      ...(t.reasoning ? { reasoning: t.reasoning } : {}),
+      ...(t.kind === "job" ? { jobPrompt: true } : {}),
+    })
+  )
+  if (pending !== null) {
+    shown.push(
+      { id: "pending-user", role: "user", content: pending },
+      { id: "pending-reply", role: "assistant", content: "" }
+    )
+  }
+  return shown
+}
+
+function SessionBanner({ session }: { session: AgentSession }) {
+  return (
+    <p className="text-center text-xs text-muted-foreground">
+      {session.agent} processed this card{" "}
+      {session.provider
+        ? `on ${session.provider.name} (${session.provider.model}) `
+        : ""}
+      {new Date(session.createdAt).toLocaleString()}.{" "}
+      {session.resumable
+        ? "Messages here continue that session."
+        : "Its session can't be continued."}
+    </p>
+  )
+}
+
+/** The job's prompt: long (JD, CVs, instructions), so folded away. */
+function JobPrompt({ turn }: { turn: ShownTurn }) {
+  return (
+    <details className="ml-auto max-w-[85%] rounded-xl bg-muted px-3 py-2 text-xs">
+      <summary className="cursor-pointer text-muted-foreground select-none">
+        Job prompt ({turn.content.length.toLocaleString()} characters)
+      </summary>
+      <div className="mt-2 max-h-80 overflow-y-auto whitespace-pre-wrap">
+        {turn.content}
+      </div>
+    </details>
   )
 }

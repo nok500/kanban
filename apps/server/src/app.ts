@@ -4,6 +4,7 @@ import { requireMCPSession, requireSession } from "./auth/guard"
 import { loggerOptions, setLogger } from "./logger"
 import { registerAgentRoutes } from "./routes/agents"
 import { registerAuthRoutes } from "./routes/auth"
+import { registerCardSessionRoutes } from "./routes/card-sessions"
 import { registerChatRoutes, type ChatEndpoint } from "./routes/chat"
 import { registerFileRoutes, type ServerStorage } from "./routes/files"
 import { registerMcpRoutes } from "./routes/mcp"
@@ -53,6 +54,7 @@ export function buildApp(opts: BuildOptions = {}): FastifyInstance {
 
     registerAgentRoutes(scope, opts.storage)
     registerChatRoutes(scope, opts.chatEndpoints)
+    registerCardSessionRoutes(scope)
     registerRpcRoutes(scope)
     registerFileRoutes(scope, opts.storage)
   })

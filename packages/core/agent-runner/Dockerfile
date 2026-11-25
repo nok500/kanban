@@ -10,7 +10,7 @@ RUN printf '#!/bin/sh\nexec node /opt/pi/dist/bundle/cli.js "$@"\n' > /usr/local
     && chmod +x /usr/local/bin/pi
 
 WORKDIR /app
-COPY packages/core/agent-runner/runner.py /app/runner.py
+COPY packages/core/agent-runner/runner.py packages/core/agent-runner/sessions.py /app/
 
 EXPOSE 4850
 CMD ["python", "/app/runner.py"]

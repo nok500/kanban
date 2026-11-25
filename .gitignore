@@ -47,3 +47,7 @@ plan
 .selfhost-prev-compose.yml
 
 /board
+
+# Python bytecode
+__pycache__/
+*.pyc

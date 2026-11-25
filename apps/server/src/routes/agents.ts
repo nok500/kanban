@@ -181,7 +181,7 @@ async function streamToBuffer(
   return Buffer.concat(chunks)
 }
 
-async function canAccessBoard(
+export async function canAccessBoard(
   boardId: string,
   userId: string
 ): Promise<boolean> {

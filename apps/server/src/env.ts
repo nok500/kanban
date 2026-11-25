@@ -58,6 +58,9 @@ export const env = {
   agentMonitors: list(process.env.AGENT_MONITORS),
   agentRunnerUrl:
     trimSlash(process.env.AGENT_RUNNER_URL) ?? "http://agent-runner:4850",
+  // Saved agent sessions and card chats, shared with agent-runner (compose
+  // mounts the same host folder in both). The server writes `llama/` only.
+  agentSessionsDir: process.env.AGENT_SESSIONS_DIR ?? "/kanban/sessions",
 
   // Card chat: llama.cpp (OpenAI-compatible) instances, comma-separated
   // `Name|API URL[|UI URL]` entries, e.g.
