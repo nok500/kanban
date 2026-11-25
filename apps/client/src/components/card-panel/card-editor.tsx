@@ -5,6 +5,8 @@ import { CardPanelHeader } from "./card-panel-header"
 import { CardPanelMenu } from "./card-panel-menu"
 import { CardBodyEditor } from "./card-body-editor"
 import { CardHelpButton } from "./card-help-button"
+import { CardChatButton } from "./card-chat-button"
+import { CardChatProvider } from "../card-chat/card-chat-context"
 import { CardMetaLive } from "../card/card-meta-live"
 import { CardAttachments } from "../card/attachments/card-attachments"
 import { AddAttachmentButton } from "../card/attachments/add-attachment-button"
@@ -29,17 +31,6 @@ interface IProps {
   onReveal?: () => void
   onPopOut?: () => void
   inWindow?: boolean
-}
-
-/** Ignore the click that ends a text selection — treat it as selecting, not editing. */
-function hasTextSelection(): boolean {
-  const selection = window.getSelection()
-  return selection !== null && !selection.isCollapsed
-}
-
-/** A click on an inline body image should view it, not drop into edit mode. */
-function isImageClick(target: EventTarget): boolean {
-  return target instanceof Element && target.closest("img") !== null
 }
 
 /** Presentational card editor: renders the draft and reports edits upward. */
@@ -72,88 +63,87 @@ export function CardEditor({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <AttachmentUploadProvider cardId={cardId}>
-        <AttachmentDropZone className="flex min-h-0 flex-1 flex-col">
-          <div
-            ref={setOverlay}
-            className="relative flex min-h-0 flex-1 flex-col"
-          >
-            <CardPaneLayout
-              inWindow={inWindow}
-              header={
-                withHeader && (
-                  <CardPanelHeader
-                    isPreview={isPreview}
-                    onClose={onClose}
-                    onTogglePreivew={onTogglePreview}
-                    inWindow={inWindow}
-                    actions={<AddAttachmentButton />}
-                    menu={
-                      onDelete &&
-                      onReveal && (
-                        <CardPanelMenu
-                          cardId={cardId}
-                          isPreview={isPreview}
-                          onEdit={onEdit}
-                          onReveal={onReveal}
-                          onDelete={onDelete}
-                          onPopOut={onPopOut}
-                        />
-                      )
-                    }
-                    meta={<CardMetaLive cardId={cardId} body={body} />}
+      <CardChatProvider cardId={cardId} title={title} body={body}>
+        <AttachmentUploadProvider cardId={cardId}>
+          <AttachmentDropZone className="flex min-h-0 flex-1 flex-col">
+            <div
+              ref={setOverlay}
+              className="relative flex min-h-0 flex-1 flex-col"
+            >
+              <CardPaneLayout
+                inWindow={inWindow}
+                header={
+                  withHeader && (
+                    <CardPanelHeader
+                      isPreview={isPreview}
+                      onClose={onClose}
+                      onTogglePreivew={onTogglePreview}
+                      inWindow={inWindow}
+                      actions={
+                        <>
+                          <CardChatButton />
+                          <AddAttachmentButton />
+                        </>
+                      }
+                      menu={
+                        onDelete &&
+                        onReveal && (
+                          <CardPanelMenu
+                            cardId={cardId}
+                            isPreview={isPreview}
+                            onEdit={onEdit}
+                            onReveal={onReveal}
+                            onDelete={onDelete}
+                            onPopOut={onPopOut}
+                          />
+                        )
+                      }
+                      meta={<CardMetaLive cardId={cardId} body={body} />}
+                    />
+                  )
+                }
+                attachments={
+                  <CardAttachments
+                    className="py-2"
+                    cardId={cardId}
+                    isReadonly={isPreview}
                   />
-                )
-              }
-              attachments={
-                <CardAttachments
-                  className="py-2"
-                  cardId={cardId}
-                  isReadonly={isPreview}
-                />
-              }
-              notice={notice}
-              tags={tags}
-              onClickBody={
-                isPreview
-                  ? (e) => {
-                      if (isImageClick(e.target)) return
-                      if (!hasTextSelection()) onEdit()
-                    }
-                  : undefined
-              }
-              title={
-                <TitleEditor
-                  value={title}
-                  onChangeValue={onChangeTitle}
-                  isPreview={isPreview}
-                  autoFocus={focus === "title"}
-                />
-              }
-              body={
-                <CardBodyEditor
-                  cardId={cardId}
-                  body={body}
-                  autoFocus={focus === "body"}
-                  isPreview={isPreview}
-                  onChangeBody={onChangeBody}
-                  overlayContainer={overlay}
-                />
-              }
-            />
-            {withHeader && !isMobile && (
-              <div
-                className={cn(
-                  "absolute right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 rounded-md bg-card/80 backdrop-blur-xs in-[.no-blur]:bg-card",
-                  inWindow && "fixed"
-                )}
-              >
-                <CardHelpButton />
-              </div>
-            )}
-          </div>
-        </AttachmentDropZone>
-      </AttachmentUploadProvider>
+                }
+                notice={notice}
+                tags={tags}
+                title={
+                  <TitleEditor
+                    value={title}
+                    onChangeValue={onChangeTitle}
+                    isPreview={isPreview}
+                    autoFocus={focus === "title"}
+                  />
+                }
+                body={
+                  <CardBodyEditor
+                    cardId={cardId}
+                    body={body}
+                    autoFocus={focus === "body"}
+                    isPreview={isPreview}
+                    onChangeBody={onChangeBody}
+                    overlayContainer={overlay}
+                  />
+                }
+              />
+              {withHeader && !isMobile && (
+                <div
+                  className={cn(
+                    "absolute right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 rounded-md bg-card/80 backdrop-blur-xs in-[.no-blur]:bg-card",
+                    inWindow && "fixed"
+                  )}
+                >
+                  <CardHelpButton />
+                </div>
+              )}
+            </div>
+          </AttachmentDropZone>
+        </AttachmentUploadProvider>
+      </CardChatProvider>
     </div>
   )
 }

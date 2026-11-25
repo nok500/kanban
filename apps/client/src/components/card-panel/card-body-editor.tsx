@@ -12,6 +12,7 @@ import { imageSlashCommands } from "../card/attachments/image-slash-commands"
 import { isRenderableImage } from "../card/attachments/renderable-image"
 import { useUploads } from "@/providers/attachment-upload/attachment-upload-context"
 import { CardMarkdown } from "../card/card-markdown"
+import { ChatBlockDecorations } from "../card-chat/chat-block-decorations"
 import { cn, Markdown } from "@doska/ui-kit"
 import { MarkdownEditor } from "@doska/editor"
 
@@ -65,28 +66,30 @@ export function CardBodyEditor({
 
   return (
     <CardMarkdown cardId={cardId}>
-      <MarkdownEditor
-        renderPreview={Markdown}
-        value={body}
-        autoFocus={autoFocus}
-        onChangeValue={onChangeBody}
-        onToggleTask={onChangeBody}
-        slashMenu
-        markdown
-        slashCommands={slashCommands}
-        overlayContainer={overlayContainer}
-        wikilinks={cardRefs}
-        suggestions={suggestions}
-        onPasteFiles={handlePasteFiles}
-        placeholder="Notes"
-        isPreview={isPreview}
-        markers={PREVIEW_MARKERS}
-        className={cn(
-          "min-h-[50vh] shrink-0 text-foreground/90",
-          isPreview && "text-[1.1rem]"
-        )}
-        containerClassName="flex-1"
-      />
+      <ChatBlockDecorations enabled={isPreview}>
+        <MarkdownEditor
+          renderPreview={Markdown}
+          value={body}
+          autoFocus={autoFocus}
+          onChangeValue={onChangeBody}
+          onToggleTask={onChangeBody}
+          slashMenu
+          markdown
+          slashCommands={slashCommands}
+          overlayContainer={overlayContainer}
+          wikilinks={cardRefs}
+          suggestions={suggestions}
+          onPasteFiles={handlePasteFiles}
+          placeholder="Notes"
+          isPreview={isPreview}
+          markers={PREVIEW_MARKERS}
+          className={cn(
+            "min-h-[50vh] shrink-0 text-foreground/90",
+            isPreview && "text-[1.1rem]"
+          )}
+          containerClassName="flex-1"
+        />
+      </ChatBlockDecorations>
     </CardMarkdown>
   )
 }

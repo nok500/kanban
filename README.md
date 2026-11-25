@@ -8,8 +8,10 @@ A self-hosted Kanban job-application board with automated CLI agent JD analysis 
 
 The default board (`Default`) starts with five columns:
 
-- **`JDs`** — Add job descriptions (formatted as `Company: Job Title`) and tag them with `agy` or `claude` (via card **Tags** or inline `#agy` / `#claude`).
-- **`Analise`** — Moving a tagged card into `Analise` triggers the selected CLI agent inside `agent-runner`, passing the JD title/body and any CV files attached to cards in `Docs`.
+- **`JDs`** — Add job descriptions (formatted as `Company: Job Title`) and tag them with `agy`, `claude` or `pi` (via card **Tags** or inline `#agy` / `#claude` / `#pi`).
+- **`Analise`** — Moving a tagged card into `Analise` triggers the selected CLI agent inside `agent-runner`, passing the JD title/body and any CV files attached to cards in `Docs`:
+  - `agy` / `claude` read the CV files and update the card themselves over Kanban MCP (with a web search for the company's careers page).
+  - `pi` ([pi coding agent](https://github.com/earendil-works/pi), with your pi config, e.g. a local llama.cpp provider) has no MCP, so the server extracts the CV text (PDF, text, Markdown) into its prompt, and applies its answer — the analysis plus a `DECISION`/`MATCH` verdict — to the card. Set the provider/model with `PI_PROVIDER` / `PI_MODEL`. No web access, so no careers-page lookup.
 - **`Follow-up`** — If the agent recommends following up, it appends `---` + `Thought for <N>s` + the fit analysis (including company career-page search results), sets the card `priority` (`high` / `medium` / `low`), and moves the card here.
 - **`Nay`** — If not a fit, the analysis is appended and the card is moved here.
 - **`Docs`** — Store your CV card(s) with attached CV files here.

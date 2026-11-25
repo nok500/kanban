@@ -183,3 +183,19 @@ export const history = pgTable(
   },
   (t) => [index("history_board_seq").on(t.boardId, t.seq)]
 )
+
+/**
+ * llama.cpp (OpenAI-compatible) servers for card chat, added from the UI by an
+ * admin. They sit beside the read-only ones from LLAMA_ENDPOINTS; `name` is
+ * what the client sends, so it is unique. Server-wide, not per user: the server
+ * makes the calls. `api_key` is sent as a bearer token and never returned.
+ */
+export const chatEndpoints = pgTable("chat_endpoints", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  apiUrl: text("api_url").notNull(),
+  uiUrl: text("ui_url"),
+  apiKey: text("api_key"),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
+})

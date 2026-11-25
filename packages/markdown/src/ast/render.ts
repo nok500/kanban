@@ -15,7 +15,35 @@ export interface RenderOptions {
    * index in document order, matching `taskProgress` / `toggleTaskByIndex`.
    */
   onToggleTask?: (index: number) => void
+  /**
+   * Lets the host wrap or extend a block, e.g. to attach an action to it. It is
+   * offered each top-level block (paragraph, quote, code, table) and each item
+   * of a top-level list, with the item's own blocks as `content`; whatever it
+   * returns renders in place of `content`. Needs `source`, the string the tree
+   * was parsed from, to hand the block's markdown back.
+   */
+  decorateBlock?: DecorateBlock
+  source?: string
 }
+
+export type DecoratedKind =
+  "paragraph" | "listItem" | "blockquote" | "code" | "table"
+
+export interface BlockInfo {
+  kind: DecoratedKind
+  /** The block's markdown, exactly as written (a list item keeps its marker). */
+  text: string
+  /** The closest top-level heading above the block, if any. */
+  section: string | null
+  /** Whether a top-level `---` rule precedes the block. */
+  afterRule: boolean
+}
+
+export type DecorateBlock = (
+  block: BlockInfo,
+  content: ReactNode,
+  key: string
+) => ReactNode
 
 interface Ctx {
   adapter: MarkdownAdapter
@@ -31,6 +59,8 @@ interface Ctx {
   tight: boolean
   /** Inside a blockquote, which `TASK_RE` cannot match — see `renderListItem`. */
   quoted: boolean
+  /** Set only on a top-level list's items; nested lists never see it. */
+  decorateItem?: (item: MdNode, blocks: ReactNode[]) => ReactNode
 }
 
 /** Nested blocks never inherit a list item's tightness; only its own children do. */
@@ -233,9 +263,17 @@ function renderListItem(
     ...ctx,
     tight: !loose,
     muted: ctx.muted || item.checked === true,
+    decorateItem: undefined,
   }
 
-  return ctx.adapter.listItem(marker, renderBlocks(item.children, itemCtx), key)
+  const blocks = renderBlocks(item.children, itemCtx)
+  const decorated = ctx.decorateItem?.(item, blocks) ?? blocks
+  // Passed through untouched, the item renders exactly as it would undecorated.
+  return ctx.adapter.listItem(
+    marker,
+    decorated === blocks ? blocks : [decorated],
+    key
+  )
 }
 
 function renderTable(node: MdNode, ctx: Ctx, key: string): ReactNode {
@@ -362,5 +400,75 @@ export function renderMarkdown(
     quoted: false,
   }
 
-  return renderBlocks((root as MdNode).children, ctx)
+  const { decorateBlock, source } = options
+  const nodes = (root as MdNode).children
+  if (!decorateBlock || source === undefined) return renderBlocks(nodes, ctx)
+  return renderDecorated(nodes ?? [], ctx, decorateBlock, source)
+}
+
+const DECORATED = new Set<string>(["paragraph", "blockquote", "code", "table"])
+
+function sliceOf(node: MdNode, source: string): string {
+  const start = node.position?.start.offset
+  const end = node.position?.end.offset
+  return start === undefined || end === undefined
+    ? flatten(node)
+    : source.slice(start, end)
+}
+
+/** `renderBlocks` for the top level, offering each block to `decorate`. */
+function renderDecorated(
+  nodes: MdNode[],
+  ctx: Ctx,
+  decorate: DecorateBlock,
+  source: string
+): ReactNode[] {
+  let afterRule = false
+  let section: string | null = null
+  const out: ReactNode[] = []
+
+  nodes.forEach((node, i) => {
+    const key = String(i)
+    if (node.type === "thematicBreak") afterRule = true
+    if (node.type === "heading") section = flatten(node).trim() || null
+
+    let rendered: ReactNode
+    if (node.type === "list") {
+      const listSection = section
+      const listAfterRule = afterRule
+      rendered = renderBlock(
+        node,
+        {
+          ...ctx,
+          decorateItem: (item, blocks) =>
+            decorate(
+              {
+                kind: "listItem",
+                text: sliceOf(item, source),
+                section: listSection,
+                afterRule: listAfterRule,
+              },
+              blocks,
+              "decorated"
+            ),
+        },
+        key
+      )
+    } else if (DECORATED.has(node.type)) {
+      rendered = decorate(
+        {
+          kind: node.type as DecoratedKind,
+          text: sliceOf(node, source),
+          section,
+          afterRule,
+        },
+        renderBlock(node, ctx, key),
+        key
+      )
+    } else {
+      rendered = renderBlock(node, ctx, key)
+    }
+    if (rendered !== null) out.push(rendered)
+  })
+  return out
 }

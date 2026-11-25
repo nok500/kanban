@@ -4,6 +4,7 @@ import { requireMCPSession, requireSession } from "./auth/guard"
 import { loggerOptions, setLogger } from "./logger"
 import { registerAgentRoutes } from "./routes/agents"
 import { registerAuthRoutes } from "./routes/auth"
+import { registerChatRoutes, type ChatEndpoint } from "./routes/chat"
 import { registerDesktopLoginRoutes } from "./routes/desktop-login"
 import { registerFileRoutes, type ServerStorage } from "./routes/files"
 import { registerMcpRoutes } from "./routes/mcp"
@@ -13,6 +14,8 @@ import { registerVersionRoutes } from "./routes/version"
 
 interface BuildOptions {
   storage?: ServerStorage | null
+  /** Overrides LLAMA_ENDPOINTS (tests point it at a fake upstream). */
+  chatEndpoints?: ChatEndpoint[]
 }
 
 export function buildApp(opts: BuildOptions = {}): FastifyInstance {
@@ -51,6 +54,7 @@ export function buildApp(opts: BuildOptions = {}): FastifyInstance {
     scope.addHook("onRequest", requireSession)
 
     registerAgentRoutes(scope, opts.storage)
+    registerChatRoutes(scope, opts.chatEndpoints)
     registerRpcRoutes(scope)
     registerFileRoutes(scope, opts.storage)
   })

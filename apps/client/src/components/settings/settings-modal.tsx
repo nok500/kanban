@@ -1,5 +1,5 @@
 import { CardContent, Modal, ModalContent, ModalHeader } from "@doska/ui-kit"
-import { BookOpen, Bot, Server, Users } from "lucide-react"
+import { BookOpen, Bot, BrainCircuit, Server, Users } from "lucide-react"
 import { FaGithub } from "react-icons/fa"
 import { isSyncConfigured } from "@doska/core"
 import { useAuth } from "@/lib/hooks"
@@ -14,6 +14,7 @@ interface IProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onOpenAccounts: () => void
+  onOpenChatEndpoints: () => void
   onOpenLocalMcp: () => void
   onOpenServerMcp: () => void
 }
@@ -22,6 +23,7 @@ export function SettingsModal({
   open,
   onOpenChange,
   onOpenAccounts,
+  onOpenChatEndpoints,
   onOpenLocalMcp,
   onOpenServerMcp,
 }: IProps) {
@@ -42,6 +44,13 @@ export function SettingsModal({
                   icon={<Users className="size-4" />}
                   label="Accounts"
                   onClick={onOpenAccounts}
+                />
+              )}
+              {isAdmin && isSyncConfigured() && (
+                <SettingsRow
+                  icon={<BrainCircuit className="size-4" />}
+                  label="LLM endpoints"
+                  onClick={onOpenChatEndpoints}
                 />
               )}
               {isDesktop() && (

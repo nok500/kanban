@@ -33,6 +33,10 @@ services:
       BASE_URL: ${BASE_URL:?set BASE_URL in .env, e.g. https://doska.example.com}
       AGENT_MONITORS: ${AGENT_MONITORS:-VOODOO|http://192.168.8.229:4747/status,VERDUN|http://agent-probe:4747/status}
       AGENT_RUNNER_URL: ${AGENT_RUNNER_URL:-http://agent-runner:4850}
+      # Card chat: llama.cpp instances as `Name|API URL[|UI URL]`, comma-separated.
+      # Optional and read-only in the UI; admins add more under Settings → LLM
+      # endpoints (full domains such as https://llama.example.com work there).
+      LLAMA_ENDPOINTS: ${LLAMA_ENDPOINTS:-}
     volumes:
       - doska-files:/data/files
     networks:
@@ -89,14 +93,27 @@ services:
     image: ghcr.io/nok500/kanban-agent-runner:${DOCKER_IMAGE_TAG:-latest}
     pull_policy: always
     user: "${UID:-1000}:${GID:-1000}"
+    # pi's llama.cpp provider points at the host's localhost:8081; the runner
+    # relays its own localhost:8081 there (LOCALHOST_FORWARDS), so the pi config
+    # works unchanged inside the container.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       HOME: /home/jvnl
+      # `pi` agent tag: provider/model. Empty model: the provider's first one.
+      PI_PROVIDER: ${PI_PROVIDER:-llama.cpp}
+      PI_MODEL: ${PI_MODEL:-}
+      # Comma-separated `localPort:host:port` relays from the container's localhost.
+      LOCALHOST_FORWARDS: ${LOCALHOST_FORWARDS:-8081:host.docker.internal:8081}
     volumes:
       - ${AGY_BIN}:/usr/local/bin/agy:ro
       - ${CLAUDE_BIN_USR_SHARE}:/usr/local/bin/claude:ro
       - ${GEMINI_BIN}:/home/jvnl/.gemini
       - ${CLAUDE_BIN}:/home/jvnl/.claude
       - ${CLAUDE_JSON}:/home/jvnl/.claude.json
+      # pi: the host's install (read-only) and its config (~/.pi: providers, auth).
+      - ${PI_PACKAGE:-/usr/local/lib/node_modules/@earendil-works/pi-coding-agent}:/opt/pi:ro
+      - ${PI_CONFIG:-${HOME}/.pi}:/home/jvnl/.pi
     restart: unless-stopped
 
   agent-probe:

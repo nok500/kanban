@@ -9,7 +9,7 @@ interface IProps {
   title: ReactNode
   body: ReactNode
   tags?: ReactNode
-  /** Fired by clicking the body, where clicking it starts an edit. */
+  /** Fired by clicking the body. */
   onClickBody?: (e: React.MouseEvent) => void
   /** The window itself scrolls, so the content must not. */
   inWindow?: boolean

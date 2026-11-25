@@ -88,7 +88,7 @@ const TIPS: Tip[] = [
   {
     icon: Pencil,
     title: "Editing",
-    text: "Click the text to edit. The eye button switches back to preview.",
+    text: "Use the pencil button at the top right to edit; the eye button switches back to preview. In preview, the chat button beside each point of an analysis starts a chat about it.",
   },
   {
     icon: Ellipsis,

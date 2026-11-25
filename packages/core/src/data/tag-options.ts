@@ -5,7 +5,7 @@ import { useBoard } from "./queries"
 /**
  * Every tag on the board, most used first, for the `#` menu
  */
-const BUILTIN_AGENT_TAGS = ["agy", "claude"] as const
+const BUILTIN_AGENT_TAGS = ["agy", "claude", "pi"] as const
 
 export function useTagOptions(deckId: string): PrefixOption[] {
   const { data: board } = useBoard(deckId)

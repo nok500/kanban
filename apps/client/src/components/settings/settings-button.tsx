@@ -2,6 +2,7 @@ import { SidebarMenuButton, SidebarMenuItem } from "@doska/ui-kit"
 import { Settings } from "lucide-react"
 import { useState } from "react"
 import { AccountsModal } from "@/components/accounts/accounts-modal"
+import { ChatEndpointsModal } from "@/components/chat-endpoints/chat-endpoints-modal"
 import { LocalMcpModal } from "@/components/local-mcp/local-mcp-modal"
 import { ServerMcpModal } from "@/components/server-mcp/server-mcp-modal"
 import { SettingsModal } from "./settings-modal"
@@ -10,6 +11,7 @@ import { SettingsModal } from "./settings-modal"
 export function SettingsButton() {
   const [open, setOpen] = useState(false)
   const [accountsOpen, setAccountsOpen] = useState(false)
+  const [chatEndpointsOpen, setChatEndpointsOpen] = useState(false)
   const [localMcpOpen, setLocalMcpOpen] = useState(false)
   const [serverMcpOpen, setServerMcpOpen] = useState(false)
 
@@ -29,6 +31,10 @@ export function SettingsButton() {
           setOpen(false)
           setAccountsOpen(true)
         }}
+        onOpenChatEndpoints={() => {
+          setOpen(false)
+          setChatEndpointsOpen(true)
+        }}
         onOpenLocalMcp={() => {
           setOpen(false)
           setLocalMcpOpen(true)
@@ -39,6 +45,10 @@ export function SettingsButton() {
         }}
       />
       <AccountsModal open={accountsOpen} onOpenChange={setAccountsOpen} />
+      <ChatEndpointsModal
+        open={chatEndpointsOpen}
+        onOpenChange={setChatEndpointsOpen}
+      />
       <LocalMcpModal open={localMcpOpen} onOpenChange={setLocalMcpOpen} />
       <ServerMcpModal open={serverMcpOpen} onOpenChange={setServerMcpOpen} />
     </>

@@ -24,6 +24,10 @@
     "test:selfhost:upgrade": "bash .github/scripts/selfhost-upgrade.sh",
     "test:selfhost:restore": "bash .github/scripts/selfhost-restore.sh",
     "selfhost:down": "docker compose down --volumes --remove-orphans",
+    "local:up": "docker compose -f docker-compose.local.yml up -d --build",
+    "local:build": "docker compose -f docker-compose.local.yml build",
+    "local:logs": "docker compose -f docker-compose.local.yml logs -f --tail=100",
+    "local:down": "docker compose -f docker-compose.local.yml down",
     "upd": "pnpm dlx npm-check-updates --workspaces --root -i"
   },
   "devDependencies": {

@@ -44,6 +44,8 @@ export interface MdNode {
   align?: (string | null)[]
   children?: MdNode[]
   data?: unknown
+  /** Source offsets from remark-parse; absent on nodes plugins synthesize. */
+  position?: { start: { offset?: number }; end: { offset?: number } }
 }
 
 /**

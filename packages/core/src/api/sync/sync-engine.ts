@@ -6,7 +6,8 @@ import {
 } from "@doska/sync"
 import { ORPCError } from "@orpc/client"
 import type { StoreName } from "../constants"
-import { DASHBOARDS, HISTORY, SIDEBAR } from "../constants"
+import { CARDS, COLUMNS, DASHBOARDS, HISTORY, SIDEBAR } from "../constants"
+import { adoptSeedBoard } from "./adopt-seed-board"
 import { DeckSyncDriver } from "./drivers/board-driver"
 import {
   DashboardListDriver,
@@ -180,6 +181,15 @@ class DeckSync {
 
   markDirty(store: StoreName, key: string) {
     this.engineFor(store).mark(`${store}/${key}`)
+    // First use of the untouched seed board: sync the whole board, not just
+    // what was edited. Cheap no-op for every other board.
+    if (store === CARDS || store === COLUMNS) {
+      void adoptSeedBoard(store, key, (s, id) =>
+        this.engineFor(s).mark(`${s}/${id}`)
+      ).then((adopted) => {
+        if (adopted) void this.reconcile()
+      })
+    }
   }
 
   /** Whether a record still owes the server a push — see `purgeExpired`. */

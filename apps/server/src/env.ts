@@ -56,7 +56,15 @@ export const env = {
 
   // CLI agent monitor probes: comma-separated `Label|URL` entries.
   agentMonitors: list(process.env.AGENT_MONITORS),
-  agentRunnerUrl: trimSlash(process.env.AGENT_RUNNER_URL) ?? "http://agent-runner:4850",
+  agentRunnerUrl:
+    trimSlash(process.env.AGENT_RUNNER_URL) ?? "http://agent-runner:4850",
+
+  // Card chat: llama.cpp (OpenAI-compatible) instances, comma-separated
+  // `Name|API URL[|UI URL]` entries, e.g.
+  // `verdun|http://192.168.8.220:8081/v1|http://192.168.8.220:8081/`.
+  // The API URL is called by this server; the UI URL is opened by the browser.
+  // Read-only in the UI; admins add more there (stored in `chat_endpoints`).
+  llamaEndpoints: list(process.env.LLAMA_ENDPOINTS),
 
   // Dev-only PGlite socket bridge (serve-dev.ts)
   pgSocketHost: process.env.PG_SOCKET_HOST ?? "127.0.0.1",

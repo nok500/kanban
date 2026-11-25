@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Separate container runner that executes `agy` or `claude` CLI on JD cards
-against CV attachments from the board's `Docs` column.
+"""Separate container runner that executes the `agy`, `claude` or `pi` CLI on JD
+cards against CV attachments from the board's `Docs` column.
+
+`agy` and `claude` get a prompt built here and update the card over Kanban MCP.
+`pi` has no MCP: the server sends its prompt (with the CVs' text) and applies
+its answer to the card when the job finishes.
 """
 
 import base64
+import socket
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -14,6 +19,11 @@ import threading
 import time
 
 PORT = int(os.environ.get("AGENT_RUNNER_PORT", "4850"))
+AGENTS = ("agy", "claude", "pi")
+# Provider/model for `pi`. Unset: pi's defaults. Provider without model: the
+# provider's first model.
+PI_PROVIDER = os.environ.get("PI_PROVIDER", "").strip()
+PI_MODEL = os.environ.get("PI_MODEL", "").strip()
 JOBS_ROOT = Path(os.environ.get("AGENT_JOBS_DIR", "/tmp/agent-jobs"))
 
 jobs: dict[str, dict] = {}
@@ -88,8 +98,77 @@ def build_prompt(
     )
 
 
-def run_job(job_id: str, agent: str, job_dir: Path, prompt: str, log_path: Path) -> None:
-    if agent == "agy":
+def stderr_path(log_path: Path) -> Path:
+    return log_path.with_name("stderr.log")
+
+
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
+
+
+def resolve_pi_model(provider: str) -> str | None:
+    """pi (>= 1.6) wants `--model` with `--provider`. Without PI_MODEL, take the
+    provider's first model as pi lists it, so a model swap in pi's own config
+    needs no change here."""
+    try:
+        listed = subprocess.run(
+            ["pi", "--offline", "--list-models"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            stdin=subprocess.DEVNULL,
+        ).stdout
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        log(f"pi --list-models failed: {exc}")
+        return None
+    # Rows: `provider  model  context ...` under a header line.
+    for line in listed.splitlines()[1:]:
+        cols = line.split()
+        if len(cols) >= 2 and cols[0] == provider:
+            return cols[1]
+    return None
+
+
+def pi_command(prompt: str, system: str | None) -> list[str]:
+    """`pi` in print mode with tools, sessions, skills, templates and context
+    files off: the prompt already carries the JD and the CVs' text, and the
+    answer is all the server reads."""
+    cmd = [
+        "pi",
+        "--print",
+        "--no-session",
+        "--no-tools",
+        "--no-context-files",
+        # Not --no-extensions: pi (>= 1.6) provides llama.cpp and other
+        # providers through extensions, so turning them off loses the model.
+        "--no-skills",
+        "--no-prompt-templates",
+        "--offline",
+    ]
+    if PI_PROVIDER:
+        model = PI_MODEL or resolve_pi_model(PI_PROVIDER)
+        cmd += ["--provider", PI_PROVIDER]
+        if model:
+            cmd += ["--model", model]
+    elif PI_MODEL:
+        cmd += ["--model", PI_MODEL]
+    if system:
+        cmd += ["--system-prompt", system]
+    # `--` so a prompt starting with "-" or "@" is never read as an option/file.
+    return [*cmd, "--", prompt]
+
+
+def run_job(
+    job_id: str,
+    agent: str,
+    job_dir: Path,
+    prompt: str,
+    log_path: Path,
+    system: str | None = None,
+) -> None:
+    if agent == "pi":
+        cmd = pi_command(prompt, system)
+    elif agent == "agy":
         cmd = [
             "agy",
             "--dangerously-skip-permissions",
@@ -106,21 +185,25 @@ def run_job(job_id: str, agent: str, job_dir: Path, prompt: str, log_path: Path)
             "--add-dir",
             str(job_dir),
         ]
-    log(
-        f"job={job_id} spawning: {agent} --print --dangerously-skip-permissions "
-        f"<prompt:{len(prompt)} chars> --add-dir {job_dir} cwd={job_dir}"
-    )
+    shown = [a if len(a) < 80 else f"<{len(a)} chars>" for a in cmd]
+    log(f"job={job_id} spawning: {' '.join(shown)} cwd={job_dir}")
     started = time.monotonic()
 
+    # pi's stdout is the answer the server puts on the card, so its stderr
+    # (warnings, errors) goes to its own file instead of into the answer.
+    err_path = stderr_path(log_path) if agent == "pi" else None
+
     try:
-        with log_path.open("a", encoding="utf-8") as log_file:
+        with log_path.open("a", encoding="utf-8") as log_file, (
+            err_path.open("a", encoding="utf-8") if err_path else open(os.devnull, "w")
+        ) as err_file:
             proc = subprocess.Popen(
                 cmd,
                 cwd=str(job_dir),
                 env={**os.environ, "HOME": os.environ.get("HOME", "/root")},
                 stdin=subprocess.DEVNULL,
                 stdout=log_file,
-                stderr=subprocess.STDOUT,
+                stderr=err_file if err_path else subprocess.STDOUT,
             )
             with jobs_lock:
                 jobs[job_id]["pid"] = proc.pid
@@ -140,7 +223,7 @@ def run_job(job_id: str, agent: str, job_dir: Path, prompt: str, log_path: Path)
             )
     except Exception as exc:  # noqa: BLE001
         elapsed_ms = int((time.monotonic() - started) * 1000)
-        with log_path.open("a", encoding="utf-8") as log_file:
+        with (err_path or log_path).open("a", encoding="utf-8") as log_file:
             log_file.write(f"\n[runner error] {exc}\n")
         with jobs_lock:
             jobs[job_id]["status"] = "failed"
@@ -165,8 +248,8 @@ class RunnerHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"error": "Job not found"})
                 return
             log_file = Path(snapshot["logPath"])
-            output = log_file.read_text(encoding="utf-8", errors="replace") if log_file.exists() else ""
-            snapshot["output"] = output
+            snapshot["output"] = read_text(log_file)
+            snapshot["stderr"] = read_text(stderr_path(log_file))
             self._send_json(200, snapshot)
             return
         if self.path == "/health":
@@ -190,9 +273,12 @@ class RunnerHandler(BaseHTTPRequestHandler):
             return
 
         agent = payload.get("agent")
-        if agent not in ("agy", "claude"):
+        if agent not in AGENTS:
             log(f"rejected request: invalid agent={agent!r}")
-            self._send_json(400, {"error": "agent must be 'agy' or 'claude'"})
+            self._send_json(400, {"error": f"agent must be one of {', '.join(AGENTS)}"})
+            return
+        if agent == "pi" and not payload.get("prompt"):
+            self._send_json(400, {"error": "pi jobs need the server-built prompt"})
             return
 
         board_id = payload.get("boardId")
@@ -224,13 +310,18 @@ class RunnerHandler(BaseHTTPRequestHandler):
             cv_paths.append(dest)
             log(f"job={job_id} wrote CV {dest} ({len(raw_bytes)} bytes)")
 
-        prompt = build_prompt(
-            title,
-            body,
-            cv_paths,
-            board_id=board_id,
-            card_id=card_id,
-            job_id=job_id,
+        system = payload.get("system") if agent == "pi" else None
+        prompt = (
+            str(payload["prompt"])
+            if agent == "pi"
+            else build_prompt(
+                title,
+                body,
+                cv_paths,
+                board_id=board_id,
+                card_id=card_id,
+                job_id=job_id,
+            )
         )
         (job_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
         log_path = job_dir / "output.log"
@@ -253,7 +344,7 @@ class RunnerHandler(BaseHTTPRequestHandler):
 
         thread = threading.Thread(
             target=run_job,
-            args=(job_id, agent, job_dir, prompt, log_path),
+            args=(job_id, agent, job_dir, prompt, log_path, system),
             daemon=True,
         )
         thread.start()
@@ -280,8 +371,52 @@ class RunnerHandler(BaseHTTPRequestHandler):
         return
 
 
+def _pipe(src: socket.socket, dst: socket.socket) -> None:
+    try:
+        while data := src.recv(65536):
+            dst.sendall(data)
+    except OSError:
+        pass
+    finally:
+        for s in (src, dst):
+            try:
+                s.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            s.close()
+
+
+def start_localhost_forward(spec: str) -> None:
+    """`8081:host.docker.internal:8081`: listen on the container's own
+    localhost:8081 and relay to the host. A CLI config written for the host
+    (pi's llama.cpp at http://localhost:8081) then works unchanged in here."""
+    local, target_host, target_port = spec.split(":")
+    listener = socket.create_server(("127.0.0.1", int(local)), reuse_port=False)
+
+    def accept_loop() -> None:
+        while True:
+            client, _ = listener.accept()
+            try:
+                upstream = socket.create_connection((target_host, int(target_port)), timeout=10)
+                upstream.settimeout(None)
+            except OSError as exc:
+                log(f"forward {spec}: cannot reach target: {exc}")
+                client.close()
+                continue
+            for a, b in ((client, upstream), (upstream, client)):
+                threading.Thread(target=_pipe, args=(a, b), daemon=True).start()
+
+    threading.Thread(target=accept_loop, daemon=True).start()
+    log(f"forwarding 127.0.0.1:{local} -> {target_host}:{target_port}")
+
+
 if __name__ == "__main__":
     JOBS_ROOT.mkdir(parents=True, exist_ok=True)
+    for spec in filter(None, (s.strip() for s in os.environ.get("LOCALHOST_FORWARDS", "").split(","))):
+        try:
+            start_localhost_forward(spec)
+        except (OSError, ValueError) as exc:
+            log(f"forward {spec!r} not started: {exc}")
     server = ThreadingHTTPServer(("0.0.0.0", PORT), RunnerHandler)
     log(f"listening on http://0.0.0.0:{PORT} (jobsDir={JOBS_ROOT})")
     server.serve_forever()

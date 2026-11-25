@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type { DecorateBlock } from "./render"
 import { MarkdownRenderersContext } from "./use-markdown-renderers"
 
 /**
@@ -15,6 +16,8 @@ export interface MarkdownRenderers {
   renderWikilink?: (target: string, alias?: string) => ReactNode
   /** Makes `#tag` chips clickable. */
   onTagClick?: (name: string) => void
+  /** Wraps blocks, e.g. to attach per-block actions — see `RenderOptions`. */
+  decorateBlock?: DecorateBlock
 }
 
 /**

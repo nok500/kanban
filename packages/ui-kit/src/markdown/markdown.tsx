@@ -20,8 +20,13 @@ export function Markdown({ children, className, onToggleTask }: IProps) {
   const tree = useMemo(() => parseMarkdown(children), [children])
 
   const content = useMemo(
-    () => renderMarkdown(tree, createWebAdapter(renderers), { onToggleTask }),
-    [tree, renderers, onToggleTask]
+    () =>
+      renderMarkdown(tree, createWebAdapter(renderers), {
+        onToggleTask,
+        decorateBlock: renderers.decorateBlock,
+        source: children,
+      }),
+    [tree, renderers, onToggleTask, children]
   )
 
   return <MarkdownRoot className={className}>{content}</MarkdownRoot>

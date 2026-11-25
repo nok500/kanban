@@ -1,11 +1,17 @@
-import type { IncomingMessage } from "node:http"
 import { storageFromEnv } from "@doska/file-storage/server"
-import { and, eq, inArray, isNull, sql } from "drizzle-orm"
+import { and, asc, eq, inArray, isNull, or, sql } from "drizzle-orm"
 import type { FastifyBaseLogger, FastifyInstance } from "fastify"
 import { getDB } from "../db/get-db"
-import { boardMembers, cards, columns, dashboards } from "../db/schema"
+import { boardMembers, cards, columns, dashboards, user } from "../db/schema"
 import { env } from "../env"
 import type { ServerStorage } from "./files"
+import {
+  applyAgentResult,
+  buildAnalysisPrompt,
+  extractCvText,
+  type CvDocument,
+} from "./agent-analysis"
+import { readJsonBody } from "./read-json-body"
 
 export interface AgentProcessInfo {
   pid: number
@@ -165,27 +171,14 @@ async function probeTarget(target: ProbeTarget): Promise<AgentHostStatus> {
   }
 }
 
-async function readJsonBody<T>(req: IncomingMessage): Promise<T | null> {
-  const chunks: Buffer[] = []
-  for await (const chunk of req) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
-  }
-  if (chunks.length === 0) return null
-  try {
-    return JSON.parse(Buffer.concat(chunks).toString("utf-8")) as T
-  } catch {
-    return null
-  }
-}
-
-async function streamToBase64(
+async function streamToBuffer(
   stream: AsyncIterable<Buffer | Uint8Array | string>
-): Promise<string> {
+): Promise<Buffer> {
   const chunks: Buffer[] = []
   for await (const chunk of stream) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
   }
-  return Buffer.concat(chunks).toString("base64")
+  return Buffer.concat(chunks)
 }
 
 async function canAccessBoard(
@@ -230,31 +223,70 @@ interface RunnerJobSnapshot {
   startedAt?: number
   finishedAt?: number | null
   output?: string
+  /** `pi` only: its stderr, kept out of the answer in `output`. */
+  stderr?: string
 }
 
-const AGENT_TAGS = new Set(["agy", "claude"])
-const INLINE_AGENT_RE = /(?:^|\s)#(agy|claude)(?=\s|$)/i
+type AgentName = "agy" | "claude" | "pi"
+
+const AGENT_TAGS = new Set<string>(["agy", "claude", "pi"])
+const INLINE_AGENT_RE = /(?:^|\s)#(agy|claude|pi)(?=\s|$)/i
+
+/**
+ * Agents without Kanban MCP: the server writes their prompt and applies their
+ * answer to the card (see agent-analysis.ts). The rest update the card
+ * themselves.
+ */
+const SERVER_APPLIED = new Set<AgentName>(["pi"])
+
+/** A local model loading and writing a long answer takes longer than a CLI. */
+const WATCH_TIMEOUT_MS: Record<AgentName, number> = {
+  agy: 5 * 60 * 1000,
+  claude: 5 * 60 * 1000,
+  pi: 20 * 60 * 1000,
+}
+
+function isAgentName(value: unknown): value is AgentName {
+  return typeof value === "string" && AGENT_TAGS.has(value)
+}
 const activeCardJobs = new Set<string>()
 
 function detectAgentFromCard(
   tags: string[] | null | undefined,
   body: string | null | undefined
-): "agy" | "claude" | null {
+): AgentName | null {
   const fromTags = (tags ?? [])
     .map((t) => t.trim().toLowerCase())
     .find((t) => AGENT_TAGS.has(t))
-  if (fromTags === "agy" || fromTags === "claude") return fromTags
+  if (isAgentName(fromTags)) return fromTags
   const match = INLINE_AGENT_RE.exec(body ?? "")
-  return match ? (match[1].toLowerCase() as "agy" | "claude") : null
+  return match ? (match[1].toLowerCase() as AgentName) : null
 }
 
 async function waitForJobFinish(opts: {
+  userId: string
+  boardId: string
   cardId: string
   jobId: string
+  agent: AgentName
   log: FastifyBaseLogger
 }): Promise<void> {
-  const { cardId, jobId, log } = opts
-  const deadline = Date.now() + 5 * 60 * 1000
+  const { userId, boardId, cardId, jobId, agent, log } = opts
+  const deadline = Date.now() + WATCH_TIMEOUT_MS[agent]
+  const apply = SERVER_APPLIED.has(agent)
+    ? (ok: boolean, output: string, durationMs: number | null) =>
+        applyAgentResult({
+          userId,
+          boardId,
+          cardId,
+          jobId,
+          agent,
+          ok,
+          output,
+          durationMs,
+          log,
+        })
+    : null
 
   try {
     while (Date.now() < deadline) {
@@ -264,12 +296,23 @@ async function waitForJobFinish(opts: {
           signal: AbortSignal.timeout(3000),
         })
         if (!res.ok) continue
-        const job = (await res.json()) as { status?: string }
+        const job = (await res.json()) as RunnerJobSnapshot
         if (job.status && job.status !== "running") {
           log.info(
             { jobId, cardId, status: job.status },
             "agents/watch: job finished"
           )
+          if (apply) {
+            const ok = job.status === "completed" && job.exitCode === 0
+            const { decision } = await apply(
+              ok,
+              ok
+                ? (job.output ?? "")
+                : [job.stderr, job.output].filter(Boolean).join("\n"),
+              job.durationMs ?? null
+            )
+            log.info({ jobId, cardId, decision }, "agents/watch: applied")
+          }
           return
         }
       } catch {
@@ -277,6 +320,11 @@ async function waitForJobFinish(opts: {
       }
     }
     log.warn({ jobId, cardId }, "agents/watch: timed out waiting for job")
+    await apply?.(
+      false,
+      `Timed out after ${Math.round(WATCH_TIMEOUT_MS[agent] / 60_000)} min waiting for the agent-runner.`,
+      null
+    )
   } finally {
     activeCardJobs.delete(cardId)
   }
@@ -288,7 +336,7 @@ async function dispatchAgentJob(opts: {
   cardId: string
   title: string
   body: string
-  agent: "agy" | "claude"
+  agent: AgentName
   storage: ServerStorage | null
   log: FastifyBaseLogger
 }): Promise<{ status: number; body: Record<string, unknown> }> {
@@ -308,7 +356,7 @@ async function dispatchAgentJob(opts: {
     .filter((c) => c.title.trim().toLowerCase() === "docs")
     .map((c) => c.id)
 
-  const cvs: Array<{ name: string; mime: string; contentBase64: string }> = []
+  const cvs: CvDocument[] = []
   if (docsColIds.length > 0 && storage) {
     const docCards = await db
       .select({ attachments: cards.attachments })
@@ -328,7 +376,7 @@ async function dispatchAgentJob(opts: {
           cvs.push({
             name: att.name,
             mime: att.mime,
-            contentBase64: await streamToBase64(fetched.body),
+            bytes: await streamToBuffer(fetched.body),
           })
         } catch (err) {
           log.warn(
@@ -339,6 +387,16 @@ async function dispatchAgentJob(opts: {
       }
     }
   }
+
+  // An agent without MCP gets the CVs' text and the analysis format in its
+  // prompt, since it can neither open the files nor update the card.
+  const prompt = SERVER_APPLIED.has(agent)
+    ? buildAnalysisPrompt({
+        title,
+        body,
+        cvs: await Promise.all(cvs.map(extractCvText)),
+      })
+    : null
 
   try {
     log.info(
@@ -360,7 +418,12 @@ async function dispatchAgentJob(opts: {
         cardId,
         title,
         body,
-        cvs,
+        cvs: cvs.map((cv) => ({
+          name: cv.name,
+          mime: cv.mime,
+          contentBase64: cv.bytes.toString("base64"),
+        })),
+        ...(prompt ? { system: prompt.system, prompt: prompt.user } : {}),
       }),
       signal: AbortSignal.timeout(5000),
     })
@@ -371,8 +434,11 @@ async function dispatchAgentJob(opts: {
     )
     if (runnerRes.ok && result.jobId != null) {
       void waitForJobFinish({
+        userId,
+        boardId,
         cardId,
         jobId: String(result.jobId),
+        agent,
         log,
       })
     } else {
@@ -391,6 +457,94 @@ async function dispatchAgentJob(opts: {
   }
 }
 
+/** The oldest account: the seeded owner of a self-hosted deploy. */
+async function deployOwnerId(): Promise<string | null> {
+  const [row] = await getDB()
+    .select({ id: user.id })
+    .from(user)
+    .orderBy(asc(user.createdAt))
+    .limit(1)
+  return row?.id ?? null
+}
+
+export interface PendingAgentCard {
+  userId: string
+  boardId: string
+  cardId: string
+  title: string
+  body: string
+  agent: AgentName
+}
+
+/**
+ * Cards in a Process/Analise column with an agent tag and no job marker yet,
+ * with the account to run them as. Skips cards already being processed.
+ */
+export async function findPendingAgentCards(): Promise<PendingAgentCard[]> {
+  const db = getDB()
+  // A left join: a board can have columns and cards here but no board row.
+  // The client's seeded "Default" board is never pushed as a record until it's
+  // edited, and the server accepts changes to an unknown board.
+  const targetCols = await db
+    .select({
+      colId: columns.id,
+      boardId: columns.boardId,
+      ownerId: dashboards.ownerId,
+    })
+    .from(columns)
+    .leftJoin(dashboards, eq(columns.boardId, dashboards.id))
+    .where(
+      and(
+        isNull(columns.deletedAt),
+        or(isNull(dashboards.id), isNull(dashboards.deletedAt)),
+        sql`lower(trim(${columns.title})) in ('process', 'analise')`
+      )
+    )
+  if (targetCols.length === 0) return []
+
+  // No board row, or one without an owner: it belongs to the deploy's owner,
+  // as the migrations' backfill and boardAccess() read it too.
+  const fallbackOwner = targetCols.some((c) => !c.ownerId)
+    ? await deployOwnerId()
+    : null
+  const ownerByBoard = new Map<string, string>()
+  for (const c of targetCols) {
+    const owner = c.ownerId ?? fallbackOwner
+    if (owner) ownerByBoard.set(c.boardId, owner)
+  }
+
+  const rows = await db
+    .select()
+    .from(cards)
+    .where(
+      and(
+        inArray(
+          cards.columnId,
+          targetCols.map((c) => c.colId)
+        ),
+        isNull(cards.deletedAt)
+      )
+    )
+
+  const pending: PendingAgentCard[] = []
+  for (const card of rows) {
+    if (activeCardJobs.has(card.id)) continue
+    if (/process as job-id:/i.test(card.body)) continue
+    const agent = detectAgentFromCard(card.tags, card.body)
+    const userId = ownerByBoard.get(card.boardId)
+    if (!agent || !userId) continue
+    pending.push({
+      userId,
+      boardId: card.boardId,
+      cardId: card.id,
+      title: card.title,
+      body: card.body,
+      agent,
+    })
+  }
+  return pending
+}
+
 /** Polls Process/Analise columns every 10s for tagged cards and dispatches them. */
 export function startAgentPoller(
   log: FastifyBaseLogger,
@@ -398,54 +552,8 @@ export function startAgentPoller(
 ): NodeJS.Timeout {
   const tick = async () => {
     try {
-      const db = getDB()
-      const targetCols = await db
-        .select({
-          colId: columns.id,
-          boardId: columns.boardId,
-          ownerId: dashboards.ownerId,
-        })
-        .from(columns)
-        .innerJoin(dashboards, eq(columns.boardId, dashboards.id))
-        .where(
-          and(
-            isNull(columns.deletedAt),
-            isNull(dashboards.deletedAt),
-            sql`lower(trim(${columns.title})) in ('process', 'analise')`
-          )
-        )
-
-      if (targetCols.length === 0) return
-
-      const colIds = targetCols.map((c) => c.colId)
-      const ownerByBoard = new Map<string, string>()
-      for (const c of targetCols) {
-        if (c.ownerId) ownerByBoard.set(c.boardId, c.ownerId)
-      }
-
-      const pendingCards = await db
-        .select()
-        .from(cards)
-        .where(and(inArray(cards.columnId, colIds), isNull(cards.deletedAt)))
-
-      for (const card of pendingCards) {
-        if (activeCardJobs.has(card.id)) continue
-        if (/process as job-id:/i.test(card.body)) continue
-        const agent = detectAgentFromCard(card.tags, card.body)
-        if (!agent) continue
-        const userId = ownerByBoard.get(card.boardId)
-        if (!userId) continue
-
-        void dispatchAgentJob({
-          userId,
-          boardId: card.boardId,
-          cardId: card.id,
-          title: card.title,
-          body: card.body,
-          agent,
-          storage,
-          log,
-        })
+      for (const card of await findPendingAgentCards()) {
+        void dispatchAgentJob({ ...card, storage, log })
       }
     } catch (err) {
       log.warn({ err }, "agents/poller: tick failed")
@@ -502,8 +610,10 @@ export function registerAgentRoutes(
     if (!payload?.boardId || !payload.cardId) {
       return reply.code(400).send({ error: "boardId and cardId are required" })
     }
-    if (payload.agent !== "agy" && payload.agent !== "claude") {
-      return reply.code(400).send({ error: "agent must be 'agy' or 'claude'" })
+    if (!isAgentName(payload.agent)) {
+      return reply
+        .code(400)
+        .send({ error: "agent must be 'agy', 'claude' or 'pi'" })
     }
 
     const allowed = await canAccessBoard(payload.boardId, req.userId)
