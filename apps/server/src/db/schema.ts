@@ -204,6 +204,25 @@ export const agentSettings = pgTable("agent_settings", {
   updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
 })
 
+/**
+ * Analise columns with the LLM toggle on: only cards there are sent to
+ * agent-runner. Off (no row) by default.
+ */
+export const agentColumns = pgTable("agent_columns", {
+  columnId: text("column_id").primaryKey(),
+  boardId: text("board_id").notNull(),
+  enabled: boolean("enabled").notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
+})
+
+/** The Docs card whose CV a JD card is analysed against, when Docs has several. */
+export const agentCardCvs = pgTable("agent_card_cvs", {
+  cardId: text("card_id").primaryKey(),
+  boardId: text("board_id").notNull(),
+  cvCardId: text("cv_card_id").notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
+})
+
 export const chatEndpoints = pgTable("chat_endpoints", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),

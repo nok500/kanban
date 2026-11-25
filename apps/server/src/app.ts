@@ -2,6 +2,7 @@ import Fastify from "fastify"
 import type { FastifyInstance } from "fastify"
 import { requireMCPSession, requireSession } from "./auth/guard"
 import { loggerOptions, setLogger } from "./logger"
+import { registerAgentBoardRoutes } from "./routes/agent-board"
 import { registerAgentRoutes } from "./routes/agents"
 import { registerAuthRoutes } from "./routes/auth"
 import { registerCardSessionRoutes } from "./routes/card-sessions"
@@ -54,6 +55,7 @@ export function buildApp(opts: BuildOptions = {}): FastifyInstance {
     scope.addHook("onRequest", requireSession)
 
     registerAgentRoutes(scope, opts.storage)
+    registerAgentBoardRoutes(scope)
     registerChatRoutes(scope, opts.chatEndpoints)
     registerCardSessionRoutes(scope)
     registerLlmSettingsRoutes(scope)

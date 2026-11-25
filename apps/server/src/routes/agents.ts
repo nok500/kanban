@@ -1,8 +1,16 @@
 import { storageFromEnv } from "@kanban/file-storage/server"
 import { and, asc, eq, inArray, isNull, or, sql } from "drizzle-orm"
 import type { FastifyBaseLogger, FastifyInstance } from "fastify"
+import { boardAccess } from "../db/access"
 import { getDB } from "../db/get-db"
-import { boardMembers, cards, columns, dashboards, user } from "../db/schema"
+import {
+  agentCardCvs,
+  agentColumns,
+  cards,
+  columns,
+  dashboards,
+  user,
+} from "../db/schema"
 import { env } from "../env"
 import type { ServerStorage } from "./files"
 import {
@@ -182,30 +190,22 @@ async function streamToBuffer(
   return Buffer.concat(chunks)
 }
 
+/**
+ * Whether `userId` may act on the board's agent rules and jobs: its owner or a
+ * member, or anyone for a board the server has no row for yet (like the
+ * client's seeded Default board), which sync accepts the same way.
+ */
 export async function canAccessBoard(
   boardId: string,
   userId: string
 ): Promise<boolean> {
-  const db = getDB()
-  const [board] = await db
-    .select({ id: dashboards.id, ownerId: dashboards.ownerId })
+  const [board] = await getDB()
+    .select({ deletedAt: dashboards.deletedAt })
     .from(dashboards)
-    .where(and(eq(dashboards.id, boardId), isNull(dashboards.deletedAt)))
+    .where(eq(dashboards.id, boardId))
     .limit(1)
-  if (!board) return false
-  if (!board.ownerId || board.ownerId === userId) return true
-  const [share] = await db
-    .select({ boardId: boardMembers.boardId })
-    .from(boardMembers)
-    .where(
-      and(
-        eq(boardMembers.boardId, boardId),
-        eq(boardMembers.userId, userId),
-        isNull(boardMembers.revokedAt)
-      )
-    )
-    .limit(1)
-  return Boolean(share)
+  if (board?.deletedAt) return false
+  return (await boardAccess(userId, boardId)) !== "denied"
 }
 
 interface RunAgentBody {
@@ -338,6 +338,8 @@ async function dispatchAgentJob(opts: {
   title: string
   body: string
   agent: AgentName
+  /** Only this Docs card's attachments; all of Docs when omitted. */
+  cvCardId?: string
   storage: ServerStorage | null
   log: FastifyBaseLogger
 }): Promise<{ status: number; body: Record<string, unknown> }> {
@@ -366,7 +368,8 @@ async function dispatchAgentJob(opts: {
         and(
           eq(cards.boardId, boardId),
           inArray(cards.columnId, docsColIds),
-          isNull(cards.deletedAt)
+          isNull(cards.deletedAt),
+          ...(opts.cvCardId ? [eq(cards.id, opts.cvCardId)] : [])
         )
       )
 
@@ -476,17 +479,71 @@ export interface PendingAgentCard {
   title: string
   body: string
   agent: AgentName
+  cvCardId: string
+}
+
+/** Docs cards on a board that carry at least one attachment (a CV). */
+export async function cvCardsByBoard(
+  boardIds: string[]
+): Promise<Map<string, { id: string; title: string; files: string[] }[]>> {
+  const out = new Map<
+    string,
+    { id: string; title: string; files: string[] }[]
+  >()
+  if (boardIds.length === 0) return out
+  const db = getDB()
+  const docsCols = await db
+    .select({ id: columns.id })
+    .from(columns)
+    .where(
+      and(
+        inArray(columns.boardId, boardIds),
+        isNull(columns.deletedAt),
+        sql`lower(trim(${columns.title})) = 'docs'`
+      )
+    )
+  if (docsCols.length === 0) return out
+  const rows = await db
+    .select({
+      id: cards.id,
+      boardId: cards.boardId,
+      title: cards.title,
+      position: cards.position,
+      attachments: cards.attachments,
+    })
+    .from(cards)
+    .where(
+      and(
+        inArray(
+          cards.columnId,
+          docsCols.map((c) => c.id)
+        ),
+        isNull(cards.deletedAt)
+      )
+    )
+    .orderBy(asc(cards.position))
+  for (const row of rows) {
+    const files = (row.attachments ?? []).map((a) => a.name)
+    if (files.length === 0) continue
+    const list = out.get(row.boardId) ?? []
+    list.push({ id: row.id, title: row.title, files })
+    out.set(row.boardId, list)
+  }
+  return out
 }
 
 /**
- * Cards in a Process/Analise column with an agent tag and no job marker yet,
- * with the account to run them as. Skips cards already being processed.
+ * Cards ready for an agent, with the account to run them as: in an Analise
+ * column with the LLM toggle on, tagged for an agent, no job marker yet, and a
+ * CV in Docs (the one picked for the card when Docs has several). Skips cards
+ * already being processed.
  */
 export async function findPendingAgentCards(): Promise<PendingAgentCard[]> {
   const db = getDB()
   // A left join: a board can have columns and cards here but no board row.
   // The client's seeded "Default" board is never pushed as a record until it's
   // edited, and the server accepts changes to an unknown board.
+  // Only Analise columns someone switched the LLM toggle on for.
   const targetCols = await db
     .select({
       colId: columns.id,
@@ -494,12 +551,14 @@ export async function findPendingAgentCards(): Promise<PendingAgentCard[]> {
       ownerId: dashboards.ownerId,
     })
     .from(columns)
+    .innerJoin(agentColumns, eq(agentColumns.columnId, columns.id))
     .leftJoin(dashboards, eq(columns.boardId, dashboards.id))
     .where(
       and(
         isNull(columns.deletedAt),
         or(isNull(dashboards.id), isNull(dashboards.deletedAt)),
-        sql`lower(trim(${columns.title})) in ('process', 'analise')`
+        eq(agentColumns.enabled, true),
+        sql`lower(trim(${columns.title})) = 'analise'`
       )
     )
   if (targetCols.length === 0) return []
@@ -528,6 +587,20 @@ export async function findPendingAgentCards(): Promise<PendingAgentCard[]> {
       )
     )
 
+  const boardIds = [...new Set(targetCols.map((c) => c.boardId))]
+  const cvs = await cvCardsByBoard(boardIds)
+  const choices = new Map(
+    (
+      await db
+        .select({
+          cardId: agentCardCvs.cardId,
+          cvCardId: agentCardCvs.cvCardId,
+        })
+        .from(agentCardCvs)
+        .where(inArray(agentCardCvs.boardId, boardIds))
+    ).map((c) => [c.cardId, c.cvCardId])
+  )
+
   const pending: PendingAgentCard[] = []
   for (const card of rows) {
     if (activeCardJobs.has(card.id)) continue
@@ -535,6 +608,14 @@ export async function findPendingAgentCards(): Promise<PendingAgentCard[]> {
     const agent = detectAgentFromCard(card.tags, card.body)
     const userId = ownerByBoard.get(card.boardId)
     if (!agent || !userId) continue
+    // A CV has to be there; with several, the one picked for this card.
+    const boardCvs = cvs.get(card.boardId) ?? []
+    const chosen = choices.get(card.id)
+    const cv =
+      boardCvs.length === 1
+        ? boardCvs[0]
+        : boardCvs.find((c) => c.id === chosen)
+    if (!cv) continue
     pending.push({
       userId,
       boardId: card.boardId,
@@ -542,12 +623,13 @@ export async function findPendingAgentCards(): Promise<PendingAgentCard[]> {
       title: card.title,
       body: card.body,
       agent,
+      cvCardId: cv.id,
     })
   }
   return pending
 }
 
-/** Polls Process/Analise columns every 10s for tagged cards and dispatches them. */
+/** Polls LLM-enabled Analise columns every 10s for ready cards and dispatches them. */
 export function startAgentPoller(
   log: FastifyBaseLogger,
   storage: ServerStorage | null = storageFromEnv()

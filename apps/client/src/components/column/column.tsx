@@ -4,6 +4,9 @@ import type { Card } from "@kanban/core"
 import { ConfirmDialog } from "../confirm-dialog"
 import { ColumnMenu } from "./column-menu"
 import { ColumnView } from "./column-view"
+import { LlmColumnToggle } from "../agents/llm-column-toggle"
+import { isAnaliseColumn } from "@/lib/agents/agent-rules"
+import { useAgentRules } from "@/providers/agent-rules/agent-rules-context"
 
 interface IProps {
   children: ReactNode
@@ -40,6 +43,19 @@ export function Column({
   onDelete,
 }: IProps) {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const agentRules = useAgentRules()
+  const llmToggle =
+    agentRules && isAnaliseColumn({ title }) ? (
+      <LlmColumnToggle
+        enabled={agentRules.isLlmColumn(id)}
+        onToggle={(enabled) => agentRules.toggleLlmColumn(id, enabled)}
+        unavailable={
+          agentRules.available
+            ? undefined
+            : "Sign in to a server to run agents on this column."
+        }
+      />
+    ) : undefined
 
   return (
     <Droppable droppableId={id}>
@@ -59,6 +75,7 @@ export function Column({
           isDraggingOver={snapshot.isDraggingOver}
           listRef={provided.innerRef}
           listProps={provided.droppableProps}
+          llmToggle={llmToggle}
           menu={
             <>
               <ColumnMenu

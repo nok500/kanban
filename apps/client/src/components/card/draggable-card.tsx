@@ -5,6 +5,7 @@ import type { CardPatch, Card as CardData, Column } from "@kanban/core"
 import { DROP_ANIMATION_MS } from "@/lib/hooks"
 import { routes } from "@/lib/routes"
 import { Card } from "./card"
+import { useAgentCardNote } from "../agents/agent-card-note"
 import { GhostChip } from "./ghost-chip"
 import { OrderAnimator } from "./order-animator"
 
@@ -34,6 +35,8 @@ export const DraggableCard = memo(function DraggableCard({
   const [, navigate] = useLocation()
   const id = card.id
   const grab = useRef({ x: 0, y: 0 })
+  // In an LLM-on Analise column: what the card still needs before it runs.
+  const agentNote = useAgentCardNote(card, column)
 
   return (
     <OrderAnimator>
@@ -86,6 +89,7 @@ export const DraggableCard = memo(function DraggableCard({
                 card={card}
                 column={column}
                 onPatch={onPatch}
+                metaLead={agentNote}
               />
               {snapshot.isDragging && (
                 <GhostChip

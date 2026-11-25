@@ -26,6 +26,8 @@ interface IProps {
   onRename?: (title: string) => void
   /** The column menu, where the viewer can act on the column. */
   menu?: ReactNode
+  /** Analise columns: the LLM toggle beside the title. */
+  llmToggle?: ReactNode
   /** Omit to drop the add-card button. */
   onAddCard?: () => void
   addCardDisabledReason?: string
@@ -47,6 +49,7 @@ export function ColumnView({
   onToggleBody,
   onRename,
   menu,
+  llmToggle,
   onAddCard,
   addCardDisabledReason,
   onAddFromTemplate,
@@ -112,6 +115,7 @@ export function ColumnView({
           )}
         </div>
         <div className="flex items-center">
+          {llmToggle}
           <Button
             variant="ghost"
             size="icon-lg"

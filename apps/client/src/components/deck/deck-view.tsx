@@ -25,6 +25,8 @@ import { useLocation } from "wouter"
 import { useDragEnd, useSyncShortcut } from "@/lib/hooks"
 import { routes } from "@/lib/routes"
 import { useDeck } from "@/providers/deck/deck-context"
+import { AgentRulesProvider } from "@/providers/agent-rules/agent-rules-provider"
+import { useAgentRulesState } from "@/providers/agent-rules/use-agent-rules-state"
 import { Deck } from "./deck"
 
 /**
@@ -66,57 +68,72 @@ export function DeckView({ dashboard }: { dashboard: Dashboard }) {
   )
 
   const { tagFilters, userFilters } = useDeck()
-  const handleDragEnd = useDragEnd(
+  const moveDroppedCard = useDragEnd(
     board,
     moveCard,
     dashboard.sort ?? [],
     tagFilters,
     userFilters
   )
+  const agentRules = useAgentRulesState(id, board)
+  const handleDragEnd: typeof moveDroppedCard = (result) => {
+    moveDroppedCard(result)
+    const card = board?.cards.find((c) => c.id === result.draggableId)
+    if (card && result.destination) {
+      agentRules.afterDrop(
+        card,
+        result.source.droppableId,
+        result.destination.droppableId
+      )
+    }
+  }
 
   return (
-    <Deck
-      dashboard={dashboard}
-      board={board ?? { columns: [], cards: [] }}
-      isLoading={isPending}
-      onToggleBody={(columnId, collapsed) =>
-        setColumnCollapsed({ id: columnId, collapsed })
-      }
-      onAddCard={(columnId) =>
-        createCard(columnId, {
-          onSuccess: (cardId) =>
-            navigate(routes.card.to(cardId), { state: { new: true } }),
-        })
-      }
-      onAddFromTemplate={(columnId, template) =>
-        createCardFromTemplate(
-          { columnId, template },
-          {
+    <AgentRulesProvider rules={agentRules.rules}>
+      <Deck
+        dashboard={dashboard}
+        board={board ?? { columns: [], cards: [] }}
+        isLoading={isPending}
+        onToggleBody={(columnId, collapsed) =>
+          setColumnCollapsed({ id: columnId, collapsed })
+        }
+        onAddCard={(columnId) =>
+          createCard(columnId, {
             onSuccess: (cardId) =>
               navigate(routes.card.to(cardId), { state: { new: true } }),
-          }
-        )
-      }
-      onAddColumn={() => createColumn("New column")}
-      onReorderColumns={moveColumn}
-      onChangeColumnColor={(columnId, color) =>
-        setColumnColor({ id: columnId, color })
-      }
-      onChangeColumnDone={(columnId, done) =>
-        setColumnDone({ id: columnId, done })
-      }
-      onRenameColumn={(columnId, title) =>
-        renameColumn({ id: columnId, title })
-      }
-      onDeleteColumn={deleteColumn}
-      onRenameDashboard={(name) => renameDashboard({ id, name })}
-      onDeleteDashboard={() => deleteDashboard(id)}
-      onChangeSort={(sort) => setDashboardSort({ id, sort })}
-      view={view}
-      onChangeView={(next) => setBoardView(id, next)}
-      onDragEnd={handleDragEnd}
-      onMoveCardToBoard={moveCardToBoard}
-      onPatchCard={patchCard}
-    />
+          })
+        }
+        onAddFromTemplate={(columnId, template) =>
+          createCardFromTemplate(
+            { columnId, template },
+            {
+              onSuccess: (cardId) =>
+                navigate(routes.card.to(cardId), { state: { new: true } }),
+            }
+          )
+        }
+        onAddColumn={() => createColumn("New column")}
+        onReorderColumns={moveColumn}
+        onChangeColumnColor={(columnId, color) =>
+          setColumnColor({ id: columnId, color })
+        }
+        onChangeColumnDone={(columnId, done) =>
+          setColumnDone({ id: columnId, done })
+        }
+        onRenameColumn={(columnId, title) =>
+          renameColumn({ id: columnId, title })
+        }
+        onDeleteColumn={deleteColumn}
+        onRenameDashboard={(name) => renameDashboard({ id, name })}
+        onDeleteDashboard={() => deleteDashboard(id)}
+        onChangeSort={(sort) => setDashboardSort({ id, sort })}
+        view={view}
+        onChangeView={(next) => setBoardView(id, next)}
+        onDragEnd={handleDragEnd}
+        onMoveCardToBoard={moveCardToBoard}
+        onPatchCard={patchCard}
+      />
+      {agentRules.picker}
+    </AgentRulesProvider>
   )
 }

@@ -25,6 +25,19 @@ export function useDuplicateDashboard() {
   })
 }
 
+/** A new board named after a built-in template, with its columns. */
+export function useCreateBoardFromTemplate() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (template: { id: string; title: string }) => {
+      const created = await api.createDashboard(template.title)
+      await api.fillBoard(created.id, template.id)
+      return created
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: keys.dashboards }),
+  })
+}
+
 /** Default columns, or a copy of `templateId`'s columns and cards. */
 export function useFillBoard(deckId: string) {
   const qc = useQueryClient()

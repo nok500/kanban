@@ -22,24 +22,25 @@ async function createEmptyBoard(page: Page): Promise<void> {
 }
 
 test.describe("board empty state", () => {
-  test("Empty gives the default columns", async ({ page }) => {
+  test("Empty gives the default (Job search) columns", async ({ page }) => {
     await createEmptyBoard(page)
 
     await page.getByRole("button", { name: "Empty", exact: true }).click()
 
-    await expect(page.getByRole("group", { name: "To Do" })).toBeVisible()
-    await expect(page.getByRole("group", { name: "In Progress" })).toBeVisible()
-    await expect(page.getByRole("group", { name: "Done" })).toBeVisible()
+    for (const name of ["JDs", "Analise", "Follow-up", "NAY", "Applied"]) {
+      await expect(page.getByRole("group", { name })).toBeVisible()
+    }
   })
 
-  test("From template is off until there is a board template", async ({
-    page,
-  }) => {
+  test("From template offers the built-in layouts", async ({ page }) => {
     await createEmptyBoard(page)
 
-    await expect(
-      page.getByRole("button", { name: "From template" })
-    ).toBeDisabled()
+    await page.getByRole("button", { name: "From template" }).click()
+    await page.getByRole("menuitem", { name: "Kanban" }).click()
+
+    for (const name of ["Backlog", "In progress", "Done", "Rejected"]) {
+      await expect(page.getByRole("group", { name })).toBeVisible()
+    }
   })
 
   test("From template copies the template's columns and cards", async ({
@@ -47,7 +48,7 @@ test.describe("board empty state", () => {
   }) => {
     await createBoard(page)
     await renameBoard(page, "Untitled board", "Sprint")
-    await addCard(page, "Done")
+    await addCard(page, "Applied")
     await retitleCard(page, "Untitled card", "Demo prep")
     await openBoardMenu(page)
     await menu(page, "Board actions")
@@ -59,7 +60,7 @@ test.describe("board empty state", () => {
     await page.getByRole("menuitem", { name: "Sprint" }).click()
 
     await expect(
-      column(page, "Done").locator(card(page, "Demo prep"))
+      column(page, "Applied").locator(card(page, "Demo prep"))
     ).toBeVisible()
     await expect(boardTitle(page, "Untitled board")).toBeVisible()
   })

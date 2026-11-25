@@ -88,69 +88,68 @@ export const seedColumns: Column[] = [
   },
 ]
 
-/** Templates every newly created board starts with. */
-export const BOARD_COLUMNS: Column[] = [
+/** A board layout that ships with the app, listed on the Templates page. */
+export interface BuiltinBoardTemplate {
+  /** `builtin:<slug>`: never a board id, so `fillBoard` can tell them apart. */
+  id: string
+  title: string
+  description: string
+  columns: { title: string; color: string; done?: boolean }[]
+}
+
+export const BUILTIN_BOARD_TEMPLATES: BuiltinBoardTemplate[] = [
   {
-    id: "jds",
-    title: "JDs",
-    position: "a0",
-    dashboardId: "",
-    collapsed: false,
-    done: false,
-    stamps: {},
-    color: "",
-    updatedAt: 0,
-    deletedAt: null,
+    id: "builtin:job-search",
+    title: "Job search",
+    description:
+      "JDs get analysed by an agent in Analise, then move to Follow-up or NAY.",
+    columns: [
+      { title: "JDs", color: "" },
+      { title: "Analise", color: "amber" },
+      { title: "Follow-up", color: "green" },
+      { title: "Docs", color: "violet" },
+      { title: "NAY", color: "rose", done: true },
+      { title: "Applied", color: "blue" },
+      { title: "Feedback", color: "teal" },
+    ],
   },
   {
-    id: "analise",
-    title: "Analise",
-    position: "a1",
-    dashboardId: "",
-    collapsed: false,
-    done: false,
-    stamps: {},
-    color: "",
-    updatedAt: 0,
-    deletedAt: null,
-  },
-  {
-    id: "followup",
-    title: "Follow-up",
-    position: "a2",
-    dashboardId: "",
-    collapsed: false,
-    done: false,
-    stamps: {},
-    color: "",
-    updatedAt: 0,
-    deletedAt: null,
-  },
-  {
-    id: "nay",
-    title: "Nay",
-    position: "a3",
-    dashboardId: "",
-    collapsed: false,
-    done: true,
-    stamps: {},
-    color: "",
-    updatedAt: 0,
-    deletedAt: null,
-  },
-  {
-    id: "docs",
-    title: "Docs",
-    position: "a4",
-    dashboardId: "",
-    collapsed: false,
-    done: false,
-    stamps: {},
-    color: "",
-    updatedAt: 0,
-    deletedAt: null,
+    id: "builtin:kanban",
+    title: "Kanban",
+    description: "A plain board for any work.",
+    columns: [
+      { title: "Backlog", color: "" },
+      { title: "In progress", color: "amber" },
+      { title: "Done", color: "green", done: true },
+      { title: "Rejected", color: "rose", done: true },
+    ],
   },
 ]
+
+export const isBuiltinTemplate = (id: string) => id.startsWith("builtin:")
+
+/** A built-in template's columns, positioned left to right, not yet on a board. */
+export function builtinTemplateColumns(
+  template: BuiltinBoardTemplate
+): Column[] {
+  return template.columns.map((c, i) => ({
+    id: `${template.id}:${i}`,
+    title: c.title,
+    position: `a${i}`,
+    dashboardId: "",
+    collapsed: false,
+    done: c.done ?? false,
+    stamps: {},
+    color: c.color,
+    updatedAt: 0,
+    deletedAt: null,
+  }))
+}
+
+/** The columns a board gets from "Empty": the Job search layout. */
+export const BOARD_COLUMNS: Column[] = builtinTemplateColumns(
+  BUILTIN_BOARD_TEMPLATES[0]!
+)
 
 export const seedDashboards: Dashboard[] = [
   {

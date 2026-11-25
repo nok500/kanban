@@ -1,6 +1,17 @@
-import { Button, Menu, MenuContent, MenuItem, MenuTrigger } from "@kanban/ui-kit"
+import {
+  Button,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuSeparator,
+  MenuTrigger,
+} from "@kanban/ui-kit"
 import { Plus, SquareDashedPlus, SquareText } from "lucide-react"
-import { useDashboards, useFillBoard } from "@kanban/core"
+import {
+  BUILTIN_BOARD_TEMPLATES,
+  useDashboards,
+  useFillBoard,
+} from "@kanban/core"
 import { CenteredState } from "../digest/centered-state"
 
 interface IProps {
@@ -27,10 +38,8 @@ export function BoardEmptyState({ boardId }: IProps) {
               render={
                 <Button
                   variant="secondary"
-                  disabled={isPending || templates.length === 0}
-                  tooltip={
-                    templates.length === 0 ? "No board templates yet" : false
-                  }
+                  disabled={isPending}
+                  tooltip={false}
                 />
               }
             >
@@ -38,6 +47,12 @@ export function BoardEmptyState({ boardId }: IProps) {
               From template
             </MenuTrigger>
             <MenuContent>
+              {BUILTIN_BOARD_TEMPLATES.map((template) => (
+                <MenuItem key={template.id} onClick={() => fill(template.id)}>
+                  {template.title}
+                </MenuItem>
+              ))}
+              {templates.length > 0 && <MenuSeparator />}
               {templates.map((template) => (
                 <MenuItem key={template.id} onClick={() => fill(template.id)}>
                   {template.title || "Untitled board"}

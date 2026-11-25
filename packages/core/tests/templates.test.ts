@@ -81,9 +81,44 @@ describe("fillBoard", () => {
       (c) => c.dashboardId === created.id
     )
     expect(columns.map((c) => c.title).sort()).toEqual(
-      ["Done", "In Progress", "To Do"].sort()
+      [
+        "JDs",
+        "Analise",
+        "Follow-up",
+        "Docs",
+        "NAY",
+        "Applied",
+        "Feedback",
+      ].sort()
     )
     expect(all<Card>(CARDS)).toEqual([])
+  })
+
+  it("from a built-in template, adds its columns in order, done ones marked", async () => {
+    const { createDashboard } =
+      await import("../src/api/operations/create-dashboard")
+    const { fillBoard } = await import("../src/api/operations/fill-board")
+    const created = await createDashboard("Work")
+    await fillBoard(created.id, "builtin:kanban")
+
+    const columns = all<Column>(COLUMNS)
+      .filter((c) => c.dashboardId === created.id)
+      .sort((a, b) => a.position.localeCompare(b.position))
+    expect(columns.map((c) => [c.title, c.done])).toEqual([
+      ["Backlog", false],
+      ["In progress", false],
+      ["Done", true],
+      ["Rejected", true],
+    ])
+    expect(all<Card>(CARDS)).toEqual([])
+  })
+
+  it("rejects an unknown built-in template", async () => {
+    const { createDashboard } =
+      await import("../src/api/operations/create-dashboard")
+    const { fillBoard } = await import("../src/api/operations/fill-board")
+    const created = await createDashboard("Nope")
+    await expect(fillBoard(created.id, "builtin:nope")).rejects.toThrow()
   })
 
   it("from a template, copies its live columns and cards onto the board", async () => {

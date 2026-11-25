@@ -23,6 +23,7 @@ import { DragStateProvider } from "./drag-state"
 import { DeckHeader } from "./deck-header/deck-header"
 import { TagFilterPills } from "./deck-header/tag-filter-pills"
 import { DeckRowsView } from "./deck-rows-view"
+import { AgentChecklist } from "../agents/agent-checklist"
 import { SyncIndicator } from "./sync-indicator"
 import { useSidebarCardDrop } from "./use-sidebar-card-drop"
 
@@ -105,7 +106,12 @@ export function Deck({
         <BoardView
           isLoading={isLoading}
           isDragging={isDragging}
-          footer={<SyncIndicator />}
+          footer={
+            <div className="flex items-center gap-2">
+              <AgentChecklist board={board} />
+              <SyncIndicator />
+            </div>
+          }
           header={
             <>
               <DeckHeader

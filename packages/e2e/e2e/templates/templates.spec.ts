@@ -41,11 +41,38 @@ async function markCardAsTemplate(page: Page, title: string): Promise<void> {
 }
 
 test.describe("templates", () => {
+  test("a built-in layout starts a new board with its columns", async ({
+    page,
+  }) => {
+    await page.goto("/")
+    await openTemplates(page)
+
+    await page
+      .getByRole("list", { name: "Built-in templates" })
+      .getByRole("listitem")
+      .filter({ hasText: "Job search" })
+      .getByRole("button", { name: "New board" })
+      .click()
+
+    await page.waitForURL(/\/d\//)
+    for (const name of [
+      "JDs",
+      "Analise",
+      "Follow-up",
+      "Docs",
+      "NAY",
+      "Applied",
+      "Feedback",
+    ]) {
+      await expect(page.getByRole("group", { name })).toBeVisible()
+    }
+  })
+
   test("with none yet, the page says how to add one", async ({ page }) => {
     await page.goto("/")
     await openTemplates(page)
 
-    await expect(page.getByText("No templates yet.")).toBeVisible()
+    await expect(page.getByText("None of your own yet.")).toBeVisible()
     await page
       .getByRole("button", { name: "How templates work" })
       .first()
@@ -108,7 +135,7 @@ test.describe("templates", () => {
     await expect(row).toContainText("Rituals")
 
     await row.getByRole("button", { name: "Remove from templates" }).click()
-    await expect(page.getByText("No templates yet.")).toBeVisible()
+    await expect(page.getByText("None of your own yet.")).toBeVisible()
 
     // Only the mark goes; the card stays on its board.
     await page.getByRole("button", { name: "Rituals" }).click()

@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react"
 import { SquareText } from "lucide-react"
-import { sync, useDashboards, useTemplateCards } from "@kanban/core"
+import {
+  BUILTIN_BOARD_TEMPLATES,
+  sync,
+  useDashboards,
+  useTemplateCards,
+} from "@kanban/core"
 import { Button } from "@kanban/ui-kit"
 import { PageHeader } from "../app/page-header"
 import { CenteredState } from "../digest/centered-state"
 import { BoardTemplateRow } from "./board-template-row"
+import { BuiltinTemplateRow } from "./builtin-template-row"
 import { CardTemplateRow } from "./card-template-row"
 import { TemplatesHelpButton } from "./templates-help-button"
 import { TemplatesHelpModal } from "./templates-help-modal"
@@ -33,12 +39,23 @@ export function TemplatesView() {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-10">
         <div className="mx-auto flex max-w-lg flex-col gap-8">
+          <section>
+            <h2 className="mb-3 text-sm font-medium text-muted-foreground">
+              Board layouts
+            </h2>
+            <ul aria-label="Built-in templates" className="flex flex-col gap-2">
+              {BUILTIN_BOARD_TEMPLATES.map((template) => (
+                <BuiltinTemplateRow key={template.id} template={template} />
+              ))}
+            </ul>
+          </section>
+
           {!isPending && boards.length === 0 && cards.length === 0 && (
             <CenteredState
               icon={<SquareText className="size-8 text-muted-foreground" />}
             >
               <p className="max-w-sm text-sm text-muted-foreground">
-                No templates yet. <br />
+                None of your own yet. <br />
                 Pick "Add to templates" in a card's or a board's menu.
               </p>
               <Button
@@ -54,7 +71,7 @@ export function TemplatesView() {
           {boards.length > 0 && (
             <section>
               <h2 className="mb-3 text-sm font-medium text-muted-foreground">
-                Boards
+                Your boards
               </h2>
               <ul aria-label="Board templates" className="flex flex-col gap-2">
                 {boards.map((board) => (

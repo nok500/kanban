@@ -349,52 +349,93 @@ describe("POST /api/agents/run", () => {
 })
 
 describe("findPendingAgentCards", () => {
+  const cardRecord = (
+    id: string,
+    columnId: string,
+    extra: Record<string, unknown> = {}
+  ) => ({
+    store: "cards" as const,
+    record: {
+      id,
+      title: "Acme: SRE",
+      body: "JD",
+      position: "a",
+      columnId,
+      number: null,
+      deadline: null,
+      priority: "",
+      tags: [],
+      attachments: [],
+      updatedAt: now,
+      deletedAt: null,
+      ...extra,
+    },
+  })
+  const columnRecord = (id: string, boardId: string, title: string) => ({
+    store: "columns" as const,
+    record: {
+      id,
+      title,
+      position: title === "Docs" ? "z" : "b",
+      dashboardId: boardId,
+      collapsed: false,
+      color: "",
+      done: false,
+      updatedAt: now,
+      deletedAt: null,
+    },
+  })
+  // Attachment keys are uuids; the CV's index makes each one distinct.
+  const cv = (name: string, n: number) => ({
+    id: `att-${name}`,
+    key: `att/0000000${n}-0000-4000-8000-000000000000.pdf`,
+    name,
+    mime: "application/pdf",
+    size: 10,
+  })
+
+  /** An Analise card, and Docs with one CV card per name in `cvs`. */
   const pushBoard = (
     boardId: string,
-    card: { id: string; tags?: string[]; body?: string }
+    card: { id: string; tags?: string[]; body?: string },
+    cvs: string[] = ["cv.pdf"]
   ) =>
     rpcClient(h).board.sync({
       boardId,
       since: 0,
       changes: [
-        {
-          store: "columns",
-          record: {
-            id: `${boardId}-analise`,
-            title: "Analise",
-            position: "b",
-            dashboardId: boardId,
-            collapsed: false,
-            color: "",
-            done: false,
-            updatedAt: now,
-            deletedAt: null,
-          },
-        },
-        {
-          store: "cards",
-          record: {
-            title: "Acme: SRE",
-            body: "JD",
-            position: "a",
-            columnId: `${boardId}-analise`,
-            number: null,
-            deadline: null,
-            priority: "",
-            tags: [],
-            attachments: [],
-            updatedAt: now,
-            deletedAt: null,
-            ...card,
-          },
-        },
+        columnRecord(`${boardId}-analise`, boardId, "Analise"),
+        columnRecord(`${boardId}-docs`, boardId, "Docs"),
+        cardRecord(card.id, `${boardId}-analise`, card),
+        ...cvs.map((name, n) =>
+          cardRecord(`${boardId}-cv${n}`, `${boardId}-docs`, {
+            title: `CV ${n}`,
+            position: `a${n}`,
+            attachments: [cv(name, n)],
+          })
+        ),
       ],
     })
 
-  test("finds a tagged card on a board the server has no board row for", async () => {
+  const put = (url: string, payload: unknown) =>
+    h.app.inject({
+      method: "PUT",
+      url,
+      headers: { cookie: h.cookie, "content-type": "application/json" },
+      payload: JSON.stringify(payload),
+    })
+  const enableLlm = (boardId: string, enabled = true) =>
+    put(`/api/agents/boards/${boardId}/columns/${boardId}-analise`, {
+      enabled,
+    })
+
+  test("nothing runs until the Analise column's LLM toggle is on", async () => {
+    await pushBoard("welcome", { id: "w1", tags: ["pi"] })
+    expect(await findPendingAgentCards()).toEqual([])
+
+    expect((await enableLlm("welcome")).statusCode).toBe(204)
     // Like the client's seeded "Default" board: cards and columns synced,
     // the board record never pushed.
-    await pushBoard("welcome", { id: "w1", tags: ["pi"] })
     expect(await findPendingAgentCards()).toEqual([
       {
         userId: ownerId,
@@ -403,16 +444,19 @@ describe("findPendingAgentCards", () => {
         title: "Acme: SRE",
         body: "JD",
         agent: "pi",
+        cvCardId: "welcome-cv0",
       },
     ])
+
+    await enableLlm("welcome", false)
+    expect(await findPendingAgentCards()).toEqual([])
   })
 
-  test("finds cards on a known board, with inline tags too", async () => {
-    await seedBoard()
-    await pushBoard("b1", { id: "inline", body: "JD #claude" })
+  test("finds inline tags too", async () => {
+    await pushBoard("b2", { id: "inline", body: "JD #claude" })
+    await enableLlm("b2")
     const found = await findPendingAgentCards()
-    expect(found.map((c) => [c.cardId, c.agent]).sort()).toEqual([
-      ["card1", "pi"],
+    expect(found.map((c) => [c.cardId, c.agent])).toEqual([
       ["inline", "claude"],
     ])
   })
@@ -424,6 +468,49 @@ describe("findPendingAgentCards", () => {
       tags: ["pi"],
       body: `JD\n\n${jobMarker("7")}`,
     })
+    await enableLlm("welcome")
     expect(await findPendingAgentCards()).toEqual([])
+  })
+
+  test("waits for a CV in Docs", async () => {
+    await pushBoard("welcome", { id: "w1", tags: ["pi"] }, [])
+    await enableLlm("welcome")
+    expect(await findPendingAgentCards()).toEqual([])
+  })
+
+  test("with several CVs, waits for the one picked for the card", async () => {
+    await pushBoard("welcome", { id: "w1", tags: ["agy"] }, ["a.pdf", "b.pdf"])
+    await enableLlm("welcome")
+    expect(await findPendingAgentCards()).toEqual([])
+
+    const pick = await put("/api/agents/boards/welcome/cards/w1/cv", {
+      cvCardId: "welcome-cv1",
+    })
+    expect(pick.statusCode).toBe(204)
+    const found = await findPendingAgentCards()
+    expect(found.map((c) => [c.cardId, c.cvCardId])).toEqual([
+      ["w1", "welcome-cv1"],
+    ])
+  })
+
+  test("the board's rules read back for the UI", async () => {
+    await pushBoard("welcome", { id: "w1", tags: ["pi"] }, ["a.pdf", "b.pdf"])
+    await enableLlm("welcome")
+    await put("/api/agents/boards/welcome/cards/w1/cv", {
+      cvCardId: "welcome-cv0",
+    })
+    const res = await h.app.inject({
+      method: "GET",
+      url: "/api/agents/boards/welcome",
+      headers: { cookie: h.cookie },
+    })
+    expect(res.json()).toEqual({
+      llmColumns: ["welcome-analise"],
+      cardCvs: { w1: "welcome-cv0" },
+      cvCards: [
+        { id: "welcome-cv0", title: "CV 0", files: ["a.pdf"] },
+        { id: "welcome-cv1", title: "CV 1", files: ["b.pdf"] },
+      ],
+    })
   })
 })
