@@ -109,6 +109,12 @@ services:
       # Without LOCAL_PROVIDERS, pi runs on its own config (~/.pi below) and
       # PI_PROVIDER picks one of its providers.
       PI_PROVIDER: ${PI_PROVIDER:-}
+      # pi's tools: web search (and fetch) from the host pi's extensions
+      # (~/.pi/agent/settings.json packages). AGENT_SEARXNG_URL: the SearXNG
+      # pi-searxng-search queries, as reached from inside the container (its own
+      # name, so a SEARXNG_URL exported for the host's pi doesn't leak in).
+      PI_TOOLS: ${PI_TOOLS:-web_search,web_fetch,batch_web_fetch}
+      SEARXNG_URL: ${AGENT_SEARXNG_URL:-}
     volumes:
       - ${AGY_BIN}:/usr/local/bin/agy:ro
       - ${CLAUDE_BIN_USR_SHARE}:/usr/local/bin/claude:ro

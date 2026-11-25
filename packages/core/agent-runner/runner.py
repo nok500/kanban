@@ -2,9 +2,9 @@
 """Separate container runner that executes the `agy`, `claude` or `pi` CLI on JD
 cards against CV attachments from the board's `Docs` column.
 
-`agy` and `claude` get a prompt built here and update the card over Kanban MCP.
-`pi` has no MCP: the server sends its prompt (with the CVs' text) and applies
-its answer to the card when the job finishes.
+`agy`, `claude` and `pi` get a prompt built here and update the card over Kanban
+MCP. pi gets the CVs' text in its prompt (the server extracts it), since it runs
+with only web search and the Kanban MCP tools.
 
 `pi` talks to an OpenAI-compatible server (llama.cpp and the like) from
 LOCAL_PROVIDERS: the first one that answers wins, and the runner writes the pi
@@ -35,6 +35,14 @@ AGENTS = ("agy", "claude", "pi")
 PI_PROVIDER = os.environ.get("PI_PROVIDER", "").strip()
 PI_MODEL = os.environ.get("PI_MODEL", "").strip()
 PROBE_TIMEOUT_S = float(os.environ.get("LOCAL_PROVIDERS_TIMEOUT", "3"))
+# Tools pi may call: web search (and fetch, if a plugin provides it). Names no
+# loaded extension registers are ignored. Empty: no tools at all.
+PI_TOOLS = os.environ.get("PI_TOOLS", "web_search,web_fetch,batch_web_fetch").strip()
+# The host pi's Kanban MCP server (in ~/.pi/agent/mcp.json): pi updates and
+# moves the card through it, like agy and claude. Empty: no MCP for pi.
+PI_KANBAN_MCP = os.environ.get("PI_KANBAN_MCP", "kanban").strip()
+# Only what a JD job needs: no create/delete of boards, columns or cards.
+KANBAN_MCP_TOOLS = ("list_boards", "get_board", "get_card", "search_cards", "update_card", "move_card")
 JOBS_ROOT = Path(os.environ.get("AGENT_JOBS_DIR", "/tmp/agent-jobs"))
 # A resumed message runs to completion inside the HTTP request.
 RESUME_TIMEOUT_S = int(os.environ.get("AGENT_RESUME_TIMEOUT", "1200"))
@@ -67,8 +75,22 @@ def build_prompt(
     board_id: str | None = None,
     card_id: str | None = None,
     job_id: str | None = None,
+    cv_texts: list[dict] | None = None,
 ) -> str:
-    if cv_paths:
+    if cv_texts is not None:
+        # pi can't open the files: the server sends their text.
+        readable = [c for c in cv_texts if c.get("text")]
+        unreadable = [c for c in cv_texts if not c.get("text")]
+        cv_section = (
+            "\n\n".join(f"## Candidate CV: {c.get('name')}\n\n{c['text']}" for c in readable)
+            if readable
+            else "No readable CV text was found in the Docs column; analyse the JD on its own and say the fit couldn't be checked against a CV."
+        )
+        if unreadable:
+            cv_section += "\n\n(Could not read: " + "; ".join(
+                f"{c.get('name')}: {c.get('note') or 'no text'}" for c in unreadable
+            ) + ")"
+    elif cv_paths:
         cv_lines = "\n".join(f"- {p}" for p in cv_paths)
         cv_section = f"Candidate CV file(s) from the Docs column:\n{cv_lines}"
     else:
@@ -241,6 +263,46 @@ def write_pi_config(agent_dir: Path, provider: dict, model: str) -> None:
         }
     }
     (agent_dir / "models.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
+    write_pi_mcp(agent_dir)
+
+
+def host_kanban_mcp() -> dict | None:
+    """The host pi's Kanban MCP server entry, if it has one."""
+    if not PI_KANBAN_MCP:
+        return None
+    path = Path(os.environ.get("HOME", "/root")) / ".pi" / "agent" / "mcp.json"
+    try:
+        servers = json.loads(path.read_text(encoding="utf-8")).get("mcpServers") or {}
+    except (OSError, ValueError):
+        return None
+    entry = servers.get(PI_KANBAN_MCP)
+    if not isinstance(entry, dict) or entry.get("enabled") is False:
+        return None
+    return entry
+
+
+def write_pi_mcp(agent_dir: Path) -> None:
+    """Just the Kanban server, its tools declared directly (not behind
+    codemode), signed in with the host pi's saved login: mcp-auth.json is
+    linked, so a refreshed token lands back on the host."""
+    entry = host_kanban_mcp()
+    if not entry:
+        return
+    config = {"mcpServers": {PI_KANBAN_MCP: {**entry, "exposure": "direct"}}}
+    (agent_dir / "mcp.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
+    auth = Path(os.environ.get("HOME", "/root")) / ".pi" / "agent" / "mcp-auth.json"
+    link = agent_dir / "mcp-auth.json"
+    if auth.exists() and not link.exists():
+        link.symlink_to(auth)
+
+
+def pi_tool_allowlist() -> str:
+    """PI_TOOLS plus the Kanban MCP tools a job may call."""
+    tools = [t for t in PI_TOOLS.split(",") if t.strip()]
+    server = re.sub(r"[^A-Za-z0-9_]", "_", PI_KANBAN_MCP)
+    if host_kanban_mcp():
+        tools += [f"mcp__{server}__{t}" for t in KANBAN_MCP_TOOLS]
+    return ",".join(tools)
 
 
 def resolve_pi_model(provider: str) -> str | None:
@@ -266,21 +328,57 @@ def resolve_pi_model(provider: str) -> str | None:
     return None
 
 
+def pi_extensions() -> list[str]:
+    """The extension packages the host's pi has installed (`packages` in
+    ~/.pi/agent/settings.json, e.g. pi-searxng-search for web_search), so jobs
+    get the same tools as the host's pi though they run on a generated config
+    dir. Plus any paths in PI_EXTENSIONS (comma-separated)."""
+    agent_dir = Path(os.environ.get("HOME", "/root")) / ".pi" / "agent"
+    found: list[str] = []
+    try:
+        settings = json.loads((agent_dir / "settings.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        settings = {}
+    for spec in settings.get("packages") or []:
+        spec = str(spec)
+        if spec.startswith("npm:"):
+            # "npm:name", "npm:name@1.2", "npm:@scope/name@1.2": drop the version.
+            name = spec[4:]
+            head, at, _version = name[1:].rpartition("@")
+            if at:
+                name = name[0] + head
+            path = agent_dir / "npm" / "node_modules" / name
+        else:
+            path = Path(spec).expanduser()
+        if path.exists():
+            found.append(str(path))
+    for extra in os.environ.get("PI_EXTENSIONS", "").split(","):
+        if extra.strip() and Path(extra.strip()).exists():
+            found.append(extra.strip())
+    return found
+
+
 def pi_command(
     prompt: str,
     system: str | None,
     local: tuple[dict, str] | None,
     session: list[str] | None = None,
 ) -> list[str]:
-    """`pi` in print mode with tools, skills, templates and context files off:
-    the prompt already carries the JD and the CVs' text, and the answer is all
-    the server reads. `session` names the session to create or resume
-    (`--session-dir ... --session-id/--session ...`); without it, none is kept."""
+    """`pi` in print mode with skills, templates and context files off: the
+    prompt carries the JD and the CVs' text. Its only tools are PI_TOOLS (web
+    search for the company's careers page, from the host's installed
+    extensions) and the Kanban MCP tools it updates the card with. `session` names the
+    session to create or resume (`--session-dir ... --session-id/--session ...`);
+    without it, none is kept."""
+    allowed = pi_tool_allowlist()
+    tools = ["--tools", allowed] if allowed else ["--no-tools"]
+    extensions = [arg for path in pi_extensions() for arg in ("-e", path)]
     cmd = [
         "pi",
         "--print",
         *(session or ["--no-session"]),
-        "--no-tools",
+        *tools,
+        *extensions,
         "--no-context-files",
         # Not --no-extensions: pi (>= 1.6) provides llama.cpp and other
         # providers through extensions, so turning them off loses the model.
@@ -753,10 +851,6 @@ class RunnerHandler(BaseHTTPRequestHandler):
             log(f"rejected request: invalid agent={agent!r}")
             self._send_json(400, {"error": f"agent must be one of {', '.join(AGENTS)}"})
             return
-        if agent == "pi" and not payload.get("prompt"):
-            self._send_json(400, {"error": "pi jobs need the server-built prompt"})
-            return
-
         board_id = payload.get("boardId")
         card_id = payload.get("cardId")
         title = payload.get("title") or ""
@@ -786,10 +880,13 @@ class RunnerHandler(BaseHTTPRequestHandler):
             cv_paths.append(dest)
             log(f"job={job_id} wrote CV {dest} ({len(raw_bytes)} bytes)")
 
-        system = payload.get("system") if agent == "pi" else None
+        # A server-built prompt (an agent the server applies the answer for);
+        # otherwise the Kanban MCP prompt, with the CVs' text for pi.
+        system = payload.get("system") if payload.get("prompt") else None
+        cv_texts = payload.get("cvTexts") if agent == "pi" else None
         prompt = (
             str(payload["prompt"])
-            if agent == "pi"
+            if payload.get("prompt")
             else build_prompt(
                 title,
                 body,
@@ -797,6 +894,7 @@ class RunnerHandler(BaseHTTPRequestHandler):
                 board_id=board_id,
                 card_id=card_id,
                 job_id=job_id,
+                cv_texts=cv_texts if isinstance(cv_texts, list) else None,
             )
         )
         (job_dir / "prompt.txt").write_text(prompt, encoding="utf-8")

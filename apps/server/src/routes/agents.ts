@@ -235,10 +235,16 @@ const INLINE_AGENT_RE = /(?:^|\s)#(agy|claude|pi)(?=\s|$)/i
 
 /**
  * Agents without Kanban MCP: the server writes their prompt and applies their
- * answer to the card (see agent-analysis.ts). The rest update the card
- * themselves.
+ * answer to the card (see agent-analysis.ts). None today: agy, claude and pi
+ * all update the card themselves over Kanban MCP.
  */
-const SERVER_APPLIED = new Set<AgentName>(["pi"])
+const SERVER_APPLIED = new Set<AgentName>()
+
+/**
+ * Agents that can't open the CV files (pi runs with web search and Kanban MCP
+ * tools only): the server extracts the CVs' text and sends it with the job.
+ */
+const NEEDS_CV_TEXT = new Set<AgentName>(["pi"])
 
 /** A local model loading and writing a long answer takes longer than a CLI. */
 const WATCH_TIMEOUT_MS: Record<AgentName, number> = {
@@ -401,6 +407,14 @@ async function dispatchAgentJob(opts: {
         cvs: await Promise.all(cvs.map(extractCvText)),
       })
     : null
+  const cvTexts =
+    !prompt && NEEDS_CV_TEXT.has(agent)
+      ? (await Promise.all(cvs.map(extractCvText))).map((cv) => ({
+          name: cv.name,
+          text: cv.text,
+          note: cv.note,
+        }))
+      : null
 
   try {
     log.info(
@@ -428,6 +442,7 @@ async function dispatchAgentJob(opts: {
           contentBase64: cv.bytes.toString("base64"),
         })),
         ...(prompt ? { system: prompt.system, prompt: prompt.user } : {}),
+        ...(cvTexts ? { cvTexts } : {}),
         agentConfig: await agentConfig(agent),
       }),
       signal: AbortSignal.timeout(5000),

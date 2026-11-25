@@ -226,7 +226,9 @@ describe("buildAnalysisPrompt", () => {
         { name: "old.docx", text: null, note: "unsupported format" },
       ],
     })
-    expect(system).toContain("no web access")
+    expect(system).toContain("web_search")
+    expect(system).toContain("never invent")
+    expect(prompt).toContain("### Company & Application")
     expect(prompt).toContain("## Fit Analysis: Senior SRE at Acme")
     expect(prompt).toContain("Needs Kubernetes.")
     expect(prompt).toContain("## CV: cv.pdf\n\nJane, 10y Kubernetes")

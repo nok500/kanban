@@ -99,7 +99,8 @@ export function buildAnalysisPrompt(opts: {
 
   const system = [
     "You are an experienced technical recruiter and career coach. You assess how well a candidate's CV fits a job description (JD), honestly and specifically.",
-    "You have no web access: do not invent company facts, URLs or careers pages; if something isn't in the JD, say so.",
+    "You have a web_search tool: use it to look up the company and find its official careers page or this role's application link.",
+    "Only state company facts and URLs you found in the JD or in search results; never invent them. If a search turns up nothing (or the tool isn't available), say so.",
   ].join(" ")
 
   const user = [
@@ -119,6 +120,9 @@ export function buildAnalysisPrompt(opts: {
     "",
     "### Reasoning",
     "A short paragraph weighing the matches against the gaps.",
+    "",
+    "### Company & Application",
+    "- The official careers page and/or the application link for this role, as found with web_search, or say none was found.",
     "",
     "Then end your answer with exactly these two lines and nothing after them:",
     "DECISION: follow-up   (worth applying / following up)   or   DECISION: nay   (not a fit)",
